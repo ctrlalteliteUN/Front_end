@@ -1,0 +1,13 @@
+.container-login {
+    background-image: url(http://www.carmeloportal.com/wp-content/uploads/sociedadcconocimiento28.png);
+    width: 100%;
+    min-height: 60vh;
+    
+    padding: 15px;
+    background-position: center;
+    background-size: contain;
+    background-repeat: no-repeat;
+    margin-top: 10%;
+    justify-self: center;
+    align-items: center;
+}

@@ -1,0 +1,15 @@
+.navbar-brand {
+  text-align: center;
+  margin: auto;
+  font-family: 'Kanit', sans-serif;
+  font-size: xx-large;
+  
+}
+.navbar-dark {
+  background-color: #4d636f;
+}
+
+@keyframes App-logo-spin {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
