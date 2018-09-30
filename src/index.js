@@ -12,6 +12,7 @@ import search from './components/search';
 import members from './components/members';
 import msgs from './components/msgs';
 import profile from './components/profile';
+import Landingpage from './components/Landingpage';
 
 ReactDOM.render(
     <BrowserRouter>
@@ -24,7 +25,7 @@ ReactDOM.render(
             <Route  path='/members' component={members} exact/>
             <Route  path='/msgs' component={msgs} exact/>
             <Route  path='/profile' component={profile} exact/>
-            <Route  path='/' component={App} exact/>
+            <Route  path='/' component={Landingpage} exact/>
             <Route  component={Error}/>
         </Switch>
     </div>
