@@ -2,6 +2,7 @@ import React, { Component } from 'react';
 import '../styles/Log.css';
 import '../styles/App.css';
 import Navigation from './NavigationLog';
+import {Link} from 'react-router-dom'
 
 class Login extends Component {
   render() {
@@ -47,9 +48,9 @@ class Login extends Component {
                 <hr></hr>
                 </div>
                 <div className="col-sm-8 offset-sm-2 myform-cont">
-                  <form role="form" actions="" method="post" className="">
-                <button type="submit" className="mybtn">Registrate</button>
-                  </form>
+                  <Link to="/signup">
+                  <button type="submit" className="mybtn">Registrate</button>
+                  </Link>
                   </div>
               </div>
             </div>
