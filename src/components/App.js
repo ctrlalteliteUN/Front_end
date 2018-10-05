@@ -1,7 +1,7 @@
 // This component handles the App template used on every page.
 import React from 'react';
 import PropTypes from 'prop-types';
-import { BrowserRouter as Router, Route } from 'react-router-dom';
+import { BrowserRouter as Router,Route,Switch } from 'react-router-dom';
 import { connect } from 'react-redux';
 import PrivateRoute from './PrivateRoute';
 
@@ -20,16 +20,18 @@ const App = ({ authenticated, checked }) => (
   <Router>
     {checked &&
       <div>
+        <Switch>
         <PrivateRoute exact path="/" component={Home} authenticated={authenticated} />
         <Route path="/login" component={Login} exact />
         <Route path="/welcome" component={Landingpage} exact />
         <Route path="/signup" component={Registro} exact />
-        <Route path='/groups' component={groups} exact />
-        <Route path='/search' component={search} exact />
-        <Route path='/members' component={members} exact />
-        <Route path='/msgs' component={msgs} exact />
-        <Route path='/profile' component={profile} exact />
-        <Route component={Error} exact/>
+        <PrivateRoute path='/groups' component={groups} authenticated={authenticated} exact />
+        <PrivateRoute path='/search' component={search} authenticated={authenticated} exact />
+        <PrivateRoute path='/members' component={members} authenticated={authenticated} exact />
+        <PrivateRoute path='/msgs' component={msgs} authenticated={authenticated} exact />
+        <PrivateRoute path='/profile' component={profile} authenticated={authenticated} exact />
+        <PrivateRoute component={Error}/>
+        </Switch>
       </div>
     }
   </Router>

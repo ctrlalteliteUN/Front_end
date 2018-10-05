@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
 import {NavLink} from 'react-router-dom';
+import '../styles/App.css';
 
 class Login extends Component {
   render() {

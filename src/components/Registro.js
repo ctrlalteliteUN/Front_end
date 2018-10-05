@@ -1,11 +1,22 @@
 import React, { Component } from 'react';
-import '../styles/Reg.css';
-import '../styles/App.css';
+import '../styles/Log.css';
 import Navigation from './NavigationLog';
-import {Link} from 'react-router-dom'
+import {Link, Redirect} from 'react-router-dom'
+
+import PropTypes from 'prop-types';
+import { connect } from 'react-redux';
+import { bindActionCreators } from 'redux';
+import * as sessionActions from '../actions/sessionActions';
 
 class Registro extends Component {
   render() {
+    if (this.props.authenticated) {
+      return(
+      <Redirect to={{
+        pathname: '/',
+      }} />);
+    }
+
     return (
       <div>
         <Navigation/>
@@ -70,4 +81,20 @@ class Registro extends Component {
   }
 }
 
-export default Registro;
+const { object, bool } = PropTypes;
+
+Registro.propTypes = {
+  authenticated: bool.isRequired
+};
+
+const mapState = (state) => ({
+  authenticated: state.session.authenticated
+});
+
+const mapDispatch = (dispatch) => {
+  return {
+    actions: bindActionCreators(sessionActions, dispatch)
+  };
+};
+
+export default connect(mapState, mapDispatch)(Registro);

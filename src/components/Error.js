@@ -4,7 +4,7 @@ class Error extends Component {
   render() {
     return (
       <div>
-        ERRORfdaf
+        ERROR de ruta
       </div>
     );
   }
