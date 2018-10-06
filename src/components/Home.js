@@ -1,18 +1,23 @@
-import React from 'react';
+import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
 import * as sessionActions from '../actions/sessionActions';
 import LogoutButton from './LogoutButton';
+import Navigation from './Navigation';
 
-const Home = ({ actions: { logout }, user, authenticated }) => (
-  <div>
-    <h3>Welcome {user.email}</h3>
-    <h5>{authenticated ? 'You are authenticated :)' : 'Error'}</h5>
-    <LogoutButton />
-  </div>
-);
-
+class Home extends Component {
+  render() {
+    return (
+      <div>
+        <Navigation/>
+        <h3>Welcome {this.props.user.email}</h3>
+        <h5>{this.props.authenticated ? 'You are authenticated :)' : 'Error'}</h5>
+        <LogoutButton />
+      </div>
+    )
+  }
+}
 const { object, bool } = PropTypes;
 
 Home.propTypes = {

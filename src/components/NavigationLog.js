@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import {NavLink} from 'react-router-dom';
 import '../styles/App.css';
 
-class Login extends Component {
+class NavigationLog extends Component {
   render() {
     return (
       <nav className="navbar navbar-expand-lg navbar-dark">
@@ -24,4 +24,4 @@ class Login extends Component {
   }
 }
 
-export default Login;
+export default NavigationLog;

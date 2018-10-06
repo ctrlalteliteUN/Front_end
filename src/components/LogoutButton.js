@@ -5,10 +5,10 @@ import { withRouter } from 'react-router-dom';
 import { logout } from '../actions/sessionActions';
 
 const LogoutButton = ({ history, logout }) => (
-  <button
+  <button className="Logout"
     onClick={() => logout(history)}
   >
-    LOGOUT
+    Cerrar Sesión
   </button>
 );
 

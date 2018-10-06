@@ -47,3 +47,9 @@
   padding: 15px;
 
 }
+
+.Logout{
+  background-color:transparent;
+  text-align: center;
+  border: none;
+}
