@@ -6,6 +6,7 @@ import * as sessionActions from '../actions/sessionActions';
 import LogoutButton from './LogoutButton';
 import Navigation from './Navigation';
 import '../styles/Home.css';
+import { Link, withRouter } from 'react-router-dom'
 
 
 class Home extends Component {
@@ -17,7 +18,9 @@ class Home extends Component {
           <div className="row">
             <div className=' container-home'>
               <div className="col-md-12">
+              <Link to="/profile">
                 <div className="profile "></div>
+              </Link>  
                 <p>{this.props.user.email}</p>
               </div>
             </div>
