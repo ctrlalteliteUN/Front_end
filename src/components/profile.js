@@ -13,64 +13,64 @@ class profile extends Component {
     return (
       <div>
         <Navigation />
-        <div class="container emp-profile">
+        <div className="container emp-profile">
           <form method="post">
-            <div class="row">
-              <div class="col-md-4">
-                <div class="profile-img">
+            <div className="row">
+              <div className="col-md-4">
+                <div className="profile-img">
                   <img src="http://recursospracticos.com/wp-content/uploads/2017/10/Sin-foto-de-perfil-en-Facebook.jpg" alt="" />
-                  <div class="file btn btn-lg btn-primary">
+                  <div className="file btn btn-lg btn-primary">
                     Cambiar foto
                                 <input type="file" name="file" />
                   </div>
                 </div>
               </div>
-              <div class="col-md-6">
-                <div class="profile-head">
+              <div className="col-md-6">
+                <div className="profile-head">
                   <h5>
                     Brayan Esteban Garzon
                                     </h5>
-                  <p class="proile-rating">RANKINGS : <span>4/5</span></p>
-                  <div class="ratings">
-                    <ul class="list-inline">
-                      <li class="list-inline-item selected"><i class="fa fa-star"></i></li>
-                      <li class="list-inline-item selected"><i class="fa fa-star"></i></li>
-                      <li class="list-inline-item selected"><i class="fa fa-star"></i></li>
-                      <li class="list-inline-item selected"><i class="fa fa-star"></i></li>
-                      <li class="list-inline-item selected"><i class="fa fa-star-empty"></i></li>
+                  <p className="proile-rating">RANKINGS : <span>4/5</span></p>
+                  <div className="ratings">
+                    <ul className="list-inline">
+                      <li className="list-inline-item selected"><i className="fa fa-star"></i></li>
+                      <li className="list-inline-item selected"><i className="fa fa-star"></i></li>
+                      <li className="list-inline-item selected"><i className="fa fa-star"></i></li>
+                      <li className="list-inline-item selected"><i className="fa fa-star"></i></li>
+                      <li className="list-inline-item selected"><i className="fa fa-star-empty"></i></li>
 
                     </ul>
                   </div>
-                  <div class="bottom bottom1">
-                    <a class="btn2 btn-primary btn-twitter btn-sm" href="https://twitter.com/webmaniac">
-                      <i class="fa fa-twitter"></i>
+                  <div className="bottom bottom1">
+                    <a className="btn2 btn-primary btn-twitter btn-sm" href="https://twitter.com/webmaniac">
+                      <i className="fa fa-twitter"></i>
                     </a>
-                    <a class="btn3 btn-danger btn-sm" rel="publisher"
+                    <a className="btn3 btn-danger btn-sm" rel="publisher"
                       href="https://plus.google.com/+ahmshahnuralam">
-                      <i class="fa fa-google-plus"></i>
+                      <i className="fa fa-google-plus"></i>
                     </a>
-                    <a class="btn3 btn-primary btn-sm" rel="publisher"
+                    <a className="btn3 btn-primary btn-sm" rel="publisher"
                       href="https://plus.google.com/shahnuralam">
-                      <i class="fa fa-facebook"></i>
+                      <i className="fa fa-facebook"></i>
                     </a>
                   </div>
-                  <ul class="nav nav-tabs" id="myTab" role="tablist">
-                    <li class="nav-item">
-                      <a style={{color:"#4d636f"}} class="nav-link active" id="home-tab" data-toggle="tab" href="#home" role="tab" aria-controls="home" aria-selected="true">Informacion</a>
+                  <ul className="nav nav-tabs" id="myTab" role="tablist">
+                    <li className="nav-item">
+                      <a style={{color:"#4d636f"}} className="nav-link active" id="home-tab" data-toggle="tab" href="#home" role="tab" aria-controls="home" aria-selected="true">Informacion</a>
                     </li>
-                    <li class="nav-item">
-                      <a style={{color:"#4d636f"}} class="nav-link" id="profile-tab" data-toggle="tab" href="#profile" role="tab" aria-controls="profile" aria-selected="false">Estadisticas</a>
+                    <li className="nav-item">
+                      <a style={{color:"#4d636f"}} className="nav-link" id="profile-tab" data-toggle="tab" href="#profile" role="tab" aria-controls="profile" aria-selected="false">Estadisticas</a>
                     </li>
                   </ul>
                 </div>
               </div>
-              <div class="col-md-2">
-                <input type="submit" class="profile-edit-btn" name="btnAddMore" value="Editar Perfil" />
+              <div className="col-md-2">
+                <input type="submit" className="profile-edit-btn" name="btnAddMore" value="Editar Perfil" />
               </div>
             </div>
-            <div class="row">
-              <div class="col-md-4">
-                <div class="profile-work">
+            <div className="row">
+              <div className="col-md-4">
+                <div className="profile-work">
                   <p>Grupos<a className="items">
                     <i className="fas fa-users"></i>
                   </a></p>
@@ -83,98 +83,98 @@ class profile extends Component {
                   <a href="">Comida japonesa</a><br />
                 </div>
               </div>
-              <div class="col-md-8">
-                <div class="tab-content profile-tab" id="myTabContent">
-                  <div class="tab-pane fade show active" id="home" role="tabpanel" aria-labelledby="home-tab">
-                    <div class="row">
-                      <div class="col-md-6">
+              <div className="col-md-8">
+                <div className="tab-content profile-tab" id="myTabContent">
+                  <div className="tab-pane fade show active" id="home" role="tabpanel" aria-labelledby="home-tab">
+                    <div className="row">
+                      <div className="col-md-6">
                         <label>Usuario</label>
                       </div>
-                      <div class="col-md-6">
+                      <div className="col-md-6">
                         <p>begarzonf</p>
                       </div>
                     </div>
-                    <div class="row">
-                      <div class="col-md-6">
+                    <div className="row">
+                      <div className="col-md-6">
                         <label>Nombre</label>
                       </div>
-                      <div class="col-md-6">
+                      <div className="col-md-6">
                         <p>Brayan Esteban Garzon</p>
                       </div>
                     </div>
-                    <div class="row">
-                      <div class="col-md-6">
+                    <div className="row">
+                      <div className="col-md-6">
                         <label>Email</label>
                       </div>
-                      <div class="col-md-6">
+                      <div className="col-md-6">
                         <p>begarzonf@unal.edu.co</p>
                       </div>
                     </div>
-                    <div class="row">
-                      <div class="col-md-6">
+                    <div className="row">
+                      <div className="col-md-6">
                         <label>Contraseña</label>
                       </div>
-                      <div class="col-md-6">
+                      <div className="col-md-6">
                         <p>************</p>
                       </div>
                     </div>
                   </div>
-                  <div class="tab-pane fade" id="profile" role="tabpanel" aria-labelledby="profile-tab">
-                    <div class="row">
-                      <div class="col-md-2 text-right">
-                        <li class="list-inline-item selected"><i class="fa fa-star"></i></li>5
+                  <div className="tab-pane fade" id="profile" role="tabpanel" aria-labelledby="profile-tab">
+                    <div className="row">
+                      <div className="col-md-2 text-right">
+                        <li className="list-inline-item selected"><i className="fa fa-star"></i></li>5
                     </div>
-                      <div class="col-md-8">
-                        <div class="progress progress-striped">
-                          <div class="progress-bar progress-bar-success" role="progressbar" aria-valuenow="20"
+                      <div className="col-md-8">
+                        <div className="progress progress-striped">
+                          <div className="progress-bar progress-bar-success" role="progressbar" aria-valuenow="20"
                             aria-valuemin="0" aria-valuemax="100" style={{ width: "80%" }}>
                           </div>
                         </div>
                       </div>
                     </div>
-                    <div class="row">
-                      <div class="col-md-2 text-right">
-                        <li class="list-inline-item selected"><i class="fa fa-star"></i></li>4
+                    <div className="row">
+                      <div className="col-md-2 text-right">
+                        <li className="list-inline-item selected"><i className="fa fa-star"></i></li>4
                     </div>
-                      <div class="col-md-8">
-                        <div class="progress progress-striped">
-                          <div class="progress-bar progress-bar-success" role="progressbar" aria-valuenow="20"
+                      <div className="col-md-8">
+                        <div className="progress progress-striped">
+                          <div className="progress-bar progress-bar-success" role="progressbar" aria-valuenow="20"
                             aria-valuemin="0" aria-valuemax="100" style={{ width: "60%" }}>
                           </div>
                         </div>
                       </div>
                     </div>
-                    <div class="row">
-                      <div class="col-md-2 text-right">
-                        <li class="list-inline-item selected"><i class="fa fa-star"></i></li>3
+                    <div className="row">
+                      <div className="col-md-2 text-right">
+                        <li className="list-inline-item selected"><i className="fa fa-star"></i></li>3
                     </div>
-                      <div class="col-md-8">
-                        <div class="progress progress-striped">
-                          <div class="progress-bar progress-bar-success" role="progressbar" aria-valuenow="20"
+                      <div className="col-md-8">
+                        <div className="progress progress-striped">
+                          <div className="progress-bar progress-bar-success" role="progressbar" aria-valuenow="20"
                             aria-valuemin="0" aria-valuemax="100" style={{ width: "40%" }}>
                           </div>
                         </div>
                       </div>
                     </div>
-                    <div class="row">
-                      <div class="col-md-2 text-right">
-                        <li class="list-inline-item selected"><i class="fa fa-star"></i></li>2
+                    <div className="row">
+                      <div className="col-md-2 text-right">
+                        <li className="list-inline-item selected"><i className="fa fa-star"></i></li>2
                     </div>
-                      <div class="col-md-8">
-                        <div class="progress progress-striped">
-                          <div class="progress-bar progress-bar-success" role="progressbar" aria-valuenow="20"
+                      <div className="col-md-8">
+                        <div className="progress progress-striped">
+                          <div className="progress-bar progress-bar-success" role="progressbar" aria-valuenow="20"
                             aria-valuemin="0" aria-valuemax="100" style={{ width: "20%" }}>
                           </div>
                         </div>
                       </div>
                     </div>
-                    <div class="row">
-                      <div class="col-md-2 text-right">
-                        <li class="list-inline-item selected"><i class="fa fa-star"></i></li>1
+                    <div className="row">
+                      <div className="col-md-2 text-right">
+                        <li className="list-inline-item selected"><i className="fa fa-star"></i></li>1
                     </div>
-                      <div class="col-md-8">
-                        <div class="progress progress-striped">
-                          <div class="progress-bar progress-bar-success" role="progressbar" aria-valuenow="20"
+                      <div className="col-md-8">
+                        <div className="progress progress-striped">
+                          <div className="progress-bar progress-bar-success" role="progressbar" aria-valuenow="20"
                             aria-valuemin="0" aria-valuemax="100" style={{ width: "10%" }}>
                           </div>
                         </div>

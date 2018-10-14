@@ -1,18 +1,20 @@
 import { sessionService } from 'redux-react-session';
 import * as sessionApi from '../api/sessionApi';
-
+import axios from 'axios';
+//email: "assian4@gmail.com",password: "123456789"
 export const login = (user, history) => {
   return () => {
-    return sessionApi.login(user).then(response => {
-      const { token } = response;
-      sessionService.saveSession({ token })
-      .then(() => {
-        sessionService.saveUser(response.data)
-        .then(() => {
-          history.push('/');
-        }).catch(err => console.error(err));
-      }).catch(err => console.error(err));
-    });
+    axios.post(`https://knowledge-community-back-end.herokuapp.com/sessions`, { email: user.email, password: user.password })
+      .then(response => {
+        const { token } = response.data.data.user.authentication_token;
+        sessionService.saveSession({ token })
+          .then(() => {
+            sessionService.saveUser(response.data.data.user)
+              .then(() => {
+                history.push('/');
+              }).catch(err => console.error(err));
+          }).catch(err => console.error(err));
+      });
   };
 };
 

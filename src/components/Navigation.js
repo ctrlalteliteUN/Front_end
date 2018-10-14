@@ -31,9 +31,9 @@ class Navigation extends Component {
                             </li>
                         </ul>
                         <div className="container test">
-                            <div class="form-group has-search test">
-                                <span class="fa fa-search form-control-feedback"></span>
-                                <input type="text" class="form-control" placeholder="Search" />
+                            <div className="form-group has-search test">
+                                <span className="fa fa-search form-control-feedback"></span>
+                                <input type="text" className="form-control" placeholder="Search" />
                             </div>
                         </div>
                         <ul className="navbar-nav">
