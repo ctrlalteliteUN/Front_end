@@ -18,6 +18,23 @@ export const login = (user, history) => {
   };
 };
 
+export const signup = (user, history) => {
+  return () => {
+    axios.post(`https://knowledge-community-back-end.herokuapp.com/users`, { user })
+      .then(response => {
+        const { token } = response.data.authentication_token;
+        sessionService.saveSession({ token })
+          .then(() => {
+            sessionService.saveUser(response.data)
+              .then(() => {
+                history.push('/');
+              }).catch(err => console.error(err));
+          }).catch(err => console.error(err));
+      });
+  };
+};
+
+
 export const logout = (history) => {
   return () => {
     return sessionApi.logout().then(() => {

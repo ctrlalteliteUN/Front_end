@@ -1,7 +1,8 @@
 import React, { Component } from 'react';
 import '../styles/Log.css';
 import Navigation from './NavigationLog';
-import {Link, Redirect} from 'react-router-dom'
+import { Link, withRouter } from 'react-router-dom'
+import { Redirect} from 'react-router-dom'
 
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
@@ -9,7 +10,43 @@ import { bindActionCreators } from 'redux';
 import * as sessionActions from '../actions/sessionActions';
 
 class Registro extends Component {
+  constructor(props, context) {
+    super(props, context);
+
+    this.state = {
+      user: {
+        name: '',
+        email: '',
+        password: '',
+        password_confirmation: ''
+      }
+    };
+
+    this.onSubmit = this.onSubmit.bind(this);
+    this.onChange = this.onChange.bind(this);
+
+
+  }
+  onSubmit(history) {
+    const { user } = this.state;
+    const { signup } = this.props.actions;
+    signup(user, history);
+  }
+
+  onChange(e) {
+    const { value, name } = e.target;
+    const { user } = this.state;
+    user[name] = value;
+    this.setState({ user });
+  }
+
   render() {
+    const SubmitButton = withRouter(({ history }) => (
+      <button className="mybtn"
+        onClick={() => this.onSubmit(history)}
+        type="submit">Registrar
+      </button>
+    ));
     if (this.props.authenticated) {
       return(
       <Redirect to={{
@@ -30,24 +67,19 @@ class Registro extends Component {
               </div>
               <div className="row">
                 <div className="col-sm-8 offset-sm-2 myform-cont">
-                  <form role="form" actions="" method="post" className="">
                     <div className="form-group">
-                      <input type="text" name="form-name" placeholder="Nombre" className="form-control" id="form-name"/>
+                      <input type="text" name="name" placeholder="Nombre" className="form-control" id="form-name" onChange={this.onChange}/>
                     </div>
                     <div className="form-group">
-                      <input type="text" name="form-lastname" placeholder="Apellido" className="form-control" id="form-lastname"/>
+                      <input type="text" name="email" placeholder="Email" className="form-control" id="form-email" onChange={this.onChange}/>
                     </div>
                     <div className="form-group">
-                      <input type="text" name="form-username" placeholder="Usuario" className="form-control" id="form-username"/>
+                      <input type="password" name="password" placeholder="Contraseña" className="form-control" id="form-password" onChange={this.onChange}/>
                     </div>
                     <div className="form-group">
-                      <input type="text" name="form-email" placeholder="Email" className="form-control" id="form-email"/>
+                      <input type="password" name="password_confirmation" placeholder="Confirmar contraseña" className="form-control" id="form-password" onChange={this.onChange}/>
                     </div>
-                    <div className="form-group">
-                      <input type="password" name="form-password" placeholder="Contraseña" className="form-control" id="form-password"/>
-                    </div>
-                    <button type="submit" className="mybtn">Registrar</button>
-                  </form>
+                    <SubmitButton />
                 </div>
               </div>
               <div className="row">
