@@ -14,9 +14,22 @@ export const login = (user, history) => {
                 history.push('/');
               }).catch(err => console.error(err));
           }).catch(err => console.error(err));
-      });
+      }).catch(err => alert(err));
   };
 };
+export function Welcome(user,history) {
+  axios.post(`https://knowledge-community-back-end.herokuapp.com/sessions`, { email: user.email, password: user.password })
+  .then(response => {
+    const { token } = response.data.data.user.authentication_token;
+    sessionService.saveSession({ token })
+      .then(() => {
+        sessionService.saveUser(response.data.data.user)
+          .then(() => {
+            history.push('/');
+          }).catch(err => console.error(err));
+      }).catch(err => console.error(err));
+  }).catch(err => alert(err));
+}
 
 export const signup = (user, history) => {
   return () => {

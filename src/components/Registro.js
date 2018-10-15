@@ -8,6 +8,8 @@ import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
 import * as sessionActions from '../actions/sessionActions';
+import { sessionService } from 'redux-react-session';
+import axios from 'axios';
 
 class Registro extends Component {
   constructor(props, context) {
@@ -29,8 +31,20 @@ class Registro extends Component {
   }
   onSubmit(history) {
     const { user } = this.state;
-    const { signup } = this.props.actions;
-    signup(user, history);
+    return () => {
+      axios.post(`https://knowledge-community-back-end.herokuapp.com/users`, { user })
+        .then(response => {
+          const { token } = response.data.authentication_token;
+          sessionService.saveSession({ token })
+            .then(() => {
+              sessionService.saveUser(response.data)
+                .then(() => {
+                  history.push('/');
+                }).catch(err => console.error(err));
+            }).catch(err => console.error(err));
+        });
+    };
+    //signup(user, history);
   }
 
   onChange(e) {

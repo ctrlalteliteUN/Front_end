@@ -5,6 +5,9 @@ import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
 import * as sessionActions from '../actions/sessionActions';
 import '../styles/Log.css';
+import { sessionService } from 'redux-react-session';
+import axios from 'axios';
+import { stringify } from 'querystring';
 
 
 class Loginbody extends Component {
@@ -13,6 +16,8 @@ class Loginbody extends Component {
     super(props, context);
 
     this.state = {
+      hasError: false,
+      errors: "email o contraseña incorrecto",
       user: {
         email: '',
         password: ''
@@ -27,9 +32,25 @@ class Loginbody extends Component {
   onSubmit(history) {
     const { user } = this.state;
     const { login } = this.props.actions;
-    login(user, history);
+    axios.post(`https://knowledge-community-back-end.herokuapp.com/sessions`, { email: user.email, password: user.password })
+      .then(response => {
+        const { token } = response.data.data.user.authentication_token;
+        sessionService.saveSession({ token })
+          .then(() => {
+            sessionService.saveUser(response.data.data.user)
+              .then(() => {
+                history.push('/');
+              }).catch(err => alert(err));
+          }).catch(err => alert(err));
+      }).catch(function (error) {        
+        if(error.message.indexOf('500') != -1) {
+          this.setState({
+            hasError: true,
+          });
+        }
+      }.bind(this))
   }
-
+  
   onChange(e) {
     const { value, name } = e.target;
     const { user } = this.state;
@@ -56,7 +77,13 @@ class Loginbody extends Component {
               </div>
             </div>
             <div className="row">
+
               <div className="col-sm-8 offset-sm-2 myform-cont">
+                {this.state.hasError &&
+                  <div className="alert alert-danger">
+                    <strong>Danger!</strong> {this.state.errors}
+                  </div>
+                }
                 <div className="form-group">
                   <input
                     className="form-control"
