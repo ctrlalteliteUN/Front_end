@@ -81,7 +81,7 @@ class Loginbody extends Component {
               <div className="col-sm-8 offset-sm-2 myform-cont">
                 {this.state.hasError &&
                   <div className="alert alert-danger">
-                    <strong>Danger!</strong> {this.state.errors}
+                    <strong>Error:</strong> {this.state.errors}
                   </div>
                 }
                 <div className="form-group">
