@@ -32,7 +32,7 @@ const App = ({ authenticated, checked }) => (
         <PrivateRoute path='/msgs' component={msgs} authenticated={authenticated} exact />
         <PrivateRoute path='/profile' component={profile} authenticated={authenticated} exact />
         <PrivateRoute path='/editprofile' component={editprofile} authenticated={authenticated} exact />
-        <PrivateRoute component={Error}/>
+        <PrivateRoute path='/*' authenticated={authenticated} component={Error}/>
         </Switch>
       </div>
     }

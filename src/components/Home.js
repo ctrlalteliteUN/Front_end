@@ -7,24 +7,74 @@ import Posts from './Posts';
 import Navigation from './Navigation';
 import '../styles/Home.css';
 import { Link, withRouter } from 'react-router-dom'
+import { sessionService } from 'redux-react-session';
 import axios from 'axios';
 
 class Home extends Component {
-  state = {
-    groups:[],
+  constructor(props, context) {
+    super(props, context);
+    this.state = {
+      user_id: -1,
+      post: {
+        title: "",
+        body: "",
+        solicitud: 0,
+        user_id: -1
+      },
+      groups: []
+    };
+    this.onSubmit = this.onSubmit.bind(this);
+    this.onChange = this.onChange.bind(this);
+
+
+
+
   }
 
   componentDidMount() {
     axios.get('https://knowledge-community-back-end.herokuapp.com/users')
       .then(res => {
         for (let i = 0; i < res.data.length; i++) {
-          if (res.data[i].email==this.props.user.email){
-            this.setState({ groups:res.data[i].groups,})
+          if (res.data[i].email == this.props.user.email) {
+            let post = Object.assign({}, this.state.post);
+            post.user_id = res.data[i].id;
+            this.setState({
+              user_id: res.data[i].id,
+              post: post,
+              groups: res.data[i].groups
+            })
           }
         }
       })
   }
+
+  onSubmit(history) {
+    axios.post(`https://knowledge-community-back-end.herokuapp.com/posts`, this.state.post)
+      .then(function (response) {
+        alert("Publicacion Satisfactoria");
+        console.log(response);
+        history.push('/');
+      })
+      .catch(function (error) {
+        alert(error);
+        console.log(error);
+      })
+  }
+
+  onChange(e) {
+    const { value, name } = e.target;
+    const { post } = this.state;
+    post[name] = value;
+    this.setState({ post });
+  }
+
   render() {
+    const SubmitButton = withRouter(({ history }) => (
+      <button className="btn btn-default btn-lg posd"
+        onClick={() => this.onSubmit(history)}
+        type="submit">Postear
+      </button>
+    ));
     return (
       <div>
         <Navigation />
@@ -32,7 +82,7 @@ class Home extends Component {
           <div className="row">
             <div className="col-6 col-md-4 ">
               <div className="row">
-              <div className='container-home'>
+                <div className='container-home'>
                   <div className="col-md-12">
                     <Link to="/profile">
                       <div className="profile "></div>
@@ -51,8 +101,8 @@ class Home extends Component {
                         </a></h3>
                       </div>
                       <div className="panel-body">
-                      { this.state.groups.map(person => <p>{person.name}</p>)}
-                  </div>
+                        {this.state.groups.map(group => <p>{group.name}</p>)}
+                      </div>
                     </div>
                   </div>
                 </div>
@@ -65,14 +115,23 @@ class Home extends Component {
                     <div className="form-group">
                       <input
                         className="form-control in-pos"
-                        name="busqueda"
-                        label="Busqueda"
-                        type="busqueda"
+                        name="title"
+                        label="Title"
+                        type="title"
                         placeholder="¿Qué te interesa aprender o enseñar?"
                         onChange={this.onChange}
                       />
+                      <textarea
+                        className="form-control in-pos"
+                        name="body"
+                        label="Body"
+                        type="body"
+                        placeholder="Detalla lo que requieres u ofreces"
+                        onChange={this.onChange}
+                      />
+
                     </div>
-                      <button className="btn btn-default btn-lg dropdown-toggle"
+                    {/*<button className="btn btn-default btn-lg dropdown-toggle"
                         type="button" data-toggle="dropdown">
                         Etiquetas <span className="caret"></span>
                       </button>
@@ -81,15 +140,19 @@ class Home extends Component {
                         <li><a href="#">Matematicas</a></li>
                         <li><a href="#">Programacion</a></li>
                         <li><a href="#">Comida</a></li>
-                      </ul>
-                      <button type="button" className="btn btn-default btn-lg posd">Postear</button>
+    </ul>*/}
+                    <select className="form-control sel" id="sel1" onChange={this.onChange}>
+                      <option value="1">Solicitud</option>
+                      <option value="0  ">Ofrecimiento</option>
+                    </select>
+                    <SubmitButton />
                   </div>
                 </div>
 
               </div>
               <div className="row">
               </div>
-              <Posts/>
+              <Posts />
             </div>
           </div>
         </div>
@@ -210,7 +273,6 @@ class Home extends Component {
 const { object, bool } = PropTypes;
 
 Home.propTypes = {
-  actions: object.isRequired,
   user: object.isRequired,
   authenticated: bool.isRequired
 };
