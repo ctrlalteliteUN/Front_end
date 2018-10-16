@@ -45,14 +45,14 @@ class profile extends Component {
                   <h5>
                     {this.state.persons.name}
                   </h5>
-                  <p className="proile-rating">RANKINGS : <span>4/5</span></p>
+                  <p className="proile-rating">RANKINGS : <span>{this.state.persons.score}/5</span></p>
                   <div className="ratings">
                     <ul className="list-inline">
                       <li className="list-inline-item selected"><i className="fa fa-star"></i></li>
                       <li className="list-inline-item selected"><i className="fa fa-star"></i></li>
                       <li className="list-inline-item selected"><i className="fa fa-star"></i></li>
                       <li className="list-inline-item selected"><i className="fa fa-star"></i></li>
-                      <li className="list-inline-item selected"><i className="fa fa-star-empty"></i></li>
+                      <li className="list-inline-item selected"><i className="fa fa-star"></i></li>
 
                     </ul>
                   </div>
