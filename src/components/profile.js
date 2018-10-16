@@ -11,6 +11,7 @@ import axios from 'axios';
 
 class profile extends Component {
   state = {
+    groups:[],
     persons: [],
   }
 
@@ -19,12 +20,14 @@ class profile extends Component {
       .then(res => {
         for (let i = 0; i < res.data.length; i++) {
           if (res.data[i].email==this.props.user.email){
-            this.setState({ persons : res.data[i]})
+            this.setState({ groups:res.data[i].groups,persons : res.data[i]})
           }
         }
       })
   }
+
   render() {
+    const i = 0;
     return (
       <div>
         <Navigation />
@@ -92,9 +95,7 @@ class profile extends Component {
                   <p>Grupos<a className="items">
                     <i className="fas fa-users"></i>
                   </a></p>
-                  <a href="">Matematicas</a><br />
-                  <a href="">Programacion</a><br />
-                  <a href="">Cocina Oriental</a><br />
+                  { this.state.groups.map(person => <p>{person.name}</p>)}
                   <p>Habilidades</p>
                   <a href="">Guitarra Electrica</a><br />
                   <a href="">Java, python ,c++</a><br />

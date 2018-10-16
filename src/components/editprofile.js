@@ -16,7 +16,7 @@ class editprofile extends Component {
         super(props, context);
 
         this.state = {
-            id:"",
+            id: "",
             hasError: 0,
             errors: "email, nombre o contraseña incorrecto",
             errors1: "El email ya se encuentra en uso",
@@ -32,29 +32,30 @@ class editprofile extends Component {
         this.onSubmit = this.onSubmit.bind(this);
         this.onChange = this.onChange.bind(this);
 
-    
+
     }
 
     componentDidMount() {
         axios.get('https://knowledge-community-back-end.herokuapp.com/users')
-          .then(res => {
-            for (let i = 0; i < res.data.length; i++) {
-              if (res.data[i].email==this.props.user.email){
-                this.setState({ id: res.data[i].id})
-              }
-            }
-          })
-      }
+            .then(res => {
+                for (let i = 0; i < res.data.length; i++) {
+                    if (res.data[i].email == this.props.user.email) {
+                        this.setState({ id: res.data[i].id })
+                    }
+                }
+            })
+    }
+
     onSubmit(history) {
         const { user } = this.state;
-        axios.put('https://knowledge-community-back-end.herokuapp.com/users/'+ this.state.id, { user })
+        axios.put('https://knowledge-community-back-end.herokuapp.com/users/' + this.state.id, { user })
             .then(response => {
                 const { token } = response.data.authentication_token;
                 sessionService.saveSession({ token })
                     .then(() => {
                         sessionService.saveUser(response.data)
                             .then(() => {
-                                history.push('/');
+                                history.push('/profile');
                             }).catch(err => alert(err));
                     }).catch(err => alert(err));
             }).catch(function (error) {
@@ -96,10 +97,9 @@ class editprofile extends Component {
         return (
             <div>
                 <Navigation />
-                {this.state.id}
-                {this.state.user.name}
                 <div className="container">
-                    <div className="container container-login">
+                    <div className="left">
+                    <div className="container container-login2">
                         <div className="row">
                             <div className="col-sm-12 log-text">
                                 <h2>Modifica tus datos</h2>
@@ -139,6 +139,7 @@ class editprofile extends Component {
                                 <SubmitButton />
                             </div>
                         </div>
+                    </div>
                     </div>
                 </div>
             </div>

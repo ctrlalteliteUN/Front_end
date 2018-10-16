@@ -7,10 +7,23 @@ import Posts from './Posts';
 import Navigation from './Navigation';
 import '../styles/Home.css';
 import { Link, withRouter } from 'react-router-dom'
-
+import axios from 'axios';
 
 class Home extends Component {
+  state = {
+    groups:[],
+  }
 
+  componentDidMount() {
+    axios.get('https://knowledge-community-back-end.herokuapp.com/users')
+      .then(res => {
+        for (let i = 0; i < res.data.length; i++) {
+          if (res.data[i].email==this.props.user.email){
+            this.setState({ groups:res.data[i].groups,})
+          }
+        }
+      })
+  }
   render() {
     return (
       <div>
@@ -38,7 +51,7 @@ class Home extends Component {
                         </a></h3>
                       </div>
                       <div className="panel-body">
-                        Lista de grupos
+                      { this.state.groups.map(person => <p>{person.name}</p>)}
                   </div>
                     </div>
                   </div>
