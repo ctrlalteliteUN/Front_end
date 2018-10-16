@@ -3,7 +3,6 @@ import '../styles/Log.css';
 import Navigation from './NavigationLog';
 import { Link, withRouter } from 'react-router-dom'
 import { Redirect } from 'react-router-dom'
-
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';

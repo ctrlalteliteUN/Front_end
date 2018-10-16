@@ -7,8 +7,23 @@ import { bindActionCreators } from 'redux';
 import * as sessionActions from '../actions/sessionActions';
 import '../styles/profile.css';
 import { Link, withRouter } from 'react-router-dom'
+import axios from 'axios';
 
 class profile extends Component {
+  state = {
+    persons: [],
+  }
+
+  componentDidMount() {
+    axios.get('https://knowledge-community-back-end.herokuapp.com/users')
+      .then(res => {
+        for (let i = 0; i < res.data.length; i++) {
+          if (res.data[i].email==this.props.user.email){
+            this.setState({ persons : res.data[i]})
+          }
+        }
+      })
+  }
   render() {
     return (
       <div>
@@ -21,15 +36,15 @@ class profile extends Component {
                   <img src="http://recursospracticos.com/wp-content/uploads/2017/10/Sin-foto-de-perfil-en-Facebook.jpg" alt="" />
                   <div className="file btn btn-lg btn-primary">
                     Cambiar foto
-                                <input type="file" name="file" />
+                    <input type="file" name="file" />
                   </div>
                 </div>
               </div>
               <div className="col-md-6">
                 <div className="profile-head">
                   <h5>
-                    Brayan Esteban Garzon
-                                    </h5>
+                    {this.state.persons.name}
+                  </h5>
                   <p className="proile-rating">RANKINGS : <span>4/5</span></p>
                   <div className="ratings">
                     <ul className="list-inline">
@@ -42,30 +57,33 @@ class profile extends Component {
                     </ul>
                   </div>
                   <div className="bottom bottom1">
-                    <a className="btn2 btn-primary btn-twitter btn-sm" href="https://twitter.com/webmaniac">
+                    <a className="btn2 btn-primary btn-twitter btn-sm" href="https://twitter.com/Brayan_10Garzon">
                       <i className="fa fa-twitter"></i>
                     </a>
                     <a className="btn3 btn-danger btn-sm" rel="publisher"
-                      href="https://plus.google.com/+ahmshahnuralam">
+                      href="https://plus.google.com/u/0/108558213338022499177">
                       <i className="fa fa-google-plus"></i>
                     </a>
                     <a className="btn3 btn-primary btn-sm" rel="publisher"
-                      href="https://plus.google.com/shahnuralam">
+                      href="https://www.facebook.com/BRAYAN.E.GARZON">
                       <i className="fa fa-facebook"></i>
                     </a>
                   </div>
                   <ul className="nav nav-tabs" id="myTab" role="tablist">
                     <li className="nav-item">
-                      <a style={{color:"#4d636f"}} className="nav-link active" id="home-tab" data-toggle="tab" href="#home" role="tab" aria-controls="home" aria-selected="true">Informacion</a>
+                      <a style={{ color: "#4d636f" }} className="nav-link active" id="home-tab" data-toggle="tab" href="#home" role="tab" aria-controls="home" aria-selected="true">Informacion</a>
                     </li>
                     <li className="nav-item">
-                      <a style={{color:"#4d636f"}} className="nav-link" id="profile-tab" data-toggle="tab" href="#profile" role="tab" aria-controls="profile" aria-selected="false">Estadisticas</a>
+                      <a style={{ color: "#4d636f" }} className="nav-link" id="profile-tab" data-toggle="tab" href="#profile" role="tab" aria-controls="profile" aria-selected="false">Estadisticas</a>
                     </li>
                   </ul>
                 </div>
               </div>
               <div className="col-md-2">
-                <input type="submit" className="profile-edit-btn" name="btnAddMore" value="Editar Perfil" />
+                <Link to="/editprofile">
+                  <input type="submit" className="profile-edit-btn" name="btnAddMore" value="Editar Perfil" />
+                </Link>
+                
               </div>
             </div>
             <div className="row">
@@ -74,9 +92,9 @@ class profile extends Component {
                   <p>Grupos<a className="items">
                     <i className="fas fa-users"></i>
                   </a></p>
-                  <a href="">Comida tailandesa</a><br />
+                  <a href="">Matematicas</a><br />
                   <a href="">Programacion</a><br />
-                  <a href="">Calculo integral</a>
+                  <a href="">Cocina Oriental</a><br />
                   <p>Habilidades</p>
                   <a href="">Guitarra Electrica</a><br />
                   <a href="">Java, python ,c++</a><br />
@@ -88,18 +106,10 @@ class profile extends Component {
                   <div className="tab-pane fade show active" id="home" role="tabpanel" aria-labelledby="home-tab">
                     <div className="row">
                       <div className="col-md-6">
-                        <label>Usuario</label>
-                      </div>
-                      <div className="col-md-6">
-                        <p>begarzonf</p>
-                      </div>
-                    </div>
-                    <div className="row">
-                      <div className="col-md-6">
                         <label>Nombre</label>
                       </div>
                       <div className="col-md-6">
-                        <p>Brayan Esteban Garzon</p>
+                        <p>{this.state.persons.name}</p>
                       </div>
                     </div>
                     <div className="row">
@@ -107,7 +117,7 @@ class profile extends Component {
                         <label>Email</label>
                       </div>
                       <div className="col-md-6">
-                        <p>begarzonf@unal.edu.co</p>
+                        <p>{this.state.persons.email}</p>
                       </div>
                     </div>
                     <div className="row">
@@ -115,7 +125,7 @@ class profile extends Component {
                         <label>Contraseña</label>
                       </div>
                       <div className="col-md-6">
-                        <p>************</p>
+                        <p>{this.state.persons.password}</p>
                       </div>
                     </div>
                   </div>

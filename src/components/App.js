@@ -15,6 +15,7 @@ import msgs from './msgs';
 import profile from './profile';
 import Landingpage from './Landingpage';
 import Home from './Home';
+import editprofile from './editprofile';
 
 const App = ({ authenticated, checked }) => (
   <Router>
@@ -30,6 +31,7 @@ const App = ({ authenticated, checked }) => (
         <PrivateRoute path='/members' component={members} authenticated={authenticated} exact />
         <PrivateRoute path='/msgs' component={msgs} authenticated={authenticated} exact />
         <PrivateRoute path='/profile' component={profile} authenticated={authenticated} exact />
+        <PrivateRoute path='/editprofile' component={editprofile} authenticated={authenticated} exact />
         <PrivateRoute component={Error}/>
         </Switch>
       </div>

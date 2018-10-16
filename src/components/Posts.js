@@ -29,7 +29,7 @@ class Posts extends Component {
       })
   }
   getPosts() {
-    for (let i = 0; i < this.state.posts.lenght; i++) {
+    for (let i = 0; i < this.state.posts.length; i++) {
       <Post id={this.state.posts[i].id} />
     }
   }
