@@ -24,6 +24,7 @@ class editprofile extends Component {
             errors2: "La contraseña no coincide",
             file: '',
             imagePreviewUrl: '',
+            base64img:'',
             user: {
                 name: '',
                 email: '',
@@ -40,10 +41,6 @@ class editprofile extends Component {
 
 
     }
-    _handleSubmit(e) {
-        e.preventDefault();
-        // TODO: do something with -> this.state.file
-    }
 
     _handleImageChange(e) {
         e.preventDefault();
@@ -54,11 +51,12 @@ class editprofile extends Component {
         reader.onloadend = () => {
             this.setState({
                 file: file,
-                imagePreviewUrl: reader.result
+                imagePreviewUrl: reader.result,
+                base64img: reader.result
             });
         }
-
-        reader.readAsDataURL(file)
+        reader.readAsDataURL(file);
+        
     }
 
     onDrop(picture) {
@@ -81,6 +79,10 @@ class editprofile extends Component {
 
     onSubmit(history) {
         const { user } = this.state;
+        let { imagePreviewUrl } = this.state;
+        if (imagePreviewUrl) {
+            console.log(imagePreviewUrl);
+        }
         axios.put('https://knowledge-community-back-end.herokuapp.com/users/' + this.state.id, { user })
             .then(response => {
                 const { token } = response.data.authentication_token;
@@ -189,6 +191,7 @@ class editprofile extends Component {
                                         <div>
                                             <input type="file" onChange={this._handleImageChange} />
                                             {$imagePreview}
+
                                         </div>
                                     </div>
                                     <SubmitButton />
