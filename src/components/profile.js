@@ -31,7 +31,7 @@ class profile extends Component {
             axios.get('https://knowledge-community-back-end.herokuapp.com/app_files?ProfilePhoto=1&user_id=' + this.state.id)
               .then(response => {
                 console.log(response.data.ruta)
-                this.setState({ picture: response.data.ruta})
+                this.setState({ picture: response.data})
               })
           }
         }
@@ -41,8 +41,8 @@ class profile extends Component {
   render() {
     let { picture } = this.state;
     let $picture = null;
-    if (picture.error!="El usuario no existe o no tiene foto de perfil almacenada") {
-      $picture = (<img src={`data:image/png;base64,${picture}`} />);
+    if (!picture.error) {
+      $picture = (<img src={picture.ruta} />);
     } else {
       $picture = (<img src="http://recursospracticos.com/wp-content/uploads/2017/10/Sin-foto-de-perfil-en-Facebook.jpg" alt="" />);
     }
