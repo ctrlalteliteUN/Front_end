@@ -1,11 +1,22 @@
 import React, { Component } from 'react';
 import '../styles/App.css';
 import Navigation from './NavigationLog';
-import {Link} from 'react-router-dom'
+import {Redirect} from 'react-router-dom'
 import Loginbody from './Loginbody';
+
+import PropTypes from 'prop-types';
+import { connect } from 'react-redux';
+import { bindActionCreators } from 'redux';
+import * as sessionActions from '../actions/sessionActions';
 
 class Landingpage extends Component {
   render() {
+    if (this.props.authenticated) {
+      return(
+      <Redirect to={{
+        pathname: '/',
+      }} />);
+    }
     return (
       <div>
         <Navigation/>
@@ -52,4 +63,20 @@ class Landingpage extends Component {
   }
 }
 
-export default Landingpage;
+const { bool } = PropTypes;
+
+Landingpage.propTypes = {
+  authenticated: bool.isRequired
+};
+
+const mapState = (state) => ({
+  authenticated: state.session.authenticated
+});
+
+const mapDispatch = (dispatch) => {
+  return {
+    actions: bindActionCreators(sessionActions, dispatch)
+  };
+};
+
+export default connect(mapState, mapDispatch)(Landingpage);

@@ -1,73 +1,180 @@
 import React, { Component } from 'react';
-import '../styles/Reg.css';
-import '../styles/App.css';
+import '../styles/Log.css';
 import Navigation from './NavigationLog';
-import {Link} from 'react-router-dom'
+import { Link, withRouter } from 'react-router-dom'
+import { Redirect } from 'react-router-dom'
+import PropTypes from 'prop-types';
+import { connect } from 'react-redux';
+import { bindActionCreators } from 'redux';
+import * as sessionActions from '../actions/sessionActions';
+import { sessionService } from 'redux-react-session';
+import axios from 'axios';
 
 class Registro extends Component {
+  constructor(props, context) {
+    super(props, context);
+
+    this.state = {
+      hasError: 0,
+      errors: "email, nombre o contraseña incorrecto",
+      errors1: "El email ya se encuentra en uso",
+      errors2: "La contraseña no coincide",
+      user: {
+        name: '',
+        email: '',
+        password: '',
+        password_confirmation: ''
+      }
+    };
+
+    this.onSubmit = this.onSubmit.bind(this);
+    this.onChange = this.onChange.bind(this);
+
+
+  }
+  onSubmit(history) {
+    const { user } = this.state;
+    axios.post(`https://knowledge-community-back-end.herokuapp.com/users`, { user })
+      .then(response => {
+        const { token } = response.data.authentication_token;
+        sessionService.saveSession({ token })
+          .then(() => {
+            sessionService.saveUser(response.data)
+              .then(() => {
+                history.push('/');
+              }).catch(err => alert(err));
+          }).catch(err => alert(err));
+      }).catch(function (error) {
+        if (user.name=="" || user.email=="" || user.password=="" || user.password_confirmation=="") {
+          this.setState({
+            hasError: 1,
+          });
+        }
+        else if (user.password!=user.password_confirmation) {
+          this.setState({
+            hasError: 3,
+          });
+        }
+        else if (error.message.indexOf('422') != -1) {
+          this.setState({
+            hasError: 2,
+          });
+        }
+      }.bind(this))
+
+  }
+
+  onChange(e) {
+    const { value, name } = e.target;
+    const { user } = this.state;
+    user[name] = value;
+    this.setState({ user });
+  }
+
   render() {
+    const { user } = this.state;
+    const SubmitButton = withRouter(({ history }) => (
+      <button className="mybtn"
+        onClick={() => this.onSubmit(history)}
+        type="submit">Registrar
+      </button>
+    ));
+    if (this.props.authenticated) {
+      return (
+        <Redirect to={{
+          pathname: '/',
+        }} />);
+    }
+
     return (
       <div>
-        <Navigation/>
-          <div  className="body-login">
-            <div className="container">
+        <Navigation />
+        <div className="body-login">
+          <div className="container">
             <div className="container container-login">
               <div className="row">
                 <div className="col-sm-12 log-text">
-                <h2>Registrate</h2>
+                  <h2>Registrate</h2>
                 </div>
               </div>
               <div className="row">
                 <div className="col-sm-8 offset-sm-2 myform-cont">
-                  <form role="form" actions="" method="post" className="">
-                    <div className="form-group">
-                      <input type="text" name="form-name" placeholder="Nombre" className="form-control" id="form-name"/>
+                  {this.state.hasError==1 &&
+                    <div className="alert alert-danger">
+                      <strong>Error:</strong> {this.state.errors} 
                     </div>
-                    <div className="form-group">
-                      <input type="text" name="form-lastname" placeholder="Apellido" className="form-control" id="form-lastname"/>
+                  }
+                  
+                  {this.state.hasError==2 &&
+                    <div className="alert alert-danger">
+                      <strong>Error:</strong> {this.state.errors1}
                     </div>
-                    <div className="form-group">
-                      <input type="text" name="form-username" placeholder="Usuario" className="form-control" id="form-username"/>
+                  }
+                  {this.state.hasError==3 &&
+                    <div className="alert alert-danger">
+                      <strong>Error:</strong> {this.state.errors2}
                     </div>
-                    <div className="form-group">
-                      <input type="text" name="form-email" placeholder="Email" className="form-control" id="form-email"/>
-                    </div>
-                    <div className="form-group">
-                      <input type="password" name="form-password" placeholder="Contraseña" className="form-control" id="form-password"/>
-                    </div>
-                    <button type="submit" className="mybtn">Registrar</button>
-                  </form>
+                  }
+                  <div className="form-group">
+                    <input type="text" name="name" placeholder="Nombre" className="form-control" id="form-name" onChange={this.onChange} />
+                  </div>
+                  <div className="form-group">
+                    <input type="text" name="email" placeholder="Email" className="form-control" id="form-email" onChange={this.onChange} />
+                  </div>
+                  <div className="form-group">
+                    <input type="password" name="password" placeholder="Contraseña" className="form-control" id="form-password" onChange={this.onChange} />
+                  </div>
+                  <div className="form-group">
+                    <input type="password" name="password_confirmation" placeholder="Confirmar contraseña" className="form-control" id="form-password_confirmation" onChange={this.onChange} />
+                  </div>
+                  <SubmitButton />
                 </div>
               </div>
               <div className="row">
                 <div className="col-sm-12 mysocial-login log-text">
-                  <h3> Ó registrate con: </h3>                  
+                  <h3> Ó registrate con: </h3>
                   <div className="mysocial-login-buttons">
                     <a className="mybtn-social">
                       <i className="fab fa-google"></i>
                     </a>
                     <a className="mybtn-social">
                       <i className="fab fa-facebook-f"></i>
-                    </a>                    
+                    </a>
                   </div>
                 </div>
               </div>
               <div className="row">
                 <div className="col-sm-12 log-text">
-                <hr></hr>
+                  <hr></hr>
                 </div>
                 <div className="col-sm-8 offset-sm-2 myform-cont">
-                <Link to="/login">
-                <button type="submit" className="mybtn">Iniciar Sesion</button>
-                </Link>
+                  <Link to="/login">
+                    <button type="submit" className="mybtn">Iniciar Sesion</button>
+                  </Link>
                 </div>
               </div>
             </div>
-            </div>
           </div>
         </div>
+      </div>
     );
   }
 }
 
-export default Registro;
+const { object, bool } = PropTypes;
+
+Registro.propTypes = {
+  authenticated: bool.isRequired
+};
+
+const mapState = (state) => ({
+  authenticated: state.session.authenticated
+});
+
+const mapDispatch = (dispatch) => {
+  return {
+    actions: bindActionCreators(sessionActions, dispatch)
+  };
+};
+
+export default connect(mapState, mapDispatch)(Registro);
