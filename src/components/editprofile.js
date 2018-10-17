@@ -9,6 +9,7 @@ import { sessionService } from 'redux-react-session';
 import axios from 'axios';
 import { stringify } from 'querystring';
 import Navigation from './Navigation';
+import ImageUploader from 'react-images-upload';
 
 class editprofile extends Component {
 
@@ -21,6 +22,8 @@ class editprofile extends Component {
             errors: "email, nombre o contraseña incorrecto",
             errors1: "El email ya se encuentra en uso",
             errors2: "La contraseña no coincide",
+            file: '',
+            imagePreviewUrl: '',
             user: {
                 name: '',
                 email: '',
@@ -31,8 +34,38 @@ class editprofile extends Component {
 
         this.onSubmit = this.onSubmit.bind(this);
         this.onChange = this.onChange.bind(this);
+        this.onDrop = this.onDrop.bind(this);
+        this._handleImageChange = this._handleImageChange.bind(this);
+        this._handleSubmit = this._handleSubmit.bind(this);
 
 
+    }
+    _handleSubmit(e) {
+        e.preventDefault();
+        // TODO: do something with -> this.state.file
+    }
+
+    _handleImageChange(e) {
+        e.preventDefault();
+
+        let reader = new FileReader();
+        let file = e.target.files[0];
+
+        reader.onloadend = () => {
+            this.setState({
+                file: file,
+                imagePreviewUrl: reader.result
+            });
+        }
+
+        reader.readAsDataURL(file)
+    }
+
+    onDrop(picture) {
+        this.setState({
+            profile_pic: URL.createObjectURL(picture),
+        });
+        console.log(this.state.profile_pic);
     }
 
     componentDidMount() {
@@ -86,6 +119,11 @@ class editprofile extends Component {
     }
 
     render() {
+        let { imagePreviewUrl } = this.state;
+        let $imagePreview = null;
+        if (imagePreviewUrl) {
+            $imagePreview = (<img src={imagePreviewUrl} />);
+        }
         const { user } = this.state;
         const SubmitButton = withRouter(({ history }) => (
             <button className="mybtn"
@@ -99,47 +137,67 @@ class editprofile extends Component {
                 <Navigation />
                 <div className="container">
                     <div className="left">
-                    <div className="container container-login2">
-                        <div className="row">
-                            <div className="col-sm-12 log-text">
-                                <h2>Modifica tus datos</h2>
+                        <div className="container container-login2">
+                            <div className="row">
+                                <div className="col-sm-12 log-text">
+                                    <h2>Modifica tus datos</h2>
+                                </div>
+                            </div>
+                            <div className="row">
+
+                                <div className="col-sm-8 offset-sm-2 myform-cont">
+                                    {this.state.hasError == 1 &&
+                                        <div className="alert alert-danger">
+                                            <strong>Error:</strong> {this.state.errors}
+                                        </div>
+                                    }
+
+                                    {this.state.hasError == 2 &&
+                                        <div className="alert alert-danger">
+                                            <strong>Error:</strong> {this.state.errors1}
+                                        </div>
+                                    }
+                                    {this.state.hasError == 3 &&
+                                        <div className="alert alert-danger">
+                                            <strong>Error:</strong> {this.state.errors2}
+                                        </div>
+                                    }
+                                    <div className="form-group">
+                                        <input type="text" name="name" placeholder="Nombre" className="form-control" id="form-name" onChange={this.onChange} />
+                                    </div>
+                                    <div className="form-group">
+                                        <input type="text" name="email" placeholder="Email" className="form-control" id="form-email" onChange={this.onChange} />
+                                    </div>
+                                    <div className="form-group">
+                                        <input type="password" name="password" placeholder="Contraseña" className="form-control" id="form-password" onChange={this.onChange} />
+                                    </div>
+                                    <div className="form-group">
+                                        <input type="password" name="password_confirmation" placeholder="Confirmar contraseña" className="form-control" id="form-password_confirmation" onChange={this.onChange} />
+                                    </div>
+                                    <div>
+                                        <h4>Cambiar foto</h4>
+                                        {/*<ImageUploader
+                                            withIcon={false}
+                                            buttonText='Seleccionar foto'
+                                            onChange={this.onDrop}
+                                            imgExtension={['.jpg', '.gif', '.png', '.gif']}
+                                            maxFileSize={5242880}
+                                            withLabel={false}
+                                            singleImage={true}
+                                        />
+                                        <img src={this.state.file} />*/}
+                                        <div>
+                                            <input type="file" onChange={this._handleImageChange} />
+                                            {$imagePreview}
+                                        </div>
+                                    </div>
+                                    <SubmitButton />
+                                    <div>
+
+                                    </div>
+                                </div>
                             </div>
                         </div>
-                        <div className="row">
-
-                            <div className="col-sm-8 offset-sm-2 myform-cont">
-                                {this.state.hasError == 1 &&
-                                    <div className="alert alert-danger">
-                                        <strong>Error:</strong> {this.state.errors}
-                                    </div>
-                                }
-
-                                {this.state.hasError == 2 &&
-                                    <div className="alert alert-danger">
-                                        <strong>Error:</strong> {this.state.errors1}
-                                    </div>
-                                }
-                                {this.state.hasError == 3 &&
-                                    <div className="alert alert-danger">
-                                        <strong>Error:</strong> {this.state.errors2}
-                                    </div>
-                                }
-                                <div className="form-group">
-                                    <input type="text" name="name" placeholder="Nombre" className="form-control" id="form-name" onChange={this.onChange} />
-                                </div>
-                                <div className="form-group">
-                                    <input type="text" name="email" placeholder="Email" className="form-control" id="form-email" onChange={this.onChange} />
-                                </div>
-                                <div className="form-group">
-                                    <input type="password" name="password" placeholder="Contraseña" className="form-control" id="form-password" onChange={this.onChange} />
-                                </div>
-                                <div className="form-group">
-                                    <input type="password" name="password_confirmation" placeholder="Confirmar contraseña" className="form-control" id="form-password_confirmation" onChange={this.onChange} />
-                                </div>
-                                <SubmitButton />
-                            </div>
-                        </div>
-                    </div>
                     </div>
                 </div>
             </div>

@@ -8,6 +8,7 @@
     "react": "^16.5.2",
     "react-axios": "^2.0.1",
     "react-dom": "^16.5.2",
+    "react-images-upload": "^1.2.3",
     "react-redux": "^5.0.7",
     "react-router": "^4.3.1",
     "react-router-dom": "^4.3.1",
