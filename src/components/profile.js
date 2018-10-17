@@ -14,9 +14,10 @@ class profile extends Component {
   constructor(props) {
     super(props);
     this.state = {
+      id: "",
       groups: [],
       persons: [],
-      pictures: []
+      picture: ""
     };
 
   }
@@ -26,13 +27,25 @@ class profile extends Component {
       .then(res => {
         for (let i = 0; i < res.data.length; i++) {
           if (res.data[i].email == this.props.user.email) {
-            this.setState({ groups: res.data[i].groups, persons: res.data[i] })
+            this.setState({ id: res.data[i].id, groups: res.data[i].groups, persons: res.data[i] })
+            axios.get('https://knowledge-community-back-end.herokuapp.com/app_files?ProfilePhoto=1&user_id=' + this.state.id)
+              .then(response => {
+                console.log(response.data.ruta)
+                this.setState({ picture: response.data.ruta})
+              })
           }
         }
       })
-    }
+  }
 
   render() {
+    let { picture } = this.state;
+    let $picture = null;
+    if (picture.error!="El usuario no existe o no tiene foto de perfil almacenada") {
+      $picture = (<img src={`data:image/png;base64,${picture}`} />);
+    } else {
+      $picture = (<img src="http://recursospracticos.com/wp-content/uploads/2017/10/Sin-foto-de-perfil-en-Facebook.jpg" alt="" />);
+    }
     const i = 0;
     return (
       <div>
@@ -41,7 +54,7 @@ class profile extends Component {
           <div className="row">
             <div className="col-md-4">
               <div className="profile-img">
-                <img src="http://recursospracticos.com/wp-content/uploads/2017/10/Sin-foto-de-perfil-en-Facebook.jpg" alt="" />
+                {$picture}
               </div>
             </div>
             <div className="col-md-6">

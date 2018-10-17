@@ -37,7 +37,6 @@ class editprofile extends Component {
         this.onChange = this.onChange.bind(this);
         this.onDrop = this.onDrop.bind(this);
         this._handleImageChange = this._handleImageChange.bind(this);
-        this._handleSubmit = this._handleSubmit.bind(this);
 
 
     }
@@ -82,6 +81,7 @@ class editprofile extends Component {
         let { imagePreviewUrl } = this.state;
         if (imagePreviewUrl) {
             console.log(imagePreviewUrl);
+            axios.post(`https://knowledge-community-back-end.herokuapp.com/app_files`, { ruta: imagePreviewUrl, file_type_id: 1, user_id: this.state.id, post_id:"", description:"foto_perfil", titulo:"foto.png" })
         }
         axios.put('https://knowledge-community-back-end.herokuapp.com/users/' + this.state.id, { user })
             .then(response => {
