@@ -19,9 +19,10 @@ class Home extends Component {
         title: "",
         body: "",
         solicitud: 0,
-        user_id: -1
+        user_id: -1,
       },
-      groups: []
+      groups: [],
+      picture:""
     };
     this.onSubmit = this.onSubmit.bind(this);
     this.onChange = this.onChange.bind(this);
@@ -42,7 +43,11 @@ class Home extends Component {
               user_id: res.data[i].id,
               post: post,
               groups: res.data[i].groups
-            })
+            });
+            axios.get('https://knowledge-community-back-end.herokuapp.com/app_files?ProfilePhoto=1&user_id=' + this.state.user_id)
+              .then(response => {
+                this.setState({ picture: response.data})
+              })
           }
         }
       })
@@ -75,6 +80,13 @@ class Home extends Component {
         type="submit">Postear
       </button>
     ));
+    let { picture } = this.state;
+    let $picture = null;
+    if (!picture.error) {
+      $picture = (<img src={picture.ruta} />);
+    } else {
+      $picture = (<img src="http://recursospracticos.com/wp-content/uploads/2017/10/Sin-foto-de-perfil-en-Facebook.jpg" alt="" />);
+    }
     return (
       <div>
         <Navigation />
@@ -85,7 +97,9 @@ class Home extends Component {
                 <div className='container-home'>
                   <div className="col-md-12">
                     <Link to="/profile">
-                      <div className="profile "></div>
+                      <div className="home-profile-img">
+                      {$picture}
+                      </div>
                     </Link>
                     <p>{this.props.user.email}</p>
                   </div>

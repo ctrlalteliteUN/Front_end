@@ -30,7 +30,6 @@ class profile extends Component {
             this.setState({ id: res.data[i].id, groups: res.data[i].groups, persons: res.data[i] })
             axios.get('https://knowledge-community-back-end.herokuapp.com/app_files?ProfilePhoto=1&user_id=' + this.state.id)
               .then(response => {
-                console.log(response.data.ruta)
                 this.setState({ picture: response.data})
               })
           }
