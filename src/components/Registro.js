@@ -9,6 +9,8 @@ import { bindActionCreators } from 'redux';
 import * as sessionActions from '../actions/sessionActions';
 import { sessionService } from 'redux-react-session';
 import axios from 'axios';
+import { GoogleLogin } from 'react-google-login';
+import FacebookLogin from 'react-facebook-login';
 
 class Registro extends Component {
   constructor(props, context) {
@@ -45,12 +47,12 @@ class Registro extends Component {
               }).catch(err => alert(err));
           }).catch(err => alert(err));
       }).catch(function (error) {
-        if (user.name=="" || user.email=="" || user.password=="" || user.password_confirmation=="") {
+        if (user.name == "" || user.email == "" || user.password == "" || user.password_confirmation == "") {
           this.setState({
             hasError: 1,
           });
         }
-        else if (user.password!=user.password_confirmation) {
+        else if (user.password != user.password_confirmation) {
           this.setState({
             hasError: 3,
           });
@@ -70,6 +72,15 @@ class Registro extends Component {
     user[name] = value;
     this.setState({ user });
   }
+
+  responseGoogle = (response) => {
+    console.log(response);
+  }
+
+  responseFacebook = (response) => {
+    console.log(response);
+  }
+
 
   render() {
     const { user } = this.state;
@@ -99,18 +110,18 @@ class Registro extends Component {
               </div>
               <div className="row">
                 <div className="col-sm-8 offset-sm-2 myform-cont">
-                  {this.state.hasError==1 &&
+                  {this.state.hasError == 1 &&
                     <div className="alert alert-danger">
-                      <strong>Error:</strong> {this.state.errors} 
+                      <strong>Error:</strong> {this.state.errors}
                     </div>
                   }
-                  
-                  {this.state.hasError==2 &&
+
+                  {this.state.hasError == 2 &&
                     <div className="alert alert-danger">
                       <strong>Error:</strong> {this.state.errors1}
                     </div>
                   }
-                  {this.state.hasError==3 &&
+                  {this.state.hasError == 3 &&
                     <div className="alert alert-danger">
                       <strong>Error:</strong> {this.state.errors2}
                     </div>
@@ -134,12 +145,22 @@ class Registro extends Component {
                 <div className="col-sm-12 mysocial-login log-text">
                   <h3> Ó registrate con: </h3>
                   <div className="mysocial-login-buttons">
-                    <a className="mybtn-social">
+                    <GoogleLogin className="mybtn-social" tag="a" type=""
+                      clientId="373142330185-sv6n2fga4rjtqbjre1cr8hlcj7md8u8h.apps.googleusercontent.com"
+                      onSuccess={this.responseGoogle}
+                      onFailure={this.responseGoogle}
+                    >
                       <i className="fab fa-google"></i>
-                    </a>
-                    <a className="mybtn-social">
-                      <i className="fab fa-facebook-f"></i>
-                    </a>
+                    </GoogleLogin>
+                    <FacebookLogin
+                    appId="337250857041345"
+                    autoLoad={false}
+                    fields="name,email,picture"
+                    callback={this.responseFacebook}
+                    cssClass="mybtn-social-f"
+                    icon="fab fa-facebook-square"
+                    textButton=""
+                  ></FacebookLogin>
                   </div>
                 </div>
               </div>

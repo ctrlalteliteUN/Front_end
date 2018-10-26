@@ -8,6 +8,8 @@ import '../styles/Log.css';
 import { sessionService } from 'redux-react-session';
 import axios from 'axios';
 import { stringify } from 'querystring';
+import { GoogleLogin } from 'react-google-login';
+import FacebookLogin from 'react-facebook-login';
 
 
 class Loginbody extends Component {
@@ -26,12 +28,14 @@ class Loginbody extends Component {
 
     this.onSubmit = this.onSubmit.bind(this);
     this.onChange = this.onChange.bind(this);
+    this.responseGoogle = this.responseGoogle.bind(this);
+    this.responseFacebook = this.responseFacebook.bind(this);
+
 
 
   }
   onSubmit(history) {
     const { user } = this.state;
-    const { login } = this.props.actions;
     axios.post(`https://knowledge-community-back-end.herokuapp.com/sessions`, { email: user.email, password: user.password })
       .then(response => {
         const { token } = response.data.data.user.authentication_token;
@@ -42,20 +46,28 @@ class Loginbody extends Component {
                 history.push('/');
               }).catch(err => alert(err));
           }).catch(err => alert(err));
-      }).catch(function (error) {        
-        if(error.message.indexOf('500') != -1) {
+      }).catch(function (error) {
+        if (error.message.indexOf('500') != -1) {
           this.setState({
             hasError: true,
           });
         }
       }.bind(this))
   }
-  
+
   onChange(e) {
     const { value, name } = e.target;
     const { user } = this.state;
     user[name] = value;
     this.setState({ user });
+  }
+
+  responseGoogle = (response) => {
+    console.log(response);
+  }
+
+  responseFacebook = (response) => {
+    console.log(response);
   }
 
   render() {
@@ -112,12 +124,22 @@ class Loginbody extends Component {
               <div className="col-sm-12 mysocial-login log-text">
                 <h3> Ó ingresa con: </h3>
                 <div className="mysocial-login-buttons">
-                  <a className="mybtn-social">
+                  <GoogleLogin className="mybtn-social" tag="a" type=""
+                    clientId="373142330185-sv6n2fga4rjtqbjre1cr8hlcj7md8u8h.apps.googleusercontent.com"
+                    onSuccess={this.responseGoogle}
+                    onFailure={this.responseGoogle}
+                  >
                     <i className="fab fa-google"></i>
-                  </a>
-                  <a className="mybtn-social">
-                    <i className="fab fa-facebook-f"></i>
-                  </a>
+                  </GoogleLogin>
+                  <FacebookLogin
+                    appId="337250857041345"
+                    autoLoad={false}
+                    fields="name,email,picture"
+                    callback={this.responseFacebook}
+                    cssClass="mybtn-social-f"
+                    icon="fab fa-facebook-square"
+                    textButton=""
+                  ></FacebookLogin>
                 </div>
               </div>
             </div>

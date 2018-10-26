@@ -65,6 +65,13 @@ body{
     margin-right: 50px;
     font-size: 30px;
 }
+.mybtn-social-f{
+    margin-left: 50px;
+    margin-right: 50px;
+    font-size: 35px;
+    background:rgba(0,0,0,0);
+    border-style: none;
+}
 
 hr {
     display: block;
