@@ -36,6 +36,16 @@
     margin-right: 20px;
     margin-left: 20px;
   }
+  .container-comments{
+    background-color:rgba(255, 255, 255, 0.8);
+    width: 98%;
+    border-style: solid;
+    border-radius: 5px;
+    border-color: #4d636f;
+    padding: 5px;
+    margin-top: 20px;
+    margin-right: 20px;
+  }
   .container-home3{
     background-color:rgba(255, 255, 255, 0.8);
     text-align: left;
@@ -114,4 +124,7 @@
 }
 .panel-default{
     padding: 5px;
+}
+.comment-txt{
+    margin: 5px;
 }

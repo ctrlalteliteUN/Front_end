@@ -29,12 +29,13 @@ class Posts extends Component {
       })
   }
   getPosts() {
+
     for (let i = 0; i < this.state.posts.length; i++) {
-      <Post id={this.state.posts[i].id} />
+      <Post id={this.state.posts[i].id} user_id={this.props.user_id} />
     }
   }
   render() {
-    const listItems = this.state.posts.map((d) => <Post id={d.id}>{d.title}</Post>);
+    const listItems = this.state.posts.map((d) => <Post id={d.id} user_id={this.props.user_id}>{d.title}</Post>);
     return (
       <div>
       {listItems}

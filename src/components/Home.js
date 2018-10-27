@@ -166,7 +166,7 @@ class Home extends Component {
               </div>
               <div className="row">
               </div>
-              <Posts />
+              <Posts user_id={this.state.user_id}/>
             </div>
           </div>
         </div>
