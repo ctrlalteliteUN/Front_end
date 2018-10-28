@@ -11,6 +11,7 @@ import { sessionService } from 'redux-react-session';
 import axios from 'axios';
 import { GoogleLogin } from 'react-google-login';
 import FacebookLogin from 'react-facebook-login';
+import LoadingSpinner from './LoadingSpinner';
 
 class Registro extends Component {
   constructor(props, context) {
@@ -26,7 +27,8 @@ class Registro extends Component {
         email: '',
         password: '',
         password_confirmation: ''
-      }
+      },
+      loading: false
     };
 
     this.onSubmit = this.onSubmit.bind(this);
@@ -36,8 +38,12 @@ class Registro extends Component {
   }
   onSubmit(history) {
     const { user } = this.state;
+    this.setState({ loading: true }, () => {
     axios.post(`https://knowledge-community-back-end.herokuapp.com/users`, { user })
       .then(response => {
+        this.setState({
+          loading: false,
+        })
         const { token } = response.data.authentication_token;
         sessionService.saveSession({ token })
           .then(() => {
@@ -50,20 +56,23 @@ class Registro extends Component {
         if (user.name == "" || user.email == "" || user.password == "" || user.password_confirmation == "") {
           this.setState({
             hasError: 1,
+            loading: false,
           });
         }
         else if (user.password != user.password_confirmation) {
           this.setState({
             hasError: 3,
+            loading: false,
           });
         }
         else if (error.message.indexOf('422') != -1) {
           this.setState({
             hasError: 2,
+            loading: false,
           });
         }
       }.bind(this))
-
+    })
   }
 
   onChange(e) {
@@ -101,6 +110,7 @@ class Registro extends Component {
       <div>
         <Navigation />
         <div className="body-login">
+        {this.state.loading ? <LoadingSpinner /> :
           <div className="container">
             <div className="container container-login">
               <div className="row">
@@ -176,6 +186,7 @@ class Registro extends Component {
               </div>
             </div>
           </div>
+        }
         </div>
       </div>
     );

@@ -71,8 +71,29 @@ class Loginbody extends Component {
     this.setState({ user });
   }
 
-  responseGoogle = (response) => {
-    console.log(response);
+  responseGoogle = (response,history) => {
+    const { token } = response.tokenObj;
+    this.setState({ loading: true }, () => {
+      axios.post(`https://knowledge-community-back-end.herokuapp.com/auth/request`, { token })
+        .then(response => {
+          this.setState({
+            loading: false,
+          })          
+          /*const { token } = response.data.data.user.authentication_token;
+          sessionService.saveSession({ token })
+            .then(() => {
+              sessionService.saveUser(response.data.data.user)
+                .then(() => {
+                  history.push('/');
+                }).catch(err => alert(err));
+            }).catch(err => alert(err));*/
+        }).catch(function (error) {
+          console.error(error);
+          this.setState({
+            loading: false,
+          })
+        }.bind(this))
+    })
   }
 
   responseFacebook = (response) => {
@@ -88,83 +109,83 @@ class Loginbody extends Component {
       </button>
     ));
 
-    return (      
+    return (
       <div>
-        {this.state.loading ? <LoadingSpinner /> : 
-        <div className="container">
-          <div className="container container-login">
-            <div className="row">
-              <div className="col-sm-12 log-text">
-                <h2>Ingresa</h2>
+        {this.state.loading ? <LoadingSpinner /> :
+          <div className="container">
+            <div className="container container-login">
+              <div className="row">
+                <div className="col-sm-12 log-text">
+                  <h2>Ingresa</h2>
+                </div>
               </div>
-            </div>
-            <div className="row">
+              <div className="row">
 
-              <div className="col-sm-8 offset-sm-2 myform-cont">
-                {this.state.hasError &&
-                  <div className="alert alert-danger">
-                    <strong>Error:</strong> {this.state.errors}
+                <div className="col-sm-8 offset-sm-2 myform-cont">
+                  {this.state.hasError &&
+                    <div className="alert alert-danger">
+                      <strong>Error:</strong> {this.state.errors}
+                    </div>
+                  }
+                  <div className="form-group">
+                    <input
+                      className="form-control"
+                      name="email"
+                      label="Email"
+                      type="email"
+                      placeholder="e-mail"
+                      onChange={this.onChange}
+                    />
+
                   </div>
-                }
-                <div className="form-group">
-                  <input
-                    className="form-control"
-                    name="email"
-                    label="Email"
-                    type="email"
-                    placeholder="e-mail"
-                    onChange={this.onChange}
-                  />
-
-                </div>
-                <div className="form-group">
-                  <input
-                    className="form-control"
-                    name="password"
-                    label="Password"
-                    type="password"
-                    placeholder="Contraseña"
-                    onChange={this.onChange}
-                  />
-                </div>
-                <SubmitButton />
-              </div>
-            </div>
-            <div className="row">
-              <div className="col-sm-12 mysocial-login log-text">
-                <h3> Ó ingresa con: </h3>
-                <div className="mysocial-login-buttons">
-                  <GoogleLogin className="mybtn-social" tag="a" type=""
-                    clientId="373142330185-sv6n2fga4rjtqbjre1cr8hlcj7md8u8h.apps.googleusercontent.com"
-                    onSuccess={this.responseGoogle}
-                    onFailure={this.responseGoogle}
-                  >
-                    <i className="fab fa-google"></i>
-                  </GoogleLogin>
-                  <FacebookLogin
-                    appId="337250857041345"
-                    autoLoad={false}
-                    fields="name,email,picture"
-                    callback={this.responseFacebook}
-                    cssClass="mybtn-social-f"
-                    icon="fab fa-facebook-square"
-                    textButton=""
-                  ></FacebookLogin>
+                  <div className="form-group">
+                    <input
+                      className="form-control"
+                      name="password"
+                      label="Password"
+                      type="password"
+                      placeholder="Contraseña"
+                      onChange={this.onChange}
+                    />
+                  </div>
+                  <SubmitButton />
                 </div>
               </div>
-            </div>
-            <div className="row">
-              <div className="col-sm-12 log-text">
-                <hr></hr>
+              <div className="row">
+                <div className="col-sm-12 mysocial-login log-text">
+                  <h3> Ó ingresa con: </h3>
+                  <div className="mysocial-login-buttons">
+                    <GoogleLogin className="mybtn-social" tag="a" type=""
+                      clientId="373142330185-sv6n2fga4rjtqbjre1cr8hlcj7md8u8h.apps.googleusercontent.com"
+                      onSuccess={this.responseGoogle}
+                      onFailure={this.responseGoogle}
+                    >
+                      <i className="fab fa-google"></i>
+                    </GoogleLogin>
+                    <FacebookLogin
+                      appId="337250857041345"
+                      autoLoad={false}
+                      fields="name,email,picture"
+                      callback={this.responseFacebook}
+                      cssClass="mybtn-social-f"
+                      icon="fab fa-facebook-square"
+                      textButton=""
+                    ></FacebookLogin>
+                  </div>
+                </div>
               </div>
-              <div className="col-sm-8 offset-sm-2 myform-cont">
-                <Link to="/signup">
-                  <button type="submit" className="mybtn">Registrate</button>
-                </Link>
+              <div className="row">
+                <div className="col-sm-12 log-text">
+                  <hr></hr>
+                </div>
+                <div className="col-sm-8 offset-sm-2 myform-cont">
+                  <Link to="/signup">
+                    <button type="submit" className="mybtn">Registrate</button>
+                  </Link>
+                </div>
               </div>
             </div>
           </div>
-        </div>
         }
       </div>
     );

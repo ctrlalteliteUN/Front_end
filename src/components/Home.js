@@ -9,6 +9,7 @@ import '../styles/Home.css';
 import { Link, withRouter } from 'react-router-dom'
 import { sessionService } from 'redux-react-session';
 import axios from 'axios';
+import LoadingSpinner from './LoadingSpinner';
 
 class Home extends Component {
   constructor(props, context) {
@@ -28,7 +29,8 @@ class Home extends Component {
         user_id: -1,
       },
       groups: [],
-      picture: ""
+      picture: "",
+      loading: false
     };
     this.onSubmit = this.onSubmit.bind(this);
     this.onChange = this.onChange.bind(this);
@@ -39,37 +41,46 @@ class Home extends Component {
   }
 
   componentDidMount() {
-    axios.get('https://knowledge-community-back-end.herokuapp.com/users')
-      .then(res => {
-        for (let i = 0; i < res.data.length; i++) {
-          if (res.data[i].email == this.props.user.email) {
-            let post = Object.assign({}, this.state.post);
-            post.user_id = res.data[i].id;
-            this.setState({
-              user_id: res.data[i].id,
-              post: post,
-              groups: res.data[i].groups
-            });
-            axios.get('https://knowledge-community-back-end.herokuapp.com/app_files?ProfilePhoto=1&user_id=' + this.state.user_id)
-              .then(response => {
-                this.setState({ picture: response.data })
-              })
+    this.setState({ loading: true }, () => {
+      axios.get('https://knowledge-community-back-end.herokuapp.com/users')
+        .then(res => {
+          for (let i = 0; i < res.data.length; i++) {
+            if (res.data[i].email == this.props.user.email) {
+              let post = Object.assign({}, this.state.post);
+              post.user_id = res.data[i].id;
+              this.setState({
+                user_id: res.data[i].id,
+                post: post,
+                groups: res.data[i].groups,
+                loading: false
+              });
+              axios.get('https://knowledge-community-back-end.herokuapp.com/app_files?ProfilePhoto=1&user_id=' + this.state.user_id)
+                .then(response => {
+                  this.setState({ picture: response.data,
+                    loading: false })
+                })
+            }
           }
-        }
-      })
+        })
+    })
   }
 
   onSubmit(history) {
+    this.setState({ loading: true }, () => {
     axios.post(`https://knowledge-community-back-end.herokuapp.com/posts`, this.state.post)
       .then(response => {
         alert("Publicacion Satisfactoria");
         console.log(response);
         console.log(this.state.tag);
         history.push('/');
+        this.forceUpdate();
+        this.setState({
+          loading: false,
+        })        
         axios.post('https://knowledge-community-back-end.herokuapp.com/posts/' + response.data.id + '/tags', this.state.tag)
           .then(response => {
             console.log(response);
-            history.push('/');
+            this.forceUpdate();
           })
           .catch(function (error) {
             alert(error);
@@ -79,8 +90,11 @@ class Home extends Component {
       .catch(function (error) {
         alert(error);
         console.log(error);
+        this.setState({
+          loading: false,
+        })
       })
-
+    })
   }
   onPDF(history) {
     let { pdfPreviewUrl } = this.state;
@@ -144,6 +158,7 @@ class Home extends Component {
     return (
       <div>
         <Navigation />
+        {this.state.loading ? <LoadingSpinner /> : 
         <div className='container'>
           <div className="row">
             <div className="col-6 col-md-4 ">
@@ -243,6 +258,7 @@ class Home extends Component {
             </div>
           </div>
         </div>
+        }
       </div>)
     {/*<div className=' container-home'>
         <div className="col-md-12">

@@ -7,6 +7,7 @@ import '../styles/Home.css';
 import { Link, withRouter } from 'react-router-dom';
 import axios from 'axios';
 import Post from './Post';
+import LoadingSpinner from './LoadingSpinner';
 
 class Posts extends Component {
   constructor(props, context) {
@@ -14,19 +15,23 @@ class Posts extends Component {
 
     this.state = {
       posts: [],
+      loading: false
     };
   };
 
 
 
   componentDidMount() {
+    this.setState({ loading: true }, () => {
     axios.get('https://knowledge-community-back-end.herokuapp.com/posts')
       .then(res => {
         console.log(res.data.length);
         this.setState({
-          posts: res.data
+          posts: res.data,
+          loading: false,
         });
       })
+    })
   }
   getPosts() {
 
@@ -38,7 +43,9 @@ class Posts extends Component {
     const listItems = this.state.posts.map((d) => <Post id={d.id} user_id={this.props.user_id}>{d.title}</Post>);
     return (
       <div>
+        {this.state.loading ? <LoadingSpinner /> : 
       {listItems}
+        }
       </div>
     )
   }
