@@ -73,12 +73,14 @@ class Loginbody extends Component {
 
   responseGoogle = (response,history) => {
     const { token } = response.tokenObj;
+    console.log(response);
     this.setState({ loading: true }, () => {
       axios.post(`https://knowledge-community-back-end.herokuapp.com/auth/request`, { token })
         .then(response => {
           this.setState({
             loading: false,
-          })          
+          })   
+          console.log(response);       
           /*const { token } = response.data.data.user.authentication_token;
           sessionService.saveSession({ token })
             .then(() => {
