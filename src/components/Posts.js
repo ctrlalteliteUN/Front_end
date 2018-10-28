@@ -43,9 +43,7 @@ class Posts extends Component {
     const listItems = this.state.posts.map((d) => <Post id={d.id} user_id={this.props.user_id}>{d.title}</Post>);
     return (
       <div>
-        {this.state.loading ? <LoadingSpinner /> : 
       {listItems}
-        }
       </div>
     )
   }
