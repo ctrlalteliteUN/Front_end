@@ -15,6 +15,12 @@ class Home extends Component {
     super(props, context);
     this.state = {
       user_id: -1,
+      post_id: -1,
+      file: "",
+      pdfPreviewUrl: "",
+      tag: {
+        name: "",
+      },
       post: {
         title: "",
         body: "",
@@ -22,11 +28,11 @@ class Home extends Component {
         user_id: -1,
       },
       groups: [],
-      picture:""
+      picture: ""
     };
     this.onSubmit = this.onSubmit.bind(this);
     this.onChange = this.onChange.bind(this);
-
+    this._handleImageChange = this._handleImageChange.bind(this);
 
 
 
@@ -46,7 +52,7 @@ class Home extends Component {
             });
             axios.get('https://knowledge-community-back-end.herokuapp.com/app_files?ProfilePhoto=1&user_id=' + this.state.user_id)
               .then(response => {
-                this.setState({ picture: response.data})
+                this.setState({ picture: response.data })
               })
           }
         }
@@ -55,25 +61,73 @@ class Home extends Component {
 
   onSubmit(history) {
     axios.post(`https://knowledge-community-back-end.herokuapp.com/posts`, this.state.post)
-      .then(function (response) {
+      .then(response => {
         alert("Publicacion Satisfactoria");
         console.log(response);
+        console.log(this.state.tag);
         history.push('/');
+        axios.post('https://knowledge-community-back-end.herokuapp.com/posts/' + response.data.id + '/tags', this.state.tag)
+          .then(response => {
+            console.log(response);
+            history.push('/');
+          })
+          .catch(function (error) {
+            alert(error);
+            console.log(error);
+          })
       })
       .catch(function (error) {
         alert(error);
         console.log(error);
       })
+
+  }
+  onPDF(history) {
+    let { pdfPreviewUrl } = this.state;
+    if (pdfPreviewUrl) {
+      console.log(pdfPreviewUrl);
+      console.log(this.state.user_id)
+      axios.post(`https://knowledge-community-back-end.herokuapp.com/app_files`, { ruta: pdfPreviewUrl, file_type_id: 2, user_id: this.state.user_id, post_id: "", description: "pdf", titulo: "archivo.pdf" })
+        .then(response => {
+          console.log(response)
+          history.push('/')
+        })
+    }
   }
 
   onChange(e) {
     const { value, name } = e.target;
     const { post } = this.state;
+    const { tag } = this.state;
     post[name] = value;
+    tag[name] = value;
     this.setState({ post });
+    this.setState({ tag });
   }
 
+  _handleImageChange(e) {
+    e.preventDefault();
+
+    let reader = new FileReader();
+    let file = e.target.files[0];
+
+    reader.onloadend = () => {
+      this.setState({
+        file: file,
+        pdfPreviewUrl: reader.result,
+      });
+      console.log(reader.result)
+    }
+    reader.readAsDataURL(file);
+
+  }
   render() {
+    const Pdfbutton = withRouter(({ history }) => (
+      <button className="btn btn-default btn-lg posd"
+        onClick={() => this.onPDF(history)}
+        type="submit">Subir
+      </button>
+    ));
     const SubmitButton = withRouter(({ history }) => (
       <button className="btn btn-default btn-lg posd"
         onClick={() => this.onSubmit(history)}
@@ -98,7 +152,7 @@ class Home extends Component {
                   <div className="col-md-12">
                     <Link to="/profile">
                       <div className="home-profile-img">
-                      {$picture}
+                        {$picture}
                       </div>
                     </Link>
                     <p>{this.props.user.email}</p>
@@ -117,6 +171,17 @@ class Home extends Component {
                       <div className="panel-body">
                         {this.state.groups.map(group => <p>{group.name}</p>)}
                       </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div className="row">
+                <div className='container-home'>
+                  <div>
+                    <h4>Subir PDF</h4>
+                    <div>
+                      <input type="file" onChange={this._handleImageChange} />
+                      <Pdfbutton />
                     </div>
                   </div>
                 </div>
@@ -143,6 +208,14 @@ class Home extends Component {
                         placeholder="Detalla lo que requieres u ofreces"
                         onChange={this.onChange}
                       />
+                      <textarea
+                        className="form-control in-pos"
+                        name="name"
+                        label="name"
+                        type="name"
+                        placeholder="Agregar etiqueta"
+                        onChange={this.onChange}
+                      />
 
                     </div>
                     {/*<button className="btn btn-default btn-lg dropdown-toggle"
@@ -166,7 +239,7 @@ class Home extends Component {
               </div>
               <div className="row">
               </div>
-              <Posts user_id={this.state.user_id}/>
+              <Posts user_id={this.state.user_id} />
             </div>
           </div>
         </div>

@@ -8,6 +8,7 @@ import { Link, withRouter } from 'react-router-dom';
 import axios from 'axios';
 import Comment from './Comment.js'
 
+
 class Post extends Component {
     constructor(props, context) {
         super(props, context);
@@ -21,7 +22,9 @@ class Post extends Component {
             comment: {
                 user_id: this.props.user_id,
                 body: "",
-            }
+            },
+            tags:[],
+
         };
 
         this.onSubmit = this.onSubmit.bind(this);
@@ -37,7 +40,8 @@ class Post extends Component {
                     body: res.data.body,
                     title: res.data.title,
                     user: res.data.user,
-                    comments: res.data.comments
+                    comments: res.data.comments,
+                    tags : res.data.tags
                 });
                 axios.get('https://knowledge-community-back-end.herokuapp.com/app_files?ProfilePhoto=1&user_id=' + this.state.user.id)
                     .then(response => {
@@ -87,6 +91,7 @@ class Post extends Component {
         }
 
         const listItems = this.state.comments.map((d) => <Comment user_id={d.user_id} body={d.body}></Comment>);
+
         return (
 
             <div className='container-home2'>
@@ -96,7 +101,7 @@ class Post extends Component {
                             {$picture}
                         </div>
                         <div className="title">
-                            <h3 className="panel-title">{this.state.user.name} : {this.state.title} </h3>
+                            <h3 className="panel-title">{this.state.user.name} : {this.state.title} {this.state.tags.map(person => <p>{person.name}</p>)} </h3>
                         </div>
                     </div>
                     <div className="container panel-body pb">
