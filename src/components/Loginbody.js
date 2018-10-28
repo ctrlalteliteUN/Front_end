@@ -10,6 +10,7 @@ import axios from 'axios';
 import { stringify } from 'querystring';
 import { GoogleLogin } from 'react-google-login';
 import FacebookLogin from 'react-facebook-login';
+import LoadingSpinner from './LoadingSpinner';
 
 
 class Loginbody extends Component {
@@ -23,7 +24,8 @@ class Loginbody extends Component {
       user: {
         email: '',
         password: ''
-      }
+      },
+      loading: false
     };
 
     this.onSubmit = this.onSubmit.bind(this);
@@ -36,24 +38,31 @@ class Loginbody extends Component {
   }
   onSubmit(history) {
     const { user } = this.state;
-    axios.post(`https://knowledge-community-back-end.herokuapp.com/sessions`, { email: user.email, password: user.password })
-      .then(response => {
-        const { token } = response.data.data.user.authentication_token;
-        sessionService.saveSession({ token })
-          .then(() => {
-            sessionService.saveUser(response.data.data.user)
-              .then(() => {
-                history.push('/');
-              }).catch(err => alert(err));
-          }).catch(err => alert(err));
-      }).catch(function (error) {
-        if (error.message.indexOf('500') != -1) {
+    this.setState({ loading: true }, () => {
+      axios.post(`https://knowledge-community-back-end.herokuapp.com/sessions`, { email: user.email, password: user.password })
+        .then(response => {
           this.setState({
-            hasError: true,
-          });
-        }
-      }.bind(this))
+            loading: false,
+          })
+          const { token } = response.data.data.user.authentication_token;
+          sessionService.saveSession({ token })
+            .then(() => {
+              sessionService.saveUser(response.data.data.user)
+                .then(() => {
+                  history.push('/');
+                }).catch(err => alert(err));
+            }).catch(err => alert(err));
+        }).catch(function (error) {
+          if (error.message.indexOf('500') != -1) {
+            this.setState({
+              hasError: true,
+              loading: false,
+            });
+          }
+        }.bind(this))
+    });
   }
+
 
   onChange(e) {
     const { value, name } = e.target;
@@ -79,8 +88,9 @@ class Loginbody extends Component {
       </button>
     ));
 
-    return (
+    return (      
       <div>
+        {this.state.loading ? <LoadingSpinner /> : 
         <div className="container">
           <div className="container container-login">
             <div className="row">
@@ -155,6 +165,7 @@ class Loginbody extends Component {
             </div>
           </div>
         </div>
+        }
       </div>
     );
   }
