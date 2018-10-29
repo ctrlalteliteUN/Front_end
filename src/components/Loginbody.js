@@ -75,7 +75,7 @@ class Loginbody extends Component {
   }
   responseGoogle = (response,history) => {
     console.log(response);
-    const {id_token} = response.tokenObj.id_token;
+    const {id_token} = response.tokenObj;
     console.log(id_token);
     this.setState({ loading: true }, () => {
       axios.post(`https://knowledge-community-back-end.herokuapp.com/auth/request`, { id_token })
