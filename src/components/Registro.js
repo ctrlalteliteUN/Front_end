@@ -85,11 +85,13 @@ class Registro extends Component {
   responseGoogle = (response,history) => {
     console.log(response);
     const {id_token} = response.tokenObj;
-    console.log(id_token);
+    
     const {email}=response.profileObj
     const {name}=response.profileObj;
+    let query={"id_token":id_token,"email":email,"name":name};
+    console.log(query);
     this.setState({ loading: true }, () => {
-      axios.post(`https://knowledge-community-back-end.herokuapp.com/auth/request`, { "id_token":id_token,"email":email,"name":name })
+      axios.post(`https://knowledge-community-back-end.herokuapp.com/auth/request`, query)
         .then(response => {
           this.setState({
             loading: false,
