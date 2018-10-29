@@ -71,7 +71,7 @@ class Loginbody extends Component {
     this.setState({ user });
   }
 
-  responseGoogle = (response,history) => {
+  responseGoogle = (response) => {
     console.log(response);
     /*const { tokenObj } = response;    
     this.setState({ loading: true }, () => {
@@ -160,8 +160,7 @@ class Loginbody extends Component {
                     <GoogleLogin className="mybtn-social" tag="a" type=""
                       clientId="373142330185-hko54qc5fakooerj23p6n1494vj768h4.apps.googleusercontent.com"
                       onSuccess={this.responseGoogle}
-                      onFailure={this.responseGoogle}
-                    >
+                      onFailure={this.responseGoogle}                    >
                       <i className="fab fa-google"></i>
                     </GoogleLogin>
                     <FacebookLogin
