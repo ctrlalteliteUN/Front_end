@@ -56,11 +56,16 @@ class Home extends Component {
               });
               axios.get('https://knowledge-community-back-end.herokuapp.com/app_files?ProfilePhoto=1&user_id=' + this.state.user_id)
                 .then(response => {
-                  this.setState({ picture: response.data,
-                    loading: false })
+                  this.setState({
+                    picture: response.data,
+                    loading: false
+                  })
                 })
             }
           }
+          this.setState({
+            loading: false
+          })
         }).catch(function (error) {
           console.log(error);
           console.log(error);
@@ -73,33 +78,33 @@ class Home extends Component {
 
   onSubmit(history) {
     this.setState({ loading: true }, () => {
-    axios.post(`https://knowledge-community-back-end.herokuapp.com/posts`, this.state.post)
-      .then(response => {
-        alert("Publicacion Satisfactoria");
-        console.log(response);
-        console.log(this.state.tag);
-        history.push('/');
-        this.forceUpdate();
-        this.setState({
-          loading: false,
-        })        
-        axios.post('https://knowledge-community-back-end.herokuapp.com/posts/' + response.data.id + '/tags', this.state.tag)
-          .then(response => {
-            console.log(response);
-            this.forceUpdate();
+      axios.post(`https://knowledge-community-back-end.herokuapp.com/posts`, this.state.post)
+        .then(response => {
+          alert("Publicacion Satisfactoria");
+          console.log(response);
+          console.log(this.state.tag);
+          history.push('/');
+          this.forceUpdate();
+          this.setState({
+            loading: false,
           })
-          .catch(function (error) {
-            console.log(error);
-            console.log(error);
-          })
-      })
-      .catch(function (error) {
-        console.log(error);
-        console.log(error);
-        this.setState({
-          loading: false,
+          axios.post('https://knowledge-community-back-end.herokuapp.com/posts/' + response.data.id + '/tags', this.state.tag)
+            .then(response => {
+              console.log(response);
+              this.forceUpdate();
+            })
+            .catch(function (error) {
+              console.log(error);
+              console.log(error);
+            })
         })
-      })
+        .catch(function (error) {
+          console.log(error);
+          console.log(error);
+          this.setState({
+            loading: false,
+          })
+        })
     })
   }
   onPDF(history) {
@@ -164,82 +169,82 @@ class Home extends Component {
     return (
       <div>
         <Navigation />
-        {this.state.loading ? <LoadingSpinner /> : 
-        <div className='container'>
-          <div className="row">
-            <div className="col-6 col-md-4 ">
-              <div className="row">
-                <div className='container-home'>
-                  <div className="col-md-12">
-                    <Link to="/profile">
-                      <div className="home-profile-img">
-                        {$picture}
-                      </div>
-                    </Link>
-                    <p>{this.props.user.email}</p>
+        {this.state.loading ? <LoadingSpinner /> :
+          <div className='container'>
+            <div className="row">
+              <div className="col-6 col-md-4 ">
+                <div className="row">
+                  <div className='container-home'>
+                    <div className="col-md-12">
+                      <Link to="/profile">
+                        <div className="home-profile-img">
+                          {$picture}
+                        </div>
+                      </Link>
+                      <p>{this.props.user.email}</p>
+                    </div>
                   </div>
                 </div>
-              </div>
-              <div className="row">
-                <div className='container-home'>
-                  <div className="col-md-12">
-                    <div className="panel panel-default">
-                      <div className="panel-heading">
-                        <h3 className="panel-title">Grupos<a className="items">
-                          <i className="fas fa-users"></i>
-                        </a></h3>
-                      </div>
-                      <div className="panel-body">
-                        {this.state.groups.map(group => <p>{group.name}</p>)}
+                <div className="row">
+                  <div className='container-home'>
+                    <div className="col-md-12">
+                      <div className="panel panel-default">
+                        <div className="panel-heading">
+                          <h3 className="panel-title">Grupos<a className="items">
+                            <i className="fas fa-users"></i>
+                          </a></h3>
+                        </div>
+                        <div className="panel-body">
+                          {this.state.groups.map(group => <p>{group.name}</p>)}
+                        </div>
                       </div>
                     </div>
                   </div>
                 </div>
-              </div>
-              <div className="row">
-                <div className='container-home'>
-                  <div>
-                    <h4>Subir PDF</h4>
+                <div className="row">
+                  <div className='container-home'>
                     <div>
-                      <input type="file" onChange={this._handleImageChange} />
-                      <Pdfbutton />
+                      <h4>Subir PDF</h4>
+                      <div>
+                        <input type="file" onChange={this._handleImageChange} />
+                        <Pdfbutton />
+                      </div>
                     </div>
                   </div>
                 </div>
               </div>
-            </div>
-            <div className="col-12 col-md-8">
-              <div className="row">
-                <div className=' container-home2'>
-                  <div className="col-md-12">
-                    <div className="form-group">
-                      <input
-                        className="form-control in-pos"
-                        name="title"
-                        label="Title"
-                        type="title"
-                        placeholder="¿Qué te interesa aprender o enseñar?"
-                        onChange={this.onChange}
-                      />
-                      <textarea
-                        className="form-control in-pos"
-                        name="body"
-                        label="Body"
-                        type="body"
-                        placeholder="Detalla lo que requieres u ofreces"
-                        onChange={this.onChange}
-                      />
-                      <textarea
-                        className="form-control in-pos"
-                        name="name"
-                        label="name"
-                        type="name"
-                        placeholder="Agregar etiqueta"
-                        onChange={this.onChange}
-                      />
+              <div className="col-12 col-md-8">
+                <div className="row">
+                  <div className=' container-home2'>
+                    <div className="col-md-12">
+                      <div className="form-group">
+                        <input
+                          className="form-control in-pos"
+                          name="title"
+                          label="Title"
+                          type="title"
+                          placeholder="¿Qué te interesa aprender o enseñar?"
+                          onChange={this.onChange}
+                        />
+                        <textarea
+                          className="form-control in-pos"
+                          name="body"
+                          label="Body"
+                          type="body"
+                          placeholder="Detalla lo que requieres u ofreces"
+                          onChange={this.onChange}
+                        />
+                        <textarea
+                          className="form-control in-pos"
+                          name="name"
+                          label="name"
+                          type="name"
+                          placeholder="Agregar etiqueta"
+                          onChange={this.onChange}
+                        />
 
-                    </div>
-                    {/*<button className="btn btn-default btn-lg dropdown-toggle"
+                      </div>
+                      {/*<button className="btn btn-default btn-lg dropdown-toggle"
                         type="button" data-toggle="dropdown">
                         Etiquetas <span className="caret"></span>
                       </button>
@@ -249,21 +254,21 @@ class Home extends Component {
                         <li><a href="#">Programacion</a></li>
                         <li><a href="#">Comida</a></li>
     </ul>*/}
-                    <select className="form-control sel" id="sel1" onChange={this.onChange}>
-                      <option value="1">Solicitud</option>
-                      <option value="0  ">Ofrecimiento</option>
-                    </select>
-                    <SubmitButton />
+                      <select className="form-control sel" id="sel1" onChange={this.onChange}>
+                        <option value="1">Solicitud</option>
+                        <option value="0  ">Ofrecimiento</option>
+                      </select>
+                      <SubmitButton />
+                    </div>
                   </div>
-                </div>
 
+                </div>
+                <div className="row">
+                </div>
+                <Posts user_id={this.state.user_id} />
               </div>
-              <div className="row">
-              </div>
-              <Posts user_id={this.state.user_id} />
             </div>
           </div>
-        </div>
         }
       </div>)
     {/*<div className=' container-home'>
