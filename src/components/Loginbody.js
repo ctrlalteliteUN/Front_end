@@ -78,21 +78,22 @@ class Loginbody extends Component {
     const {id_token} = response.tokenObj;
     console.log(id_token);
     const {email}=response.profileObj
+    const {name}=response.profileObj;
     this.setState({ loading: true }, () => {
-      axios.post(`https://knowledge-community-back-end.herokuapp.com/auth/request`, { "id_token":id_token,"email":email })
+      axios.post(`https://knowledge-community-back-end.herokuapp.com/auth/request`, { "id_token":id_token,"email":email,"name":name })
         .then(response => {
           this.setState({
             loading: false,
           })   
           console.log(response);       
-          /*const { token } = response.data.data.user.authentication_token;
+          const { token } = response.data.data.user.authentication_token;
           sessionService.saveSession({ token })
             .then(() => {
               sessionService.saveUser(response.data.data.user)
                 .then(() => {
                   history.push('/');
                 }).catch(err => alert(err));
-            }).catch(err => alert(err));*/
+            }).catch(err => alert(err));
         }).catch(function (error) {
           console.error(error);
           this.setState({
