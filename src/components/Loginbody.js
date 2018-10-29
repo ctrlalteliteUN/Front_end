@@ -90,9 +90,10 @@ class Loginbody extends Component {
           console.log(response);  
           const { authentication_token } = response.data;
           console.log(authentication_token);
+          let user={email:email}
           sessionService.saveSession({ authentication_token })
             .then(() => {
-              sessionService.saveUser(email)
+              sessionService.saveUser(user)
             }).catch(err => console.log(err));
         }).catch(function (error) {
           console.error(error);
