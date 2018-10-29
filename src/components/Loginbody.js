@@ -72,7 +72,8 @@ class Loginbody extends Component {
   }
   responseGoogle = (response,history) => {
     console.log(response);
-    const { tokenObj } = response;    
+    const { tokenObj } = response.tokenObj;    
+    console.log(tokenObj);
     this.setState({ loading: true }, () => {
       axios.post(`https://knowledge-community-back-end.herokuapp.com/auth/request`, { tokenObj })
         .then(response => {
@@ -80,14 +81,14 @@ class Loginbody extends Component {
             loading: false,
           })   
           console.log(response);       
-          const { token } = response.data.data.user.authentication_token;
+          /*const { token } = response.data.data.user.authentication_token;
           sessionService.saveSession({ token })
             .then(() => {
               sessionService.saveUser(response.data.data.user)
                 .then(() => {
                   history.push('/');
                 }).catch(err => alert(err));
-            }).catch(err => alert(err));
+            }).catch(err => alert(err));*/
         }).catch(function (error) {
           console.error(error);
           this.setState({
@@ -157,7 +158,7 @@ class Loginbody extends Component {
                   <h3> Ó ingresa con: </h3>
                   <div className="mysocial-login-buttons">
                     <GoogleLogin className="mybtn-social" tag="a" type=""
-                      clientId="373142330185-hko54qc5fakooerj23p6n1494vj768h4.apps.googleusercontent.com"
+                      clientId="51763937694-8c7g33bu1s7vpa006dg22455utpr6eq8.apps.googleusercontent.com"
                       onSuccess={this.responseGoogle}
                       onFailure={this.responseGoogle}                    >
                       <i className="fab fa-google"></i>
