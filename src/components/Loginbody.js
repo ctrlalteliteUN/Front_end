@@ -70,7 +70,7 @@ class Loginbody extends Component {
     user[name] = value;
     this.setState({ user });
   }
-  responseGoogle = (response) => {
+  responseGoogle = (response,history) => {
     console.log(response);
     const { tokenObj } = response;    
     this.setState({ loading: true }, () => {
