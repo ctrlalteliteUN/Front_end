@@ -92,7 +92,7 @@ class Loginbody extends Component {
           console.log(authentication_token);
           sessionService.saveSession({ authentication_token })
             .then(() => {
-              sessionService.saveUser(response.data)
+              sessionService.saveUser(email)
             }).catch(err => console.log(err));
         }).catch(function (error) {
           console.error(error);
