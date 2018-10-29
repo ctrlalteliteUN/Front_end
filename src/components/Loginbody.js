@@ -77,8 +77,9 @@ class Loginbody extends Component {
     console.log(response);
     const {id_token} = response.tokenObj;
     console.log(id_token);
+    const {email}=response.profileObj
     this.setState({ loading: true }, () => {
-      axios.post(`https://knowledge-community-back-end.herokuapp.com/auth/request`, { "id_token":id_token })
+      axios.post(`https://knowledge-community-back-end.herokuapp.com/auth/request`, { "id_token":id_token,"email":email })
         .then(response => {
           this.setState({
             loading: false,
