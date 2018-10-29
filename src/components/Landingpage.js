@@ -52,7 +52,6 @@ class Landingpage extends Component {
               <div className="right">
                 <div className="container mt-5">
                   <Loginbody />
-                  <iframe src="data:application/pdf;base64,YOUR_BINARY_DATA" height="100%" width="100%"></iframe>
                 </div>
               </div>
             </div>
