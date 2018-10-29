@@ -22,7 +22,6 @@ class Posts extends Component {
 
 
   componentDidMount() {
-    this.setState({ loading: true }, () => {
     axios.get('https://knowledge-community-back-end.herokuapp.com/posts')
       .then(res => {
         console.log(res.data.length);
@@ -30,8 +29,13 @@ class Posts extends Component {
           posts: res.data,
           loading: false,
         });
+      }).catch(function (error) {
+        alert(error);
+        console.log(error);
+        this.setState({
+          loading: false,
+        })
       })
-    })
   }
   getPosts() {
 

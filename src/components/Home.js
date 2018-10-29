@@ -61,6 +61,12 @@ class Home extends Component {
                 })
             }
           }
+        }).catch(function (error) {
+          alert(error);
+          console.log(error);
+          this.setState({
+            loading: false,
+          })
         })
     })
   }
