@@ -53,6 +53,9 @@ class Loginbody extends Component {
                 }).catch(err => alert(err));
             }).catch(err => alert(err));
         }).catch(function (error) {
+          this.setState({
+            loading: false,
+          })
           if (error.message.indexOf('500') != -1) {
             this.setState({
               hasError: true,
@@ -72,10 +75,10 @@ class Loginbody extends Component {
   }
   responseGoogle = (response,history) => {
     console.log(response);
-    const { tokenObj } = response;    
-    console.log(tokenObj);
+    const {id_token} = response.tokenObj.id_token;
+    console.log(id_token);
     this.setState({ loading: true }, () => {
-      axios.post(`https://knowledge-community-back-end.herokuapp.com/auth/request`, { tokenObj })
+      axios.post(`https://knowledge-community-back-end.herokuapp.com/auth/request`, { id_token })
         .then(response => {
           this.setState({
             loading: false,
