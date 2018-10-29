@@ -7,6 +7,7 @@ import '../styles/Home.css';
 import { Link, withRouter } from 'react-router-dom';
 import axios from 'axios';
 import Post from './Post';
+import LoadingSpinner from './LoadingSpinner';
 
 class Posts extends Component {
   constructor(props, context) {
@@ -14,6 +15,7 @@ class Posts extends Component {
 
     this.state = {
       posts: [],
+      loading: false
     };
   };
 
@@ -24,17 +26,25 @@ class Posts extends Component {
       .then(res => {
         console.log(res.data.length);
         this.setState({
-          posts: res.data
+          posts: res.data,
+          loading: false,
         });
+      }).catch(function (error) {
+        console.log(error);
+        console.log(error);
+        this.setState({
+          loading: false,
+        })
       })
   }
   getPosts() {
+
     for (let i = 0; i < this.state.posts.length; i++) {
-      <Post id={this.state.posts[i].id} />
+      <Post id={this.state.posts[i].id} user_id={this.props.user_id} />
     }
   }
   render() {
-    const listItems = this.state.posts.map((d) => <Post id={d.id}>{d.title}</Post>);
+    const listItems = this.state.posts.map((d) => <Post id={d.id} user_id={this.props.user_id}>{d.title}</Post>);
     return (
       <div>
       {listItems}

@@ -9,129 +9,245 @@ import '../styles/Home.css';
 import { Link, withRouter } from 'react-router-dom'
 import { sessionService } from 'redux-react-session';
 import axios from 'axios';
+import LoadingSpinner from './LoadingSpinner';
 
 class Home extends Component {
   constructor(props, context) {
     super(props, context);
     this.state = {
       user_id: -1,
+      post_id: -1,
+      file: "",
+      namefile:"",
+      pdfPreviewUrl: "",
+      tag: {
+        name: "",
+      },
       post: {
         title: "",
         body: "",
         solicitud: 0,
-        user_id: -1
+        user_id: -1,
       },
-      groups: []
+      groups: [],
+      picture: "",
+      loading: false
     };
     this.onSubmit = this.onSubmit.bind(this);
     this.onChange = this.onChange.bind(this);
-
+    this._handleImageChange = this._handleImageChange.bind(this);
 
 
 
   }
 
   componentDidMount() {
-    axios.get('https://knowledge-community-back-end.herokuapp.com/users')
-      .then(res => {
-        for (let i = 0; i < res.data.length; i++) {
-          if (res.data[i].email == this.props.user.email) {
-            let post = Object.assign({}, this.state.post);
-            post.user_id = res.data[i].id;
-            this.setState({
-              user_id: res.data[i].id,
-              post: post,
-              groups: res.data[i].groups
-            })
+    this.setState({ loading: true }, () => {
+      axios.get('https://knowledge-community-back-end.herokuapp.com/users')
+        .then(res => {
+          for (let i = 0; i < res.data.length; i++) {
+            if (res.data[i].email == this.props.user.email) {
+              let post = Object.assign({}, this.state.post);
+              post.user_id = res.data[i].id;
+              this.setState({
+                user_id: res.data[i].id,
+                post: post,
+                groups: res.data[i].groups,
+                loading: false
+              });
+              axios.get('https://knowledge-community-back-end.herokuapp.com/app_files?ProfilePhoto=1&user_id=' + this.state.user_id)
+                .then(response => {
+                  this.setState({
+                    picture: response.data,
+                    loading: false
+                  })
+                })
+            }
           }
-        }
-      })
+          this.setState({
+            loading: false
+          })
+        }).catch(function (error) {
+          console.log(error);
+          console.log(error);
+          this.setState({
+            loading: false,
+          })
+        })
+    })
   }
 
   onSubmit(history) {
-    axios.post(`https://knowledge-community-back-end.herokuapp.com/posts`, this.state.post)
-      .then(function (response) {
-        alert("Publicacion Satisfactoria");
-        console.log(response);
-        history.push('/');
-      })
-      .catch(function (error) {
-        alert(error);
-        console.log(error);
-      })
+    this.setState({ loading: true }, () => {
+      axios.post(`https://knowledge-community-back-end.herokuapp.com/posts`, this.state.post)
+        .then(response => {
+          alert("Publicacion Satisfactoria");
+          console.log(response);
+          console.log(this.state.tag);
+          history.push('/');
+          this.forceUpdate();
+          this.setState({
+            loading: false,
+          })
+          axios.post('https://knowledge-community-back-end.herokuapp.com/posts/' + response.data.id + '/tags', this.state.tag)
+            .then(response => {
+              console.log(response);
+              this.forceUpdate();
+            })
+            .catch(function (error) {
+              console.log(error);
+              console.log(error);
+            })
+        })
+        .catch(function (error) {
+          console.log(error);
+          console.log(error);
+          this.setState({
+            loading: false,
+          })
+        })
+    })
+  }
+  onPDF(history) {
+    let { pdfPreviewUrl } = this.state;
+    if (pdfPreviewUrl) {
+      console.log(pdfPreviewUrl);
+      console.log(this.state.user_id)
+      axios.post(`https://knowledge-community-back-end.herokuapp.com/app_files`, { ruta: pdfPreviewUrl, file_type_id: 2, user_id: this.state.user_id, post_id: "", description: "pdf", titulo:this.state.namefile })
+        .then(response => {
+          console.log(response)
+          history.push('/')
+        })
+    }
   }
 
   onChange(e) {
     const { value, name } = e.target;
     const { post } = this.state;
+    const { tag } = this.state;
     post[name] = value;
+    tag[name] = value;
     this.setState({ post });
+    this.setState({ tag });
   }
 
+  _handleImageChange(e) {
+    e.preventDefault();
+
+    let reader = new FileReader();
+    let file = e.target.files[0];
+
+    reader.onloadend = () => {
+      this.setState({
+        file: file,
+        pdfPreviewUrl: reader.result,
+        namefile: file.name,
+      });
+      console.log(reader.result)
+      console.log(file.name)
+    }
+    reader.readAsDataURL(file);
+
+  }
   render() {
+    const Pdfbutton = withRouter(({ history }) => (
+      <button className="btn btn-default btn-lg posd"
+        onClick={() => this.onPDF(history)}
+        type="submit">Subir
+      </button>
+    ));
     const SubmitButton = withRouter(({ history }) => (
       <button className="btn btn-default btn-lg posd"
         onClick={() => this.onSubmit(history)}
         type="submit">Postear
       </button>
     ));
+    let { picture } = this.state;
+    let $picture = null;
+    if (!picture.error) {
+      $picture = (<img src={picture.ruta} />);
+    } else {
+      $picture = (<img src="http://recursospracticos.com/wp-content/uploads/2017/10/Sin-foto-de-perfil-en-Facebook.jpg" alt="" />);
+    }
     return (
       <div>
         <Navigation />
-        <div className='container'>
-          <div className="row">
-            <div className="col-6 col-md-4 ">
-              <div className="row">
-                <div className='container-home'>
-                  <div className="col-md-12">
-                    <Link to="/profile">
-                      <div className="profile "></div>
-                    </Link>
-                    <p>{this.props.user.email}</p>
+        {this.state.loading ? <LoadingSpinner /> :
+          <div className='container'>
+            <div className="row">
+              <div className="col-6 col-md-4 ">
+                <div className="row">
+                  <div className='container-home'>
+                    <div className="col-md-12">
+                      <Link to="/profile">
+                        <div className="home-profile-img">
+                          {$picture}
+                        </div>
+                      </Link>
+                      <p>{this.props.user.email}</p>
+                    </div>
                   </div>
                 </div>
-              </div>
-              <div className="row">
-                <div className='container-home'>
-                  <div className="col-md-12">
-                    <div className="panel panel-default">
-                      <div className="panel-heading">
-                        <h3 className="panel-title">Grupos<a className="items">
-                          <i className="fas fa-users"></i>
-                        </a></h3>
+                <div className="row">
+                  <div className='container-home'>
+                    <div className="col-md-12">
+                      <div className="panel panel-default">
+                        <div className="panel-heading">
+                          <h3 className="panel-title">Grupos<a className="items">
+                            <i className="fas fa-users"></i>
+                          </a></h3>
+                        </div>
+                        <div className="panel-body">
+                          {this.state.groups.map(group => <p>{group.name}</p>)}
+                        </div>
                       </div>
-                      <div className="panel-body">
-                        {this.state.groups.map(group => <p>{group.name}</p>)}
+                    </div>
+                  </div>
+                </div>
+                <div className="row">
+                  <div className='container-home'>
+                    <div>
+                      <h4>Subir PDF</h4>
+                      <div>
+                        <input type="file" onChange={this._handleImageChange} />
+                        <Pdfbutton />
                       </div>
                     </div>
                   </div>
                 </div>
               </div>
-            </div>
-            <div className="col-12 col-md-8">
-              <div className="row">
-                <div className=' container-home2'>
-                  <div className="col-md-12">
-                    <div className="form-group">
-                      <input
-                        className="form-control in-pos"
-                        name="title"
-                        label="Title"
-                        type="title"
-                        placeholder="¿Qué te interesa aprender o enseñar?"
-                        onChange={this.onChange}
-                      />
-                      <textarea
-                        className="form-control in-pos"
-                        name="body"
-                        label="Body"
-                        type="body"
-                        placeholder="Detalla lo que requieres u ofreces"
-                        onChange={this.onChange}
-                      />
+              <div className="col-12 col-md-8">
+                <div className="row">
+                  <div className=' container-home2'>
+                    <div className="col-md-12">
+                      <div className="form-group">
+                        <input
+                          className="form-control in-pos"
+                          name="title"
+                          label="Title"
+                          type="title"
+                          placeholder="¿Qué te interesa aprender o enseñar?"
+                          onChange={this.onChange}
+                        />
+                        <textarea
+                          className="form-control in-pos"
+                          name="body"
+                          label="Body"
+                          type="body"
+                          placeholder="Detalla lo que requieres u ofreces"
+                          onChange={this.onChange}
+                        />
+                        <textarea
+                          className="form-control in-pos"
+                          name="name"
+                          label="name"
+                          type="name"
+                          placeholder="Agregar etiqueta"
+                          onChange={this.onChange}
+                        />
 
-                    </div>
-                    {/*<button className="btn btn-default btn-lg dropdown-toggle"
+                      </div>
+                      {/*<button className="btn btn-default btn-lg dropdown-toggle"
                         type="button" data-toggle="dropdown">
                         Etiquetas <span className="caret"></span>
                       </button>
@@ -141,21 +257,22 @@ class Home extends Component {
                         <li><a href="#">Programacion</a></li>
                         <li><a href="#">Comida</a></li>
     </ul>*/}
-                    <select className="form-control sel" id="sel1" onChange={this.onChange}>
-                      <option value="1">Solicitud</option>
-                      <option value="0  ">Ofrecimiento</option>
-                    </select>
-                    <SubmitButton />
+                      <select className="form-control sel" id="sel1" onChange={this.onChange}>
+                        <option value="1">Solicitud</option>
+                        <option value="0  ">Ofrecimiento</option>
+                      </select>
+                      <SubmitButton />
+                    </div>
                   </div>
-                </div>
 
+                </div>
+                <div className="row">
+                </div>
+                <Posts user_id={this.state.user_id} />
               </div>
-              <div className="row">
-              </div>
-              <Posts />
             </div>
           </div>
-        </div>
+        }
       </div>)
     {/*<div className=' container-home'>
         <div className="col-md-12">

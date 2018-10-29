@@ -14,7 +14,7 @@ export const login = (user, history) => {
                 history.push('/');
               }).catch(err => console.error(err));
           }).catch(err => console.error(err));
-      }).catch(err => alert(err));
+      }).catch(err => console.log(err));
   };
 };
 export function Welcome(user,history) {
@@ -28,7 +28,7 @@ export function Welcome(user,history) {
             history.push('/');
           }).catch(err => console.error(err));
       }).catch(err => console.error(err));
-  }).catch(err => alert(err));
+  }).catch(err => console.log(err));
 }
 
 export const signup = (user, history) => {

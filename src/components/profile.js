@@ -9,36 +9,46 @@ import '../styles/profile.css';
 import { Link, withRouter } from 'react-router-dom'
 import axios from 'axios';
 import ImageUploader from 'react-images-upload';
+import Archivo from './archivo';
 
 class profile extends Component {
   constructor(props) {
     super(props);
     this.state = {
       id: "",
+      files: [],
       groups: [],
       persons: [],
-      picture: ""
+      picture: "",
+      loading: false
     };
 
   }
 
   componentDidMount() {
-    axios.get('https://knowledge-community-back-end.herokuapp.com/users')
-      .then(res => {
-        for (let i = 0; i < res.data.length; i++) {
-          if (res.data[i].email == this.props.user.email) {
-            this.setState({ id: res.data[i].id, groups: res.data[i].groups, persons: res.data[i] })
-            axios.get('https://knowledge-community-back-end.herokuapp.com/app_files?ProfilePhoto=1&user_id=' + this.state.id)
-              .then(response => {
-                console.log(response.data.ruta)
-                this.setState({ picture: response.data})
-              })
+    this.setState({ loading: true }, () => {
+      axios.get('https://knowledge-community-back-end.herokuapp.com/users')
+        .then(res => {
+          for (let i = 0; i < res.data.length; i++) {
+            if (res.data[i].email == this.props.user.email) {
+              this.setState({ id: res.data[i].id, groups: res.data[i].groups, persons: res.data[i] })
+              axios.get('https://knowledge-community-back-end.herokuapp.com/app_files?ProfilePhoto=1&user_id=' + this.state.id)
+                .then(response => {
+                  this.setState({ picture: response.data })
+                })
+              axios.get('https://knowledge-community-back-end.herokuapp.com/app_files?FileType=2&user_id=' + this.state.id)
+                .then(response => {
+                  console.log(response.data)
+                  this.setState({ files: response.data })
+                })
+            }
           }
-        }
-      })
+        })
+    })
   }
 
   render() {
+    console.log(this.state.files.map(person => person.ruta))
     let { picture } = this.state;
     let $picture = null;
     if (!picture.error) {
@@ -47,6 +57,8 @@ class profile extends Component {
       $picture = (<img src="http://recursospracticos.com/wp-content/uploads/2017/10/Sin-foto-de-perfil-en-Facebook.jpg" alt="" />);
     }
     const i = 0;
+    const link = "http://knowledge-community-back-end.herokuapp.com/users/" + this.state.id + ".pdf"
+    const listItems = this.state.files.map((d) => <Archivo ruta={d.ruta} titulo={d.titulo}></Archivo>);
     return (
       <div>
         <Navigation />
@@ -91,7 +103,7 @@ class profile extends Component {
                     <a style={{ color: "#4d636f" }} className="nav-link active" id="home-tab" data-toggle="tab" href="#home" role="tab" aria-controls="home" aria-selected="true">Informacion</a>
                   </li>
                   <li className="nav-item">
-                    <a style={{ color: "#4d636f" }} className="nav-link" id="profile-tab" data-toggle="tab" href="#profile" role="tab" aria-controls="profile" aria-selected="false">Estadisticas</a>
+                    <a style={{ color: "#4d636f" }} className="nav-link" id="profile-tab" data-toggle="tab" href="#profile" role="tab" aria-controls="profile" aria-selected="false">Estadisticas y Reportes</a>
                   </li>
                 </ul>
               </div>
@@ -205,12 +217,25 @@ class profile extends Component {
                       </div>
                     </div>
                   </div>
+                  <div className="row">
+                    <h6>
+                    Registro
+                    </h6>
+                    </div>  
+                  <div className="row">  
+                    <iframe src={link} width="600px" height="300px" seamless webkitallowfullscreen mozallowfullscreen allowfullscreen></iframe> 
+                  </div>
+                  <div className="row">
+                      {listItems}
+                  </div>
+
+
                 </div>
               </div>
             </div>
           </div>
         </div>
-      </div>
+      </div >
     )
   }
 }
