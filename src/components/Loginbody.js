@@ -70,10 +70,12 @@ class Loginbody extends Component {
     user[name] = value;
     this.setState({ user });
   }
-
   responseGoogle = (response) => {
     console.log(response);
-    /*const { tokenObj } = response;    
+  }
+  /*responseGoogle = (response) => {
+    console.log(response);
+    const { tokenObj } = response;    
     this.setState({ loading: true }, () => {
       axios.post(`https://knowledge-community-back-end.herokuapp.com/auth/request`, { tokenObj })
         .then(response => {
@@ -95,8 +97,8 @@ class Loginbody extends Component {
             loading: false,
           })
         }.bind(this))
-    })*/
-  }
+    })
+  }*/
 
   responseFacebook = (response) => {
     console.log(response);
