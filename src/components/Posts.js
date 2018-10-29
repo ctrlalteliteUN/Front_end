@@ -30,7 +30,7 @@ class Posts extends Component {
           loading: false,
         });
       }).catch(function (error) {
-        alert(error);
+        console.log(error);
         console.log(error);
         this.setState({
           loading: false,

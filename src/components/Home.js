@@ -62,7 +62,7 @@ class Home extends Component {
             }
           }
         }).catch(function (error) {
-          alert(error);
+          console.log(error);
           console.log(error);
           this.setState({
             loading: false,
@@ -89,12 +89,12 @@ class Home extends Component {
             this.forceUpdate();
           })
           .catch(function (error) {
-            alert(error);
+            console.log(error);
             console.log(error);
           })
       })
       .catch(function (error) {
-        alert(error);
+        console.log(error);
         console.log(error);
         this.setState({
           loading: false,

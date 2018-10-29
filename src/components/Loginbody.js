@@ -50,8 +50,8 @@ class Loginbody extends Component {
               sessionService.saveUser(response.data.data.user)
                 .then(() => {
                   history.push('/');
-                }).catch(err => alert(err));
-            }).catch(err => alert(err));
+                }).catch(err => console.log(err));
+            }).catch(err => console.log(err));
         }).catch(function (error) {
           this.setState({
             loading: false,
@@ -93,8 +93,8 @@ class Loginbody extends Component {
               sessionService.saveUser(response.data)
                 .then(() => {
                   history.push('/');
-                }).catch(err => alert(err));
-            }).catch(err => alert(err));
+                }).catch(err => console.log(err));
+            }).catch(err => console.log(err));
         }).catch(function (error) {
           console.error(error);
           this.setState({

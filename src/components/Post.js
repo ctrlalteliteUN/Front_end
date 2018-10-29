@@ -60,7 +60,7 @@ class Post extends Component {
                 history.push('/');
             })
             .catch(function (error) {
-                alert(error);
+                console.log(error);
                 console.log(error);
             })
     }

@@ -50,8 +50,8 @@ class Registro extends Component {
             sessionService.saveUser(response.data)
               .then(() => {
                 history.push('/');
-              }).catch(err => alert(err));
-          }).catch(err => alert(err));
+              }).catch(err => console.log(err));
+          }).catch(err => console.log(err));
       }).catch(function (error) {
         if (user.name == "" || user.email == "" || user.password == "" || user.password_confirmation == "") {
           this.setState({
