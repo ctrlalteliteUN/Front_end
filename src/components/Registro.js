@@ -97,9 +97,9 @@ class Registro extends Component {
             loading: false,
           })       
           console.log(response);  
-          const { token } = response.data.authentication_token;
-          console.log(token);
-          sessionService.saveSession({ token })
+          const { authentication_token } = response.data;
+          console.log(authentication_token);
+          sessionService.saveSession({ authentication_token })
             .then(() => {
               sessionService.saveUser(response.data)
                 .then(() => {
