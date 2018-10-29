@@ -17,12 +17,14 @@ class profile extends Component {
       id: "",
       groups: [],
       persons: [],
-      picture: ""
+      picture: "",
+      loading: false
     };
 
   }
 
   componentDidMount() {
+    this.setState({ loading: true }, () => {
     axios.get('https://knowledge-community-back-end.herokuapp.com/users')
       .then(res => {
         for (let i = 0; i < res.data.length; i++) {
@@ -35,6 +37,7 @@ class profile extends Component {
           }
         }
       })
+    })
   }
 
   render() {

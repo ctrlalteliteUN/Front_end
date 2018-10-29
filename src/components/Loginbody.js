@@ -158,7 +158,7 @@ class Loginbody extends Component {
                   <h3> Ó ingresa con: </h3>
                   <div className="mysocial-login-buttons">
                     <GoogleLogin className="mybtn-social" tag="a" type=""
-                      clientId="373142330185-sv6n2fga4rjtqbjre1cr8hlcj7md8u8h.apps.googleusercontent.com"
+                      clientId="373142330185-hko54qc5fakooerj23p6n1494vj768h4.apps.googleusercontent.com"
                       onSuccess={this.responseGoogle}
                       onFailure={this.responseGoogle}
                     >
