@@ -18,6 +18,7 @@ class Home extends Component {
       user_id: -1,
       post_id: -1,
       file: "",
+      namefile:"",
       pdfPreviewUrl: "",
       tag: {
         name: "",
@@ -112,7 +113,7 @@ class Home extends Component {
     if (pdfPreviewUrl) {
       console.log(pdfPreviewUrl);
       console.log(this.state.user_id)
-      axios.post(`https://knowledge-community-back-end.herokuapp.com/app_files`, { ruta: pdfPreviewUrl, file_type_id: 2, user_id: this.state.user_id, post_id: "", description: "pdf", titulo: "archivo.pdf" })
+      axios.post(`https://knowledge-community-back-end.herokuapp.com/app_files`, { ruta: pdfPreviewUrl, file_type_id: 2, user_id: this.state.user_id, post_id: "", description: "pdf", titulo:this.state.namefile })
         .then(response => {
           console.log(response)
           history.push('/')
@@ -140,8 +141,10 @@ class Home extends Component {
       this.setState({
         file: file,
         pdfPreviewUrl: reader.result,
+        namefile: file.name,
       });
       console.log(reader.result)
+      console.log(file.name)
     }
     reader.readAsDataURL(file);
 
