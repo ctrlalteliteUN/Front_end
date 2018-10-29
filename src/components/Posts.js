@@ -22,7 +22,7 @@ class Posts extends Component {
 
 
   componentDidMount() {
-    axios.get('https://knowledge-community-back-end.herokuapp.com/posts')
+    axios.get('https://knowledge-community-back-end.herokuapp.com/posts?page=2')
       .then(res => {
         console.log(res.data.length);
         this.setState({

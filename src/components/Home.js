@@ -84,8 +84,6 @@ class Home extends Component {
           alert("Publicacion Satisfactoria");
           console.log(response);
           console.log(this.state.tag);
-          history.push('/');
-          this.forceUpdate();
           this.setState({
             loading: false,
           })
@@ -96,11 +94,9 @@ class Home extends Component {
             })
             .catch(function (error) {
               console.log(error);
-              console.log(error);
             })
         })
         .catch(function (error) {
-          console.log(error);
           console.log(error);
           this.setState({
             loading: false,
