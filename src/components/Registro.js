@@ -102,9 +102,6 @@ class Registro extends Component {
           sessionService.saveSession({ authentication_token })
             .then(() => {
               sessionService.saveUser(response.data)
-                .then(() => {
-                  history.push('/');
-                }).catch(err => console.log(err));
             }).catch(err => console.log(err));
         }).catch(function (error) {
           console.error(error);
