@@ -86,10 +86,11 @@ class Loginbody extends Component {
             loading: false,
           })   
           console.log(response);       
-          const { token } = response.data.data.user.authentication_token;
+          const { token } = response.data.authentication_token;
+          console.log(token);
           sessionService.saveSession({ token })
             .then(() => {
-              sessionService.saveUser(response.data.data.user)
+              sessionService.saveUser(response.data)
                 .then(() => {
                   history.push('/');
                 }).catch(err => alert(err));
