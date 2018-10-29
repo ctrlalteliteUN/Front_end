@@ -73,7 +73,7 @@ class Loginbody extends Component {
 
   responseGoogle = (response,history) => {
     console.log(response);
-    const { tokenObj } = response;    
+    /*const { tokenObj } = response;    
     this.setState({ loading: true }, () => {
       axios.post(`https://knowledge-community-back-end.herokuapp.com/auth/request`, { tokenObj })
         .then(response => {
@@ -81,21 +81,21 @@ class Loginbody extends Component {
             loading: false,
           })   
           console.log(response);       
-          /*const { token } = response.data.data.user.authentication_token;
+          const { token } = response.data.data.user.authentication_token;
           sessionService.saveSession({ token })
             .then(() => {
               sessionService.saveUser(response.data.data.user)
                 .then(() => {
                   history.push('/');
                 }).catch(err => alert(err));
-            }).catch(err => alert(err));*/
+            }).catch(err => alert(err));
         }).catch(function (error) {
           console.error(error);
           this.setState({
             loading: false,
           })
         }.bind(this))
-    })
+    })*/
   }
 
   responseFacebook = (response) => {
