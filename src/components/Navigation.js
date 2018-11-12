@@ -2,9 +2,61 @@ import React, { Component } from 'react';
 import { NavLink } from 'react-router-dom';
 import '../styles/navbar.css';
 import LogoutButton from './LogoutButton';
+import { Redirect } from 'react-router-dom'
 
 
 class Navigation extends Component {
+
+    constructor(props, context) {
+        super(props, context);
+
+        this.state = {
+            redirect: false,
+            search:''
+        };
+
+        this.onSubmit = this.onSubmit.bind(this);
+        this.onChange = this.onChange.bind(this);
+        this.keyPress = this.keyPress.bind(this);
+        this.setRedirect = this.setRedirect.bind(this);
+        this.renderRedirect = this.renderRedirect.bind(this);
+
+
+    }
+
+    setRedirect() {
+        this.setState({
+            redirect: true
+        })
+
+    }
+
+    renderRedirect() {
+        if (this.state.redirect) {
+            console.log(this.state.redirect);
+            return <Redirect to={{
+                pathname: "/search",
+                state: { search: this.state.search }
+            }} />
+        }
+    }
+
+
+
+    onSubmit(history) {
+        console.log("PRUEBA PRUEBA PREUBA");
+    }
+    onChange(e) {
+        this.setState({search: e.target.value});
+      }
+
+    keyPress(e) {
+        if (e.keyCode == 13) {
+            console.log('value', e.target.value);
+            this.setRedirect();
+        }
+
+    }
     render() {
         return (
             <div>
@@ -32,8 +84,9 @@ class Navigation extends Component {
                         </ul>
                         <div className="container test">
                             <div className="form-group has-search test">
-                                <span className="fa fa-search form-control-feedback"></span>
-                                <input type="text" className="form-control" placeholder="Search" />
+                                {this.renderRedirect()}
+                                <span className="fa fa-search form-control-feedback" onClick={this.onSubmit}></span>
+                                <input type="text" className="form-control" placeholder="Search" onKeyDown={this.keyPress} onChange={this.onChange} />
                             </div>
                         </div>
                         <ul className="navbar-nav">
@@ -45,7 +98,7 @@ class Navigation extends Component {
                                 <div className="dropdown-menu dropdown-menu-right" aria-labelledby="navbarDropdown">
                                     <a className="dropdown-item">Registro de Actividad</a>
                                     <div className="dropdown-divider"></div>
-                                    <a className="dropdown-item drop-logout" ><LogoutButton/></a>
+                                    <a className="dropdown-item drop-logout" ><LogoutButton /></a>
                                 </div>
                             </li>
                         </ul>

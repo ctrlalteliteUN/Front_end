@@ -1,17 +1,21 @@
 import React, { Component } from 'react';
 import '../styles/Log.css';
 import '../styles/App.css';
-import Navigation from './NavigationLog';
-import {Link} from 'react-router-dom'
+import Navigation from './Navigation';
+import { Link } from 'react-router-dom'
 
 class search extends Component {
-    render() {
-        return (
-          <div>
-            <Navigation/>
-            <p>Ruta busquedas</p>
-          </div>
-        )
-    }  
+  constructor(props) {
+    super(props);
+    console.log(this.props.location.state.search) //undefined
+  }
+  render() {
+    return (
+      <div>
+        <Navigation />
+        <p>{this.props.location.state.search}</p>
+      </div>
+    )
+  }
 }
 export default search;

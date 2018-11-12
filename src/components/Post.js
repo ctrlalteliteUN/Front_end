@@ -7,6 +7,7 @@ import '../styles/Home.css';
 import { Link, withRouter } from 'react-router-dom';
 import axios from 'axios';
 import Comment from './Comment.js'
+import Map from './Map';
 
 
 class Post extends Component {
@@ -23,7 +24,7 @@ class Post extends Component {
                 user_id: this.props.user_id,
                 body: "",
             },
-            tags:[],
+            tags: [],
 
         };
 
@@ -41,7 +42,7 @@ class Post extends Component {
                     title: res.data.title,
                     user: res.data.user,
                     comments: res.data.comments,
-                    tags : res.data.tags
+                    tags: res.data.tags
                 });
                 axios.get('https://knowledge-community-back-end.herokuapp.com/app_files?ProfilePhoto=1&user_id=' + this.state.user.id)
                     .then(response => {
@@ -52,7 +53,7 @@ class Post extends Component {
 
     onSubmit(history) {
         const { comment } = this.state;
-        comment.user_id=this.props.user_id;
+        comment.user_id = this.props.user_id;
         axios.post('https://knowledge-community-back-end.herokuapp.com/posts/' + this.props.id + '/comments', this.state.comment)
             .then(function (response) {
                 alert("Comentario publicado");
@@ -129,6 +130,10 @@ class Post extends Component {
                         <h5>Comentarios</h5>
                     </div>
                 }
+                <div>
+                    <h1>Nos puede encontrar en:</h1>
+                    <Map />
+                </div>
                 <div className="container">
                     {listItems}
                 </div>
