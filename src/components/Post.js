@@ -25,6 +25,8 @@ class Post extends Component {
                 body: "",
             },
             tags: [],
+            lat: '',
+            lng: ''
 
         };
 
@@ -42,7 +44,9 @@ class Post extends Component {
                     title: res.data.title,
                     user: res.data.user,
                     comments: res.data.comments,
-                    tags: res.data.tags
+                    tags: res.data.tags,
+                    lat: res.data.lat,
+                    lng: res.data.lng
                 });
                 axios.get('https://knowledge-community-back-end.herokuapp.com/app_files?ProfilePhoto=1&user_id=' + this.state.user.id)
                     .then(response => {
@@ -73,6 +77,8 @@ class Post extends Component {
         this.setState({ name });
     }
 
+    
+
 
     render() {
 
@@ -83,15 +89,15 @@ class Post extends Component {
             </button>
         ));
 
-        let { picture } = this.state;
+        let { lat, lng, picture } = this.state;
         let $picture = null;
         if (!picture.error) {
             $picture = (<img src={picture.ruta} />);
         } else {
             $picture = (<img src="http://recursospracticos.com/wp-content/uploads/2017/10/Sin-foto-de-perfil-en-Facebook.jpg" alt="" />);
         }
-
         const listItems = this.state.comments.map((d) => <Comment user_id={d.user_id} body={d.body}></Comment>);
+        const center = { lat: parseFloat(lat), lng: parseFloat(lng) };
 
         return (
 
@@ -131,8 +137,8 @@ class Post extends Component {
                     </div>
                 }
                 <div>
-                    <h1>Nos puede encontrar en:</h1>
-                    <Map />
+                    {lat != null && lat != '' && <Map center={center} username={this.state.user.name} type='vista'  />}
+
                 </div>
                 <div className="container">
                     {listItems}

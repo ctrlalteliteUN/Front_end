@@ -11,6 +11,10 @@ class Map extends Component {
         super(props, context);
 
         this.state = {
+            marker:{
+                lat:this.props.center.lat,
+                lng:this.props.center.lng
+            },
         };
 
         this._onClick = this._onClick.bind(this);
@@ -19,14 +23,23 @@ class Map extends Component {
     }
     static defaultProps = {
         center: {
-            lat: 59.95,
-            lng: 30.33,
+            lat: 4.6381938,
+            lng: -74.0840464,
         },
-        zoom: 11
+        zoom: 13
 
     };
 
-    _onClick = ({ x, y, lat, lng, event }) => console.log(x, y, lat, lng, event)
+    _onClick = ({ x, y, lat, lng, event }) => {
+        if (this.props.type!='vista'){
+            const {marker}=this.state;
+            marker.lat=lat;
+            marker.lng=lng;
+            this.setState({marker:marker});
+            this.props.onSelectLoc(marker);
+        }
+        
+    }
     render() {
         const marker = ({ text }) => <div>{text}</div>;
         return (
@@ -39,9 +52,9 @@ class Map extends Component {
                     onClick={this._onClick}
                 >
                     <Marker
-                        lat={59.955413}
-                        lng={30.337844}
-                        text={'Kreyser Avrora'}
+                        lat={this.state.marker.lat}
+                        lng={this.state.marker.lng}
+                        text={this.props.username}
                     />
                 </GoogleMapReact>
             </div>

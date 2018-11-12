@@ -11,7 +11,7 @@ class Marker extends Component {
                 <div className="pin">
                     <i class="fas fa-map-marker-alt"></i>                    
                 </div>
-                {this.props.text}
+                <h4>{this.props.text}</h4>
             </div>
         );
     }
