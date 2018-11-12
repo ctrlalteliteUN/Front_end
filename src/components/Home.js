@@ -10,6 +10,8 @@ import { Link, withRouter } from 'react-router-dom'
 import { sessionService } from 'redux-react-session';
 import axios from 'axios';
 import LoadingSpinner from './LoadingSpinner';
+import Map from './Map';
+
 
 class Home extends Component {
   constructor(props, context) {
@@ -18,7 +20,7 @@ class Home extends Component {
       user_id: -1,
       post_id: -1,
       file: "",
-      namefile:"",
+      namefile: "",
       pdfPreviewUrl: "",
       tag: {
         name: "",
@@ -28,14 +30,19 @@ class Home extends Component {
         body: "",
         solicitud: 0,
         user_id: -1,
+        lat:null,
+        lng:null
       },
       groups: [],
       picture: "",
-      loading: false
+      loading: false,
+      map: false
     };
     this.onSubmit = this.onSubmit.bind(this);
     this.onChange = this.onChange.bind(this);
+    this.check = this.check.bind(this);
     this._handleImageChange = this._handleImageChange.bind(this);
+    this.handleLoc=this.handleLoc.bind(this);
 
 
 
@@ -84,8 +91,6 @@ class Home extends Component {
           alert("Publicacion Satisfactoria");
           console.log(response);
           console.log(this.state.tag);
-          history.push('/');
-          this.forceUpdate();
           this.setState({
             loading: false,
           })
@@ -96,11 +101,9 @@ class Home extends Component {
             })
             .catch(function (error) {
               console.log(error);
-              console.log(error);
             })
         })
         .catch(function (error) {
-          console.log(error);
           console.log(error);
           this.setState({
             loading: false,
@@ -108,12 +111,13 @@ class Home extends Component {
         })
     })
   }
+
   onPDF(history) {
     let { pdfPreviewUrl } = this.state;
     if (pdfPreviewUrl) {
       console.log(pdfPreviewUrl);
       console.log(this.state.user_id)
-      axios.post(`https://knowledge-community-back-end.herokuapp.com/app_files`, { ruta: pdfPreviewUrl, file_type_id: 2, user_id: this.state.user_id, post_id: "", description: "pdf", titulo:this.state.namefile })
+      axios.post(`https://knowledge-community-back-end.herokuapp.com/app_files`, { ruta: pdfPreviewUrl, file_type_id: 2, user_id: this.state.user_id, post_id: "", description: "pdf", titulo: this.state.namefile })
         .then(response => {
           console.log(response)
           history.push('/')
@@ -129,6 +133,10 @@ class Home extends Component {
     tag[name] = value;
     this.setState({ post });
     this.setState({ tag });
+  }
+  check(e) {
+    let val= !this.state.map;
+    this.setState({ map: val });
   }
 
   _handleImageChange(e) {
@@ -149,6 +157,18 @@ class Home extends Component {
     reader.readAsDataURL(file);
 
   }
+
+  handleLoc(marker) {    
+    const { post }=this.state;
+    post.lat=marker.lat;
+    post.lng=marker.lng;
+    this.setState({
+        post:post
+    });
+    console.log(post);
+}
+
+
   render() {
     const Pdfbutton = withRouter(({ history }) => (
       <button className="btn btn-default btn-lg posd"
@@ -261,6 +281,14 @@ class Home extends Component {
                         <option value="1">Solicitud</option>
                         <option value="0  ">Ofrecimiento</option>
                       </select>
+                      <div class="posd" >
+                        <label><input type="checkbox" name="map" onChange={this.check} value={!this.state.map} />Mapa?</label>
+                      </div>
+                      
+                      {this.state.map != false && <div className="map"><Map type='editar' onSelectLoc={this.handleLoc}/></div>}
+                      <br></br>
+                      <br></br>
+                      
                       <SubmitButton />
                     </div>
                   </div>

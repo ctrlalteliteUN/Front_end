@@ -9,7 +9,7 @@ import axios from 'axios';
 import Post from './Post';
 import LoadingSpinner from './LoadingSpinner';
 
-class Posts extends Component {
+class Search_posts extends Component {
   constructor(props, context) {
     super(props, context);
 
@@ -22,7 +22,7 @@ class Posts extends Component {
 
 
   componentDidMount() {
-    axios.get('https://knowledge-community-back-end.herokuapp.com/posts?page=2')
+    axios.get('https://knowledge-community-back-end.herokuapp.com/posts?body='+this.props.searchm)
       .then(res => {
         console.log(res.data.length);
         this.setState({
@@ -44,6 +44,7 @@ class Posts extends Component {
     }
   }
   render() {
+    
     const listItems = this.state.posts.map((d) => <Post id={d.id} user_id={this.props.user_id}>{d.title}</Post>);
     return (
       <div>
@@ -72,4 +73,4 @@ const mapDispatch = (dispatch) => {
 };
 
 export default connect(null, mapDispatch)(Posts);*/
-export default Posts;
+export default Search_posts;

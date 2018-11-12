@@ -128,3 +128,9 @@
 .comment-txt{
     margin: 5px;
 }
+.pin {
+   color:red;
+  }
+  .map{
+      margin-top: 60px;
+  }

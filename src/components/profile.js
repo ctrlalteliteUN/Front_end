@@ -10,12 +10,15 @@ import { Link, withRouter } from 'react-router-dom'
 import axios from 'axios';
 import ImageUploader from 'react-images-upload';
 import Archivo from './archivo';
+import { Bar } from 'react-chartjs-2';
 
 class profile extends Component {
   constructor(props) {
     super(props);
     this.state = {
       id: "",
+      posts: [],
+      comments: [],
       files: [],
       groups: [],
       persons: [],
@@ -41,6 +44,16 @@ class profile extends Component {
                   console.log(response.data)
                   this.setState({ files: response.data })
                 })
+              axios.get('https://knowledge-community-back-end.herokuapp.com/users/' + this.state.id + '?statistics=1')
+                .then(response => {
+                  console.log(response.data)
+                  this.setState({ posts: response.data })
+                })
+              axios.get('https://knowledge-community-back-end.herokuapp.com/users/' + this.state.id + '?statistics=2')
+                .then(response => {
+                  console.log(response.data)
+                  this.setState({ comments: response.data })
+                })
             }
           }
         })
@@ -48,7 +61,52 @@ class profile extends Component {
   }
 
   render() {
-    console.log(this.state.files.map(person => person.ruta))
+
+    var post = Object.keys(this.state.posts)
+    const label = []
+    const d = []
+    for (let i = 0; i < post.length; i++) {
+      label.push(post[i])
+      d.push(this.state.posts[post[i]])
+
+    }
+
+    const data = {
+      labels: label,
+      datasets: [
+        {
+          label: 'Post de los ultimos 7 dias',
+          backgroundColor: 'rgba(255,99,132,0.2)',
+          borderColor: 'rgba(255,99,132,1)',
+          borderWidth: 1,
+          hoverBackgroundColor: 'rgba(255,99,132,0.4)',
+          hoverBorderColor: 'rgba(255,99,132,1)',
+          data: d
+        }
+      ]
+    };
+    var comment = Object.keys(this.state.comments)
+    const label2 = []
+    const d2 = []
+    for (let i = 0; i < comment.length; i++) {
+      label2.push(comment[i])
+      d2.push(this.state.comments[comment[i]])
+
+    }
+    const data2 = {
+      labels: label2,
+      datasets: [
+        {
+          label: 'Comments de los ultimos 7 dias',
+          backgroundColor: 'rgba(255,99,132,0.2)',
+          borderColor: 'rgba(255,99,132,1)',
+          borderWidth: 1,
+          hoverBackgroundColor: 'rgba(255,99,132,0.4)',
+          hoverBorderColor: 'rgba(255,99,132,1)',
+          data: d2
+        }
+      ]
+    };
     let { picture } = this.state;
     let $picture = null;
     if (!picture.error) {
@@ -217,16 +275,52 @@ class profile extends Component {
                       </div>
                     </div>
                   </div>
-                  <div className="row">
-                    <h6>
-                    Registro
-                    </h6>
-                    </div>  
-                  <div className="row">  
-                    <iframe src={link} width="600px" height="300px" seamless webkitallowfullscreen mozallowfullscreen allowfullscreen></iframe> 
+                  <div>
+                    <h2>Posts</h2>
+                    <Bar
+                      data={data}
+                      width={100}
+                      height={50}
+                      options={{
+                        maintainAspectRatio: true,
+                        scales: {
+                          yAxes: [{
+                            ticks: {
+                              beginAtZero: true
+                            }
+                          }]
+                        }
+                      }}
+                    />
+                  </div>
+                  <div>
+                    <h2>Comments</h2>
+                    <Bar
+                      data={data2}
+                      width={100}
+                      height={50}
+                      options={{
+                        maintainAspectRatio: true,
+                        scales: {
+                          yAxes: [{
+                            ticks: {
+                              beginAtZero: true
+                            }
+                          }]
+                        }
+                      }}
+                    />
                   </div>
                   <div className="row">
-                      {listItems}
+                    <h6>
+                      Registro
+                    </h6>
+                  </div>
+                  <div className="row">
+                    <iframe src={link} width="600px" height="300px" seamless webkitallowfullscreen mozallowfullscreen allowfullscreen></iframe>
+                  </div>
+                  <div className="row">
+                    {listItems}
                   </div>
 
 
