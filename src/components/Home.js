@@ -11,6 +11,7 @@ import { sessionService } from 'redux-react-session';
 import axios from 'axios';
 import LoadingSpinner from './LoadingSpinner';
 import Map from './Map';
+import { loadState, saveState } from './localStorage.js';
 
 
 class Home extends Component {
@@ -18,6 +19,7 @@ class Home extends Component {
     super(props, context);
     this.state = {
       user_id: -1,
+      email:"",
       post_id: -1,
       file: "",
       namefile: "",
@@ -43,12 +45,33 @@ class Home extends Component {
     this.check = this.check.bind(this);
     this._handleImageChange = this._handleImageChange.bind(this);
     this.handleLoc=this.handleLoc.bind(this);
-
+    this.saveStateHome=this.saveStateHome.bind(this);
 
 
   }
+saveStateHome(){
+    saveState(this.state,'home');
+  }
+
+  componentWillMount(){
+    if (this.props.history.location.state != undefined) {
+      this.setState({ email: this.props.history.location.state.detail.email })
+    }   
+
+  }
+
+  componentWillUnmount() {
+    window.removeEventListener('beforeunload', this.saveStateHome)
+
+    // saves if component has a chance to unmount
+    this.saveStateHome();
+  }
 
   componentDidMount() {
+    console.log(this.props);
+    const state = loadState('home');
+    this.setState(state);
+    window.addEventListener('beforeunload', this.saveStateHome);
     this.setState({ loading: true }, () => {
       axios.get('https://knowledge-community-back-end.herokuapp.com/users')
         .then(res => {
@@ -60,13 +83,11 @@ class Home extends Component {
                 user_id: res.data[i].id,
                 post: post,
                 groups: res.data[i].groups,
-                loading: false
               });
               axios.get('https://knowledge-community-back-end.herokuapp.com/app_files?ProfilePhoto=1&user_id=' + this.state.user_id)
                 .then(response => {
                   this.setState({
                     picture: response.data,
-                    loading: false
                   })
                 })
             }
@@ -75,13 +96,11 @@ class Home extends Component {
             loading: false
           })
         }).catch(function (error) {
-          console.log(error);
-          console.log(error);
-          this.setState({
-            loading: false,
-          })
+          console.error(error);
+          console.error(error);
         })
     })
+    
   }
 
   onSubmit(history) {
@@ -89,22 +108,20 @@ class Home extends Component {
       axios.post(`https://knowledge-community-back-end.herokuapp.com/posts`, this.state.post)
         .then(response => {
           alert("Publicacion Satisfactoria");
-          console.log(response);
-          console.log(this.state.tag);
           this.setState({
             loading: false,
           })
           axios.post('https://knowledge-community-back-end.herokuapp.com/posts/' + response.data.id + '/tags', this.state.tag)
             .then(response => {
-              console.log(response);
+
               this.forceUpdate();
             })
             .catch(function (error) {
-              console.log(error);
+              console.error(error);
             })
         })
         .catch(function (error) {
-          console.log(error);
+          console.error(error);
           this.setState({
             loading: false,
           })
@@ -115,11 +132,8 @@ class Home extends Component {
   onPDF(history) {
     let { pdfPreviewUrl } = this.state;
     if (pdfPreviewUrl) {
-      console.log(pdfPreviewUrl);
-      console.log(this.state.user_id)
       axios.post(`https://knowledge-community-back-end.herokuapp.com/app_files`, { ruta: pdfPreviewUrl, file_type_id: 2, user_id: this.state.user_id, post_id: "", description: "pdf", titulo: this.state.namefile })
         .then(response => {
-          console.log(response)
           history.push('/')
         })
     }
@@ -151,8 +165,6 @@ class Home extends Component {
         pdfPreviewUrl: reader.result,
         namefile: file.name,
       });
-      console.log(reader.result)
-      console.log(file.name)
     }
     reader.readAsDataURL(file);
 
@@ -165,7 +177,6 @@ class Home extends Component {
     this.setState({
         post:post
     });
-    console.log(post);
 }
 
 
@@ -199,7 +210,7 @@ class Home extends Component {
                 <div className="row">
                   <div className='container-home'>
                     <div className="col-md-12">
-                      <Link to="/profile">
+                      <Link  to={{ pathname: '/profile', params: { email: this.props.user.email } }}>
                         <div className="home-profile-img">
                           {$picture}
                         </div>
@@ -281,7 +292,7 @@ class Home extends Component {
                         <option value="1">Solicitud</option>
                         <option value="0  ">Ofrecimiento</option>
                       </select>
-                      <div class="posd" >
+                      <div className="posd" >
                         <label><input type="checkbox" name="map" onChange={this.check} value={!this.state.map} />Mapa?</label>
                       </div>
                       
@@ -304,7 +315,7 @@ class Home extends Component {
       </div>)
     {/*<div className=' container-home'>
         <div className="col-md-12">
-          <Link to="/profile">
+          <Link className="link" to="/profile">
             <div className="profile "></div>
           </Link>
           <p>{this.props.user.email}</p>

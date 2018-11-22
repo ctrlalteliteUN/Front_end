@@ -10,21 +10,23 @@ import axios from 'axios';
 import { stringify } from 'querystring';
 import Navigation from './Navigation';
 import ImageUploader from 'react-images-upload';
+import { loadState, saveState } from './localStorage.js';
 
 class editprofile extends Component {
 
-    constructor(props, context) {
-        super(props, context);
-
+    constructor(props) {
+        super(props);
         this.state = {
             id: "",
+            email: "",
             hasError: 0,
             errors: "email, nombre o contraseña incorrecto",
             errors1: "El email ya se encuentra en uso",
             errors2: "La contraseña no coincide",
             file: '',
             imagePreviewUrl: '',
-            base64img:'',
+            base64img: '',
+            persons:{},
             user: {
                 name: '',
                 email: '',
@@ -37,8 +39,7 @@ class editprofile extends Component {
         this.onChange = this.onChange.bind(this);
         this.onDrop = this.onDrop.bind(this);
         this._handleImageChange = this._handleImageChange.bind(this);
-
-
+        this.saveStateEditProfile = this.saveStateEditProfile.bind(this);
     }
 
     _handleImageChange(e) {
@@ -55,33 +56,50 @@ class editprofile extends Component {
             });
         }
         reader.readAsDataURL(file);
-        
+
     }
 
     onDrop(picture) {
         this.setState({
             profile_pic: URL.createObjectURL(picture),
         });
-        console.log(this.state.profile_pic);
+    }
+
+
+
+    saveStateEditProfile() {
+        saveState(this.state, 'editprofile');
+    }
+
+    componentWillUnmount() {
+        window.removeEventListener('beforeunload', this.saveStateEditProfile)
+
+        // saves if component has a chance to unmount
+        this.saveStateEditProfile();
     }
 
     componentDidMount() {
-        axios.get('https://knowledge-community-back-end.herokuapp.com/users')
-            .then(res => {
-                for (let i = 0; i < res.data.length; i++) {
-                    if (res.data[i].email == this.props.user.email) {
-                        this.setState({ id: res.data[i].id })
-                    }
-                }
-            })
+
+        const state = loadState('editprofile');
+        this.setState(state);
+        window.addEventListener('beforeunload', this.saveStateEditProfile);
+        if (this.props.location.params != undefined) {
+            this.setState({ email: this.props.location.params.email }, function () {
+                axios.get('https://knowledge-community-back-end.herokuapp.com/users?email=' + this.state.email)
+                    .then(res => {
+                        console.log(this.state);
+                        this.setState({ id: res.data[0].id, groups: res.data[0].groups, persons: res.data[0] })
+                    })
+            });
+        }
     }
 
     onSubmit(history) {
         const { user } = this.state;
         let { imagePreviewUrl } = this.state;
         if (imagePreviewUrl) {
-            console.log(imagePreviewUrl);
-            axios.post(`https://knowledge-community-back-end.herokuapp.com/app_files`, { ruta: imagePreviewUrl, file_type_id: 1, user_id: this.state.id, post_id:"", description:"foto_perfil", titulo:"foto.png" })
+
+            axios.post(`https://knowledge-community-back-end.herokuapp.com/app_files`, { ruta: imagePreviewUrl, file_type_id: 1, user_id: this.state.id, post_id: "", description: "foto_perfil", titulo: "foto.png" })
         }
         axios.put('https://knowledge-community-back-end.herokuapp.com/users/' + this.state.id, { user })
             .then(response => {
@@ -91,8 +109,8 @@ class editprofile extends Component {
                         sessionService.saveUser(response.data)
                             .then(() => {
                                 history.push('/profile');
-                            }).catch(err => console.log(err));
-                    }).catch(err => console.log(err));
+                            }).catch(err => console.error(err));
+                    }).catch(err => console.error(err));
             }).catch(function (error) {
                 if (user.name == "" || user.email == "" || user.password == "" || user.password_confirmation == "") {
                     this.setState({
@@ -165,10 +183,10 @@ class editprofile extends Component {
                                         </div>
                                     }
                                     <div className="form-group">
-                                        <input type="text" name="name" placeholder="Nombre" className="form-control" id="form-name" onChange={this.onChange} />
+                                        <input type="text" name="name" placeholder={this.state.persons.name} className="form-control" id="form-name" onChange={this.onChange} />
                                     </div>
                                     <div className="form-group">
-                                        <input type="text" name="email" placeholder="Email" className="form-control" id="form-email" onChange={this.onChange} />
+                                        <input type="text" name="email" placeholder={this.state.persons.email} className="form-control" id="form-email" onChange={this.onChange} />
                                     </div>
                                     <div className="form-group">
                                         <input type="password" name="password" placeholder="Contraseña" className="form-control" id="form-password" onChange={this.onChange} />

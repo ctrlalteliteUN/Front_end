@@ -61,12 +61,11 @@ class Post extends Component {
         axios.post('https://knowledge-community-back-end.herokuapp.com/posts/' + this.props.id + '/comments', this.state.comment)
             .then(function (response) {
                 alert("Comentario publicado");
-                console.log(response);
                 history.push('/');
             })
             .catch(function (error) {
-                console.log(error);
-                console.log(error);
+                console.error(error);
+                console.error(error);
             })
     }
 
@@ -77,7 +76,7 @@ class Post extends Component {
         this.setState({ name });
     }
 
-    
+
 
 
     render() {
@@ -108,7 +107,11 @@ class Post extends Component {
                             {$picture}
                         </div>
                         <div className="title">
-                            <h3 className="panel-title">{this.state.user.name} : {this.state.title} {this.state.tags.map(person => <p>{person.name}</p>)} </h3>
+                            <h3 className="panel-title">
+                                <Link className="link" to={{ pathname: '/profile', params: { email: this.state.user.email } }}>
+                                    {this.state.user.name}
+                                </Link> : {this.state.title} {this.state.tags.map(person => <p>{person.name}</p>)} </h3>
+
                         </div>
                     </div>
                     <div className="container panel-body pb">
@@ -137,7 +140,7 @@ class Post extends Component {
                     </div>
                 }
                 <div>
-                    {lat != null && lat != '' && <Map center={center} username={this.state.user.name} type='vista'  />}
+                    {lat != null && lat != '' && <Map center={center} username={this.state.user.name} type='vista' />}
 
                 </div>
                 <div className="container">

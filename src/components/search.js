@@ -72,8 +72,8 @@ class search extends Component {
             loading: false
           })
         }).catch(function (error) {
-          console.log(error);
-          console.log(error);
+          console.error(error);
+          console.error(error);
           this.setState({
             loading: false,
           })
@@ -86,22 +86,19 @@ class search extends Component {
       axios.post(`https://knowledge-community-back-end.herokuapp.com/posts`, this.state.post)
         .then(response => {
           alert("Publicacion Satisfactoria");
-          console.log(response);
-          console.log(this.state.tag);
           this.setState({
             loading: false,
           })
           axios.post('https://knowledge-community-back-end.herokuapp.com/posts/' + response.data.id + '/tags', this.state.tag)
             .then(response => {
-              console.log(response);
               this.forceUpdate();
             })
             .catch(function (error) {
-              console.log(error);
+              console.error(error);
             })
         })
         .catch(function (error) {
-          console.log(error);
+          console.error(error);
           this.setState({
             loading: false,
           })
@@ -111,11 +108,8 @@ class search extends Component {
   onPDF(history) {
     let { pdfPreviewUrl } = this.state;
     if (pdfPreviewUrl) {
-      console.log(pdfPreviewUrl);
-      console.log(this.state.user_id)
       axios.post(`https://knowledge-community-back-end.herokuapp.com/app_files`, { ruta: pdfPreviewUrl, file_type_id: 2, user_id: this.state.user_id, post_id: "", description: "pdf", titulo: this.state.namefile })
         .then(response => {
-          console.log(response)
           history.push('/')
         })
     }
@@ -143,17 +137,13 @@ class search extends Component {
         pdfPreviewUrl: reader.result,
         namefile: file.name,
       });
-      console.log(reader.result)
-      console.log(file.name)
     }
     reader.readAsDataURL(file);
 
   }
   render() {
     const st=this.props.location.state.search
-    console.log(st)
     var res = st.replace(" ", "%");
-    console.log(res)
     const Pdfbutton = withRouter(({ history }) => (
       <button className="btn btn-default btn-lg posd"
         onClick={() => this.onPDF(history)}
@@ -183,7 +173,7 @@ class search extends Component {
                 <div className="row">
                   <div className='container-home'>
                     <div className="col-md-12">
-                      <Link to="/profile">
+                      <Link className="link" to="/profile">
                         <div className="home-profile-img">
                           {$picture}
                         </div>

@@ -9,7 +9,7 @@ class Marker extends Component {
         return (
             <div>
                 <div className="pin">
-                    <i class="fas fa-map-marker-alt"></i>                    
+                    <i className="fas fa-map-marker-alt"></i>                    
                 </div>
                 <h4>{this.props.text}</h4>
             </div>

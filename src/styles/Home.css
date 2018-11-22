@@ -134,3 +134,9 @@
   .map{
       margin-top: 60px;
   }
+  .link {
+    color: black;
+  }
+  .link:hover {
+     color: blue;
+  }

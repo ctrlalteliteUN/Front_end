@@ -33,7 +33,6 @@ class Navigation extends Component {
 
     renderRedirect() {
         if (this.state.redirect) {
-            console.log(this.state.redirect);
             return <Redirect to={{
                 pathname: "/search",
                 state: { search: this.state.search }
@@ -44,7 +43,6 @@ class Navigation extends Component {
 
 
     onSubmit(history) {
-        console.log("PRUEBA PRUEBA PREUBA");
     }
     onChange(e) {
         this.setState({search: e.target.value});
@@ -52,7 +50,6 @@ class Navigation extends Component {
 
     keyPress(e) {
         if (e.keyCode == 13) {
-            console.log('value', e.target.value);
             this.setRedirect();
         }
 

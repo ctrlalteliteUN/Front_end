@@ -24,14 +24,13 @@ class Posts extends Component {
   componentDidMount() {
     axios.get('https://knowledge-community-back-end.herokuapp.com/posts?page=2')
       .then(res => {
-        console.log(res.data.length);
         this.setState({
           posts: res.data,
           loading: false,
         });
       }).catch(function (error) {
-        console.log(error);
-        console.log(error);
+        console.error(error);
+        console.error(error);
         this.setState({
           loading: false,
         })
