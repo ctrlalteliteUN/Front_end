@@ -9,6 +9,8 @@ import '../styles/Home.css';
 import { Link, withRouter } from 'react-router-dom'
 import axios from 'axios';
 import LoadingSpinner from './LoadingSpinner';
+import { loadState, saveState } from './localStorage.js';
+import store from '../store';
 
 
 class search extends Component {
@@ -32,7 +34,8 @@ class search extends Component {
       groups: [],
       picture: "",
       loading: false,
-      search: ""
+      search: "",
+      session: {}
     };
     this.onSubmit = this.onSubmit.bind(this);
     this.onChange = this.onChange.bind(this);
@@ -40,31 +43,45 @@ class search extends Component {
 
 
 
+    this.saveStateSearch = this.saveStateSearch.bind(this);
+  }
+
+  saveStateSearch() {
+    saveState(this.state, 'search');
+  }
+
+  componentWillUnmount() {
+    window.removeEventListener('beforeunload', this.saveStateSearch)
+
+    // saves if component has a chance to unmount
+    this.saveStateSearch();
   }
 
   componentDidMount() {
+    
+    const state = loadState('search');
+    this.setState(state);
+    window.addEventListener('beforeunload', this.saveStateSearch);
+    if (store.getState().session.user.email !== undefined) {
+      this.setState({ session: store.getState().session.user })
+    }
     this.setState({ loading: true }, () => {
-      axios.get('https://knowledge-community-back-end.herokuapp.com/users')
+      axios.get('https://knowledge-community-back-end.herokuapp.com/users?email=' + this.state.session.email)
         .then(res => {
-          for (let i = 0; i < res.data.length; i++) {
-            if (res.data[i].email===this.props.user.email) {
+          console.log(this.state);
               let post = Object.assign({}, this.state.post);
-              post.user_id = res.data[i].id;
+              post.user_id = res.data[0].id;
               this.setState({
-                user_id: res.data[i].id,
+                user_id: res.data[0].id,
                 post: post,
-                groups: res.data[i].groups,
-                loading: false
+                groups: res.data[0].groups,
               });
               axios.get('https://knowledge-community-back-end.herokuapp.com/app_files?ProfilePhoto=1&user_id=' + this.state.user_id)
                 .then(response => {
                   this.setState({
                     picture: response.data,
-                    loading: false
                   })
                 })
-            }
-          }
           this.setState({
             loading: false
           })
@@ -139,7 +156,7 @@ class search extends Component {
 
   }
   render() {
-    const st=this.props.location.state.search
+    const st = this.props.location.state.search
     //var res = st.replace(" ", "%");
     const Pdfbutton = withRouter(({ history }) => (
       <button className="btn btn-default btn-lg posd"
@@ -150,7 +167,7 @@ class search extends Component {
     let { picture } = this.state;
     let $picture = null;
     if (!picture.error) {
-      $picture = (<img src={picture.ruta} alt=""/>);
+      $picture = (<img src={picture.ruta} alt="" />);
     } else {
       $picture = (<img src="http://recursospracticos.com/wp-content/uploads/2017/10/Sin-foto-de-perfil-en-Facebook.jpg" alt="" />);
     }
@@ -205,7 +222,7 @@ class search extends Component {
                 <div className="row">
                 </div>
 
-                <Search_posts user_id={this.state.user_id} searchm={st}/>
+                <Search_posts user_id={this.state.user_id} searchm={st} />
               </div>
             </div>
           </div>

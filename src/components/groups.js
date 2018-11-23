@@ -3,7 +3,7 @@ import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
 import * as sessionActions from '../actions/sessionActions';
-import Group_posts from './Posts';
+import Group_posts from './Group_posts';
 import Navigation from './Navigation';
 import '../styles/Home.css';
 import { /*Link,*/ withRouter } from 'react-router-dom'
@@ -11,6 +11,7 @@ import axios from 'axios';
 import LoadingSpinner from './LoadingSpinner';
 import Map from './Map';
 import { loadState, saveState } from './localStorage.js';
+import store from '../store';
 
 
 class groups extends Component {
@@ -18,7 +19,7 @@ class groups extends Component {
     super(props, context);
     this.state = {
       user_id: -1,
-      email:"",
+      email: "",
       post_id: -1,
       file: "",
       namefile: "",
@@ -31,25 +32,28 @@ class groups extends Component {
         body: "",
         solicitud: 0,
         user_id: -1,
-        lat:null,
-        lng:null
+        lat: null,
+        lng: null
       },
       groups: [],
       picture: "",
       loading: false,
-      map: false
+      map: false,
+      session:{},
+      grupo_id:"",
+      name:""
     };
     this.onSubmit = this.onSubmit.bind(this);
     this.onChange = this.onChange.bind(this);
     this.check = this.check.bind(this);
     this._handleImageChange = this._handleImageChange.bind(this);
-    this.handleLoc=this.handleLoc.bind(this);
-    this.saveStateGroups=this.saveStateGroups.bind(this);
+    this.handleLoc = this.handleLoc.bind(this);
+    this.saveStateGroups = this.saveStateGroups.bind(this);
 
 
   }
-saveStateGroups(){
-    saveState(this.state,'groups');
+  saveStateGroups() {
+    saveState(this.state, 'groups');
   }
 
   componentWillUnmount() {
@@ -60,15 +64,24 @@ saveStateGroups(){
   }
 
   componentDidMount() {
-    console.log(this.props);
     const state = loadState('groups');
     this.setState(state);
     window.addEventListener('beforeunload', this.saveStateGroups);
+    if (this.props.location.params !== undefined) {
+      this.setState({
+        email: this.props.location.params.email, 
+        group_id: this.props.location.params.group_id, 
+        name: this.props.location.params.name
+      })
+    }
+    if (store.getState().session.user.email !== undefined) {
+      this.setState({ session: store.getState().session.user })
+    }
     this.setState({ loading: true }, () => {
-      axios.get('https://knowledge-community-back-end.herokuapp.com/users')
+      axios.get('https://knowledge-community-back-end.herokuapp.com/users?email=' + this.state.email)
         .then(res => {
           for (let i = 0; i < res.data.length; i++) {
-            if (res.data[i].email===this.props.user.email) {
+            if (res.data[i].email === this.props.user.email) {
               let post = Object.assign({}, this.state.post);
               post.user_id = res.data[i].id;
               this.setState({
@@ -86,7 +99,7 @@ saveStateGroups(){
           console.error(error);
         })
     })
-    
+
   }
 
   onSubmit(history) {
@@ -125,7 +138,7 @@ saveStateGroups(){
     this.setState({ tag });
   }
   check(e) {
-    let val= !this.state.map;
+    let val = !this.state.map;
     this.setState({ map: val });
   }
 
@@ -146,14 +159,14 @@ saveStateGroups(){
 
   }
 
-  handleLoc(marker) {    
-    const { post }=this.state;
-    post.lat=marker.lat;
-    post.lng=marker.lng;
+  handleLoc(marker) {
+    const { post } = this.state;
+    post.lat = marker.lat;
+    post.lng = marker.lng;
     this.setState({
-        post:post
+      post: post
     });
-}
+  }
 
 
   render() {
@@ -179,8 +192,8 @@ saveStateGroups(){
                 <div className="row">
                   <div className='container-home'>
                     <div className="col-md-12">
-                      <h3>{this.props.location.params.name}</h3>
-                      <h3>{this.props.location.params.group_id}</h3>
+                      <h3>{this.state.name}</h3>
+                      <h3>{this.state.group_id}</h3>
                     </div>
                   </div>
                 </div>
@@ -238,11 +251,11 @@ saveStateGroups(){
                       <div className="posd" >
                         <label><input type="checkbox" name="map" onChange={this.check} value={!this.state.map} />Mapa?</label>
                       </div>
-                      
-                      {this.state.map !== false && <div className="map"><Map type='editar' onSelectLoc={this.handleLoc}/></div>}
+
+                      {this.state.map !== false && <div className="map"><Map type='editar' onSelectLoc={this.handleLoc} /></div>}
                       <br></br>
                       <br></br>
-                      
+
                       <SubmitButton />
                     </div>
                   </div>
@@ -250,7 +263,7 @@ saveStateGroups(){
                 </div>
                 <div className="row">
                 </div>
-                <Group_posts user_id={this.state.user_id} group_id={this.props.location.params.group_id} />
+                <Group_posts user_id={this.state.user_id} group_id={this.state.group_id} />
               </div>
             </div>
           </div>

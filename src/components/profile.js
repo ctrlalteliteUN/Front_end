@@ -27,7 +27,7 @@ class profile extends Component {
             persons: [],
             picture: "",
             loading: false,
-            user: {}
+            session: {}
         };
         this.saveStateProfile = this.saveStateProfile.bind(this);
     }
@@ -51,7 +51,7 @@ class profile extends Component {
             this.setState({ email: this.props.location.params.email })
         }
         if (store.getState().session.user.email !== undefined) {
-            this.setState({ user: store.getState().session.user })
+            this.setState({ session: store.getState().session.user })
         }
         
         this.setState({ loading: true }, () => {
@@ -207,7 +207,7 @@ class profile extends Component {
                                     <p>Grupos<a className="items">
                                         <i className="fas fa-users"></i>
                                     </a></p>
-                                    {this.state.groups.map(person => <p>{person.name}</p>)}
+                                    {this.state.groups.map((person,i) => <p key={i}>{person.name}</p>)}
                                     <p>Habilidades</p>
                                     <a href="">Guitarra Electrica</a><br />
                                     <a href="">Java, python ,c++</a><br />
@@ -345,7 +345,7 @@ class profile extends Component {
                     </h6>
                                         </div>
                                         <div className="row">
-                                            <iframe src={link} width="600px" height="300px" seamless webkitallowfullscreen mozallowfullscreen allowfullscreen></iframe>
+                                            <iframe src={link} width="600px" height="300px" seamless /*webkitallowfullscreen mozallowfullscreen*/ allowFullScreen></iframe>
                                         </div>
                                         <div className="row">
                                             {listItems}

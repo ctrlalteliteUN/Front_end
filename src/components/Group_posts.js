@@ -4,10 +4,11 @@ import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
 import * as sessionActions from '../actions/sessionActions';
 import '../styles/Home.css';
-import { Link, withRouter } from 'react-router-dom';
+//import { Link } from 'react-router-dom';
 import axios from 'axios';
 import Post from './Post';
-import LoadingSpinner from './LoadingSpinner';
+import store from '../store';
+import { loadState, saveState } from './localStorage.js';
 
 class Group_posts extends Component {
   constructor(props, context) {
@@ -15,48 +16,60 @@ class Group_posts extends Component {
 
     this.state = {
       posts: [],
-      loading: false
+      loading: false,
+      session: {}
     };
-  };
+    this.saveStateGroupPosts = this.saveStateGroupPosts.bind(this);
+  }
 
+  saveStateGroupPosts() {
+    saveState(this.state, 'posts_group');
+  }
 
+  componentWillUnmount() {
+    window.removeEventListener('beforeunload', this.saveStateGroupPosts)
+
+    // saves if component has a chance to unmount
+    this.saveStateGroupPosts();
+  }
 
   componentDidMount() {
-    console.log(this.props.group_id)
-    axios.get('https://knowledge-community-back-end.herokuapp.com/groups/'+this.props.group_id+'/posts')
-      .then(res => {
-        this.setState({
-          posts: res.data,
-          loading: false,
-        });
-      }).catch(function (error) {
-        console.error(error);
-        console.error(error);
-        this.setState({
-          loading: false,
-        })
-      })
-  }
-  getPosts() {
-
-    for (let i = 0; i < this.state.posts.length; i++) {
-      <Post id={this.state.posts[i].id} user_id={this.props.user_id} />
+    const state = loadState('posts_group');
+    this.setState(state);
+    window.addEventListener('beforeunload', this.saveStateGroupPosts);
+    if (store.getState().session.user.email !== undefined) {
+      this.setState({ session: store.getState().session.user })
     }
+    this.setState({ loading: true }, () => {
+      axios.get('https://knowledge-community-back-end.herokuapp.com/groups/' + this.props.group_id + '/posts')
+        .then(res => {
+          this.setState({
+            posts: res.data,
+            loading: false,
+          });
+        }).catch(function (error) {
+          console.error(error);
+          console.error(error);
+          this.setState({
+            loading: false,
+          })
+        })
+    })
   }
   render() {
-    
-    const listItems = this.state.posts.map((d) => <Post id={d.id} user_id={this.props.user_id}>{d.title}</Post>);
+
+    const listItems = this.state.posts.map((d, i) => <Post key={i} id={d.id} user_id={this.props.user_id}>{d.title}</Post>);
     return (
       <div>
-      {listItems}
+        {listItems}
       </div>
     )
   }
 
 }
-/*const { object, bool } = PropTypes;
+const { object, bool } = PropTypes;
 
-Posts.propTypes = {
+Group_posts.propTypes = {
   user: object.isRequired,
   authenticated: bool.isRequired
 };
@@ -72,5 +85,5 @@ const mapDispatch = (dispatch) => {
   };
 };
 
-export default connect(null, mapDispatch)(Posts);*/
-export default Group_posts;
+export default connect(mapState, mapDispatch)(Group_posts);
+//export default Group_posts;

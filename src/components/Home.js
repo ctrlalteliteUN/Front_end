@@ -10,7 +10,7 @@ import { Link, withRouter } from 'react-router-dom'
 import axios from 'axios';
 import LoadingSpinner from './LoadingSpinner';
 import Map from './Map';
-import {saveState } from './localStorage.js';
+import { loadState, saveState } from './localStorage.js';
 import store from '../store';
 
 
@@ -38,7 +38,8 @@ class Home extends Component {
       groups: [],
       picture: "",
       loading: false,
-      map: false
+      map: false,
+      session:{}
     };
     this.onSubmit = this.onSubmit.bind(this);
     this.onChange = this.onChange.bind(this);
@@ -67,15 +68,37 @@ class Home extends Component {
     this.saveStateHome();
   }
 
-  /*componentDidMount() {
+  componentDidMount() {
     const state = loadState('home');
     this.setState(state);
     window.addEventListener('beforeunload', this.saveStateHome);
     this.setState({ loading: true }, () => {
-
+      axios.get('https://knowledge-community-back-end.herokuapp.com/users?email=' + this.state.session.email)
+        .then(res => {
+          console.log(this.state);
+          let post = Object.assign({}, this.state.post);
+          post.user_id = res.data[0].id;
+          this.setState({
+            user_id: res.data[0].id,
+            post: post,
+            groups: res.data[0].groups,
+          });
+          axios.get('https://knowledge-community-back-end.herokuapp.com/app_files?ProfilePhoto=1&user_id=' + this.state.user_id)
+            .then(response => {
+              this.setState({
+                picture: response.data,
+              })
+            })
+          this.setState({
+            loading: false
+          })
+        }).catch(function (error) {
+          console.error(error);
+          console.error(error);
+        })
     })
 
-  }*/
+  }
 
   onSubmit(history) {
     this.setState({ loading: true }, () => {
@@ -154,28 +177,9 @@ class Home extends Component {
   }
 
   componentWillReceiveProps() {
-    axios.get('https://knowledge-community-back-end.herokuapp.com/users?email=' + store.getState().session.user.email)
-      .then(res => {
-        let post = Object.assign({}, this.state.post);
-        post.user_id = res.data[0].id;
-        this.setState({
-          user_id: res.data[0].id,
-          post: post,
-          groups: res.data[0].groups,
-        });
-        axios.get('https://knowledge-community-back-end.herokuapp.com/app_files?ProfilePhoto=1&user_id=' + this.state.user_id)
-          .then(response => {
-            this.setState({
-              picture: response.data,
-            })
-          })
-        this.setState({
-          loading: false
-        })
-      }).catch(function (error) {
-        console.error(error);
-        console.error(error);
-      })
+    if (store.getState().session.user.email !== undefined) {
+      this.setState({ session: store.getState().session.user })
+  }
   }
   render() {
     //console.log(store.getState());
@@ -227,11 +231,11 @@ class Home extends Component {
                           </a></h3>
                         </div>
                         <div className="panel-body">
-                          {this.state.groups.map(group =>
-                            <Link to={{ pathname: '/groups', params: { group_id: group.id , name:group.name} }}>
-                            {group.name}    
-                            </Link> )}
-  
+                          {this.state.groups.map((group,i) =>
+                            <Link key={i} className="link" to={{ pathname: '/groups', params: { group_id: group.id, name: group.name } }}>
+                              {group.name}<br></br>
+                            </Link>)}
+
                         </div>
                       </div>
                     </div>

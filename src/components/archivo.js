@@ -21,7 +21,7 @@ class Archivo extends Component {
                     </h6>
                 </div>
                 <div className="row">
-                    <iframe title={this.props.title} src={this.props.ruta} width="600px" height="300px" seamless webkitallowfullscreen mozallowfullscreen allowfullscreen></iframe>
+                    <iframe title={this.props.title} src={this.props.ruta} width="600px" height="300px" seamless webkitallowfullscreen mozallowfullscreen allowFullScreen></iframe>
                 </div>
             </div>
         )

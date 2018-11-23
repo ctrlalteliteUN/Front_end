@@ -17,28 +17,28 @@ class Search_posts extends Component {
     this.state = {
       posts: [],
       loading: false,
-      user:{}
+      session:{}
     };
-    this.saveStateProfile = this.saveStatePost.bind(this);
+    this.saveStateSearchPost = this.saveStateSearchPost.bind(this);
   }
 
-  saveStatePost() {
-    saveState(this.state, 'post');
+  saveStateSearchPost() {
+    saveState(this.state, 'search_posts');
   }
 
   componentWillUnmount() {
-    window.removeEventListener('beforeunload', this.saveStatePost)
+    window.removeEventListener('beforeunload', this.saveStateSearchPost)
 
     // saves if component has a chance to unmount
-    this.saveStatePost();
+    this.saveStateSearchPost();
   }
 
   componentDidMount() {
-    const state = loadState('post');
+    const state = loadState('search_posts');
     this.setState(state);
-    window.addEventListener('beforeunload', this.saveStatePost);
+    window.addEventListener('beforeunload', this.saveStateSearchPost);
     if (store.getState().session.user.email !== undefined) {
-      this.setState({ user: store.getState().session.user })
+      this.setState({ session: store.getState().session.user })
     }
     this.setState({ loading: true }, () => {
       axios.get('https://knowledge-community-back-end.herokuapp.com/posts?body=' + this.props.searchm)
@@ -59,7 +59,7 @@ class Search_posts extends Component {
   }
   render() {
 
-    const listItems = this.state.posts.map((d) => <Post id={d.id} user_id={this.props.user_id}>{d.title}</Post>);
+    const listItems = this.state.posts.map((d,i) => <Post key={i} id={d.id} user_id={this.props.user_id}>{d.title}</Post>);
     return (
       <div>
         {listItems}

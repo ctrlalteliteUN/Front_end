@@ -17,7 +17,7 @@ class Post extends Component {
         super(props, context);
 
         this.state = {
-            loading:false,
+            loading: false,
             body: "",
             title: "",
             user: [],
@@ -30,7 +30,7 @@ class Post extends Component {
             tags: [],
             lat: '',
             lng: '',
-            session:{}
+            session: {}
 
         };
 
@@ -41,7 +41,7 @@ class Post extends Component {
     }
 
     saveStatePost() {
-        saveState(this.state, 'post'+this.props.id);
+        saveState(this.state, 'post' + this.props.id);
     }
 
     componentWillUnmount() {
@@ -52,7 +52,7 @@ class Post extends Component {
     }
 
     componentDidMount() {
-        const state = loadState('post'+this.props.id);
+        const state = loadState('post' + this.props.id);
         this.setState(state);
         window.addEventListener('beforeunload', this.saveStatePost);
         if (store.getState().session.user.email !== undefined) {
@@ -79,96 +79,104 @@ class Post extends Component {
     }
 
     onSubmit(history) {
-                const { comment } = this.state;
-                comment.user_id = this.props.user_id;
-                axios.post('https://knowledge-community-back-end.herokuapp.com/posts/' + this.props.id + '/comments', this.state.comment)
-                    .then(function (response) {
-                        alert("Comentario publicado");
-                        history.push('/');
-                    })
-                    .catch(function (error) {
-                        console.error(error);
-                        console.error(error);
-                    })
-            }
+        const { comment } = this.state;
+        comment.user_id = this.props.user_id;
+        axios.post('https://knowledge-community-back-end.herokuapp.com/posts/' + this.props.id + '/comments', this.state.comment)
+            .then(response => {
+                alert("Comentario publicado");
+                this.setState({
+                  loading: false,
+                })
+                let comments=this.state.comments;
+                comments.push(comment);
+                this.setState({comments:comments})
+                this.forceUpdate();
+            })
+            .catch(function (error) {
+                console.error(error);
+                console.error(error);
+            })
+        
+    }
 
     onChange(e) {
-                const { value, name } = e.target;
-                const { comment } = this.state;
-                comment[name] = value;
-                this.setState({ name });
-            }
+        const { value, name } = e.target;
+        const { comment } = this.state;
+        comment[name] = value;
+        this.setState({ name });
+        console.log(this.state.comment);
+    }
 
 
 
 
     render() {
 
-                const ComentarButton = withRouter(({ history }) => (
-                    <button className="btn btn-default btn-lg posd"
-                        onClick={() => this.onSubmit(history)}
-                        type="submit">Comentar
+        const ComentarButton = withRouter(({ history }) => (
+            <button className="btn btn-default btn-lg posd"
+                onClick={() => this.onSubmit(history)}
+                type="submit">Comentar
             </button>
-                ));
+        ));
 
-                let { lat, lng, picture } = this.state;
-                let $picture = null;
-                if(!picture.error) {
-                    $picture = (<img src={picture.ruta} alt="" />);
-                } else {
-                    $picture = (<img src="http://recursospracticos.com/wp-content/uploads/2017/10/Sin-foto-de-perfil-en-Facebook.jpg" alt="" />);
-                }
-        const listItems = this.state.comments.map((d,i) => <Comment key={i} user_id={d.user_id} body={d.body} id={d.id}></Comment>);
-                const center = { lat: parseFloat(lat), lng: parseFloat(lng) };
+        let { lat, lng, picture } = this.state;
+        let $picture = null;
+        if (!picture.error) {
+            $picture = (<img src={picture.ruta} alt="" />);
+        } else {
+            $picture = (<img src="http://recursospracticos.com/wp-content/uploads/2017/10/Sin-foto-de-perfil-en-Facebook.jpg" alt="" />);
+        }
+        const listItems = this.state.comments.map((d, i) => <Comment key={i} user_id={d.user_id} body={d.body} id={d.id}></Comment>);
+        const center = { lat: parseFloat(lat), lng: parseFloat(lng) };
 
-                return(
+        return (
 
-            <div className = 'container-home2' >
-                        <div className="panel panel-default">
-                            <div className="panel-heading">
-                                <div className="post-profile-img">
-                                    {$picture}
-                                </div>
-                                <div className="title">
-                                    <h3 className="panel-title">
-                                        <Link className="link" to={{ pathname: '/profile', params: { email: this.state.user.email } }}>
-                                            {this.state.user.name}
-                                        </Link> : {this.state.title} {this.state.tags.map((person,i) => <p key={i}>{person.name}</p>)} </h3>
-
-                                </div>
-                            </div>
-                            <div className="container panel-body pb">
-                                {this.state.body}
-                            </div>
-                            <hr></hr>
-                            <div className="buttons test">
-                                <input
-                                    className="form-control comment-txt"
-                                    name="body"
-                                    label="Body"
-                                    type="body"
-                                    placeholder="Comenta algo"
-                                    onChange={this.onChange}
-                                />
-                                <button type="button" className="btn btn-default btn-lg">Contactar</button>
-                                <ComentarButton></ComentarButton>
-                            </div>
+            <div className='container-home2' >
+                <div className="panel panel-default">
+                    <div className="panel-heading">
+                        <div className="post-profile-img">
+                            {$picture}
+                        </div>
+                        <div className="title">
+                            <h3 className="panel-title">
+                                <Link className="link" to={{ pathname: '/profile', params: { email: this.state.user.email } }}>
+                                    {this.state.user.name}
+                                </Link> : {this.state.title} {this.state.tags.map((person, i) => <p key={i}>{person.name}</p>)} </h3>
 
                         </div>
-                { this.state.comments.length > 0 &&
-            <div>
-                <br></br>
-                <hr></hr>
-                <h5>Comentarios</h5>
-            </div>
+                    </div>
+                    <div className="container panel-body pb">
+                        {this.state.body}
+                    </div>
+                    <hr></hr>
+                    <div className="buttons test">
+                        <input
+                            className="form-control comment-txt"
+                            name="body"
+                            label="Body"
+                            type="body"
+                            placeholder="Comenta algo"
+                            onChange={this.onChange}
+                        />
+                        <button type="button" className="btn btn-default btn-lg">Contactar</button>
+                        <ComentarButton></ComentarButton>
+                    </div>
+
+                </div>
+                {this.state.comments.length > 0 &&
+                    <div>
+                        <br></br>
+                        <hr></hr>
+                        <h5>Comentarios</h5>
+                    </div>
                 }
                 <div>
-    {lat !== null && lat !== '' && <Map center={center} username={this.state.user.name} type='vista' />}
+                    {lat !== null && lat !== '' && <Map center={center} username={this.state.user.name} type='vista' />}
 
-</div>
-    <div className="container">
-        {listItems}
-    </div>
+                </div>
+                <div className="container">
+                    {listItems}
+                </div>
             </div >
         )
     }
