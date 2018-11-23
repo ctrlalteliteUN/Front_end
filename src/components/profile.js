@@ -183,11 +183,11 @@ class profile extends Component {
                                 </div>
                             </div>
                             <div className="col-md-2">
-                            {this.state.email!=this.props.user.email ? <div></div>:
-                                <Link className="link" to={{ pathname: '/editprofile', params: { email: this.state.email } }}>
-                                    <input type="submit" className="profile-edit-btn" name="btnAddMore" value="Editar Perfil" />
-                                </Link>
-                            }
+                                {this.state.email != this.props.user.email ? <div></div> :
+                                    <Link className="link" to={{ pathname: '/editprofile', params: { email: this.state.email } }}>
+                                        <input type="submit" className="profile-edit-btn" name="btnAddMore" value="Editar Perfil" />
+                                    </Link>
+                                }
 
                             </div>
                         </div>

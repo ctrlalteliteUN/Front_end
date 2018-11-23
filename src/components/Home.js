@@ -12,6 +12,7 @@ import axios from 'axios';
 import LoadingSpinner from './LoadingSpinner';
 import Map from './Map';
 import { loadState, saveState } from './localStorage.js';
+import store from '../store';
 
 
 class Home extends Component {
@@ -19,7 +20,7 @@ class Home extends Component {
     super(props, context);
     this.state = {
       user_id: -1,
-      email:"",
+      email: "",
       post_id: -1,
       file: "",
       namefile: "",
@@ -32,8 +33,8 @@ class Home extends Component {
         body: "",
         solicitud: 0,
         user_id: -1,
-        lat:null,
-        lng:null
+        lat: null,
+        lng: null
       },
       groups: [],
       picture: "",
@@ -44,19 +45,19 @@ class Home extends Component {
     this.onChange = this.onChange.bind(this);
     this.check = this.check.bind(this);
     this._handleImageChange = this._handleImageChange.bind(this);
-    this.handleLoc=this.handleLoc.bind(this);
-    this.saveStateHome=this.saveStateHome.bind(this);
+    this.handleLoc = this.handleLoc.bind(this);
+    this.saveStateHome = this.saveStateHome.bind(this);
 
 
   }
-saveStateHome(){
-    saveState(this.state,'home');
+  saveStateHome() {
+    saveState(this.state, 'home');
   }
 
-  componentWillMount(){
+  componentWillMount() {
     if (this.props.history.location.state != undefined) {
       this.setState({ email: this.props.history.location.state.detail.email })
-    }   
+    }
 
   }
 
@@ -67,41 +68,15 @@ saveStateHome(){
     this.saveStateHome();
   }
 
-  componentDidMount() {
-    console.log(this.props);
+  /*componentDidMount() {
     const state = loadState('home');
     this.setState(state);
     window.addEventListener('beforeunload', this.saveStateHome);
     this.setState({ loading: true }, () => {
-      axios.get('https://knowledge-community-back-end.herokuapp.com/users')
-        .then(res => {
-          for (let i = 0; i < res.data.length; i++) {
-            if (res.data[i].email == this.props.user.email) {
-              let post = Object.assign({}, this.state.post);
-              post.user_id = res.data[i].id;
-              this.setState({
-                user_id: res.data[i].id,
-                post: post,
-                groups: res.data[i].groups,
-              });
-              axios.get('https://knowledge-community-back-end.herokuapp.com/app_files?ProfilePhoto=1&user_id=' + this.state.user_id)
-                .then(response => {
-                  this.setState({
-                    picture: response.data,
-                  })
-                })
-            }
-          }
-          this.setState({
-            loading: false
-          })
-        }).catch(function (error) {
-          console.error(error);
-          console.error(error);
-        })
+
     })
-    
-  }
+
+  }*/
 
   onSubmit(history) {
     this.setState({ loading: true }, () => {
@@ -149,7 +124,7 @@ saveStateHome(){
     this.setState({ tag });
   }
   check(e) {
-    let val= !this.state.map;
+    let val = !this.state.map;
     this.setState({ map: val });
   }
 
@@ -170,17 +145,42 @@ saveStateHome(){
 
   }
 
-  handleLoc(marker) {    
-    const { post }=this.state;
-    post.lat=marker.lat;
-    post.lng=marker.lng;
+  handleLoc(marker) {
+    const { post } = this.state;
+    post.lat = marker.lat;
+    post.lng = marker.lng;
     this.setState({
-        post:post
+      post: post
     });
-}
+  }
 
-
+  componentWillReceiveProps() {
+    console.log(store.getState());
+    axios.get('https://knowledge-community-back-end.herokuapp.com/users?email=' + store.getState().session.user.email)
+      .then(res => {
+        let post = Object.assign({}, this.state.post);
+        post.user_id = res.data[0].id;
+        this.setState({
+          user_id: res.data[0].id,
+          post: post,
+          groups: res.data[0].groups,
+        });
+        axios.get('https://knowledge-community-back-end.herokuapp.com/app_files?ProfilePhoto=1&user_id=' + this.state.user_id)
+          .then(response => {
+            this.setState({
+              picture: response.data,
+            })
+          })
+        this.setState({
+          loading: false
+        })
+      }).catch(function (error) {
+        console.error(error);
+        console.error(error);
+      })
+  }
   render() {
+    //console.log(store.getState());
     const Pdfbutton = withRouter(({ history }) => (
       <button className="btn btn-default btn-lg posd"
         onClick={() => this.onPDF(history)}
@@ -210,7 +210,7 @@ saveStateHome(){
                 <div className="row">
                   <div className='container-home'>
                     <div className="col-md-12">
-                      <Link  to={{ pathname: '/profile', params: { email: this.props.user.email } }}>
+                      <Link to={{ pathname: '/profile', params: { email: this.props.user.email } }}>
                         <div className="home-profile-img">
                           {$picture}
                         </div>
@@ -295,11 +295,11 @@ saveStateHome(){
                       <div className="posd" >
                         <label><input type="checkbox" name="map" onChange={this.check} value={!this.state.map} />Mapa?</label>
                       </div>
-                      
-                      {this.state.map != false && <div className="map"><Map type='editar' onSelectLoc={this.handleLoc}/></div>}
+
+                      {this.state.map != false && <div className="map"><Map type='editar' onSelectLoc={this.handleLoc} /></div>}
                       <br></br>
                       <br></br>
-                      
+
                       <SubmitButton />
                     </div>
                   </div>
