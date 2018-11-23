@@ -19,7 +19,7 @@ class groups extends Component {
     super(props, context);
     this.state = {
       user_id: -1,
-      email:"",
+      email: "",
       post_id: -1,
       file: "",
       namefile: "",
@@ -32,25 +32,27 @@ class groups extends Component {
         body: "",
         solicitud: 0,
         user_id: -1,
-        lat:null,
-        lng:null
+        lat: null,
+        lng: null
       },
       groups: [],
       picture: "",
       loading: false,
-      map: false
+      map: false,
+      group_id: "",
+      group_name:""
     };
     this.onSubmit = this.onSubmit.bind(this);
     this.onChange = this.onChange.bind(this);
     this.check = this.check.bind(this);
     this._handleImageChange = this._handleImageChange.bind(this);
-    this.handleLoc=this.handleLoc.bind(this);
-    this.saveStateHome=this.saveStateGroups.bind(this);
+    this.handleLoc = this.handleLoc.bind(this);
+    this.saveStateGroups = this.saveStateGroups.bind(this);
 
 
   }
-saveStateGroups(){
-    saveState(this.state,'groups');
+  saveStateGroups() {
+    saveState(this.state, 'groups');
   }
 
   componentWillUnmount() {
@@ -65,6 +67,9 @@ saveStateGroups(){
     const state = loadState('groups');
     this.setState(state);
     window.addEventListener('beforeunload', this.saveStateGroups);
+    if (this.props.location.params != undefined) {
+      this.setState({ group_name: this.props.location.params.name , group_id: this.props.location.params.group_id })
+    }
     this.setState({ loading: true }, () => {
       axios.get('https://knowledge-community-back-end.herokuapp.com/users')
         .then(res => {
@@ -87,7 +92,7 @@ saveStateGroups(){
           console.error(error);
         })
     })
-    
+
   }
 
   onSubmit(history) {
@@ -126,7 +131,7 @@ saveStateGroups(){
     this.setState({ tag });
   }
   check(e) {
-    let val= !this.state.map;
+    let val = !this.state.map;
     this.setState({ map: val });
   }
 
@@ -147,14 +152,14 @@ saveStateGroups(){
 
   }
 
-  handleLoc(marker) {    
-    const { post }=this.state;
-    post.lat=marker.lat;
-    post.lng=marker.lng;
+  handleLoc(marker) {
+    const { post } = this.state;
+    post.lat = marker.lat;
+    post.lng = marker.lng;
     this.setState({
-        post:post
+      post: post
     });
-}
+  }
 
 
   render() {
@@ -180,8 +185,7 @@ saveStateGroups(){
                 <div className="row">
                   <div className='container-home'>
                     <div className="col-md-12">
-                      <h3>{this.props.location.params.name}</h3>
-                      <h3>{this.props.location.params.group_id}</h3>
+                      <h3>{this.state.group_name}</h3>
                     </div>
                   </div>
                 </div>
@@ -249,11 +253,11 @@ saveStateGroups(){
                       <div className="posd" >
                         <label><input type="checkbox" name="map" onChange={this.check} value={!this.state.map} />Mapa?</label>
                       </div>
-                      
-                      {this.state.map != false && <div className="map"><Map type='editar' onSelectLoc={this.handleLoc}/></div>}
+
+                      {this.state.map != false && <div className="map"><Map type='editar' onSelectLoc={this.handleLoc} /></div>}
                       <br></br>
                       <br></br>
-                      
+
                       <SubmitButton />
                     </div>
                   </div>
@@ -261,7 +265,7 @@ saveStateGroups(){
                 </div>
                 <div className="row">
                 </div>
-                <Group_posts user_id={this.state.user_id} group_id={this.props.location.params.group_id} />
+                <Group_posts user_id={this.state.user_id} group_id={this.state.group_id} />
               </div>
             </div>
           </div>
