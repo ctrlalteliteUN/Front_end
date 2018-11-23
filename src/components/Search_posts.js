@@ -4,10 +4,9 @@ import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
 import * as sessionActions from '../actions/sessionActions';
 import '../styles/Home.css';
-import { Link, withRouter } from 'react-router-dom';
 import axios from 'axios';
 import Post from './Post';
-import LoadingSpinner from './LoadingSpinner';
+//import LoadingSpinner from './LoadingSpinner';
 import store from '../store';
 import { loadState, saveState } from './localStorage.js';
 
@@ -38,7 +37,7 @@ class Search_posts extends Component {
     const state = loadState('post');
     this.setState(state);
     window.addEventListener('beforeunload', this.saveStatePost);
-    if (store.getState().session.user.email != undefined) {
+    if (store.getState().session.user.email !== undefined) {
       this.setState({ user: store.getState().session.user })
     }
     this.setState({ loading: true }, () => {
@@ -57,12 +56,6 @@ class Search_posts extends Component {
           })
         })
     })
-  }
-  getPosts() {
-
-    for (let i = 0; i < this.state.posts.length; i++) {
-      <Post id={this.state.posts[i].id} user_id={this.props.user_id} />
-    }
   }
   render() {
 
@@ -93,5 +86,5 @@ const mapDispatch = (dispatch) => {
   };
 };
 
-export default connect(null, mapDispatch)(Search_posts);
+export default connect(mapState, mapDispatch)(Search_posts);
 //export default Search_posts;

@@ -4,14 +4,11 @@ import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
 import * as sessionActions from '../actions/sessionActions';
 import Search_posts from './Search_posts';
-import Posts from './Posts';
 import Navigation from './Navigation';
 import '../styles/Home.css';
 import { Link, withRouter } from 'react-router-dom'
-import { sessionService } from 'redux-react-session';
 import axios from 'axios';
 import LoadingSpinner from './LoadingSpinner';
-import st from './Navigation';
 
 
 class search extends Component {
@@ -50,7 +47,7 @@ class search extends Component {
       axios.get('https://knowledge-community-back-end.herokuapp.com/users')
         .then(res => {
           for (let i = 0; i < res.data.length; i++) {
-            if (res.data[i].email == this.props.user.email) {
+            if (res.data[i].email===this.props.user.email) {
               let post = Object.assign({}, this.state.post);
               post.user_id = res.data[i].id;
               this.setState({
@@ -143,23 +140,17 @@ class search extends Component {
   }
   render() {
     const st=this.props.location.state.search
-    var res = st.replace(" ", "%");
+    //var res = st.replace(" ", "%");
     const Pdfbutton = withRouter(({ history }) => (
       <button className="btn btn-default btn-lg posd"
         onClick={() => this.onPDF(history)}
         type="submit">Subir
       </button>
     ));
-    const SubmitButton = withRouter(({ history }) => (
-      <button className="btn btn-default btn-lg posd"
-        onClick={() => this.onSubmit(history)}
-        type="submit">Postear
-      </button>
-    ));
     let { picture } = this.state;
     let $picture = null;
     if (!picture.error) {
-      $picture = (<img src={picture.ruta} />);
+      $picture = (<img src={picture.ruta} alt=""/>);
     } else {
       $picture = (<img src="http://recursospracticos.com/wp-content/uploads/2017/10/Sin-foto-de-perfil-en-Facebook.jpg" alt="" />);
     }

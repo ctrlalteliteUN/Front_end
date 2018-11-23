@@ -7,7 +7,6 @@ import * as sessionActions from '../actions/sessionActions';
 import '../styles/Log.css';
 import { sessionService } from 'redux-react-session';
 import axios from 'axios';
-import { stringify } from 'querystring';
 import { GoogleLogin } from 'react-google-login';
 import FacebookLogin from 'react-facebook-login';
 import LoadingSpinner from './LoadingSpinner';
@@ -56,7 +55,7 @@ class Loginbody extends Component {
           this.setState({
             loading: false,
           })
-          if (error.message.indexOf('500') != -1) {
+          if (error.message.indexOf('500') !== -1) {
             this.setState({
               hasError: true,
               loading: false,
@@ -104,7 +103,6 @@ class Loginbody extends Component {
   }
 
   render() {
-    const { user: { email, password } } = this.state;
     const SubmitButton = withRouter(({ history }) => (
       <button className="mybtn"
         onClick={() => this.onSubmit(history)}

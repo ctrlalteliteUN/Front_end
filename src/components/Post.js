@@ -37,11 +37,11 @@ class Post extends Component {
         this.onSubmit = this.onSubmit.bind(this);
         this.onChange = this.onChange.bind(this);
 
-        this.saveStateProfile = this.saveStatePost.bind(this);
+        this.saveStatePost = this.saveStatePost.bind(this);
     }
 
     saveStatePost() {
-        saveState(this.state, 'post'+this.state.user.id);
+        saveState(this.state, 'post'+this.props.id);
     }
 
     componentWillUnmount() {
@@ -52,10 +52,10 @@ class Post extends Component {
     }
 
     componentDidMount() {
-        const state = loadState('post'+this.state.user.id);
+        const state = loadState('post'+this.props.id);
         this.setState(state);
         window.addEventListener('beforeunload', this.saveStatePost);
-        if (store.getState().session.user.email != undefined) {
+        if (store.getState().session.user.email !== undefined) {
             this.setState({ session: store.getState().session.user })
         }
         this.setState({ loading: true }, () => {
@@ -114,11 +114,11 @@ class Post extends Component {
                 let { lat, lng, picture } = this.state;
                 let $picture = null;
                 if(!picture.error) {
-                    $picture = (<img src={picture.ruta} />);
+                    $picture = (<img src={picture.ruta} alt="" />);
                 } else {
                     $picture = (<img src="http://recursospracticos.com/wp-content/uploads/2017/10/Sin-foto-de-perfil-en-Facebook.jpg" alt="" />);
                 }
-        const listItems = this.state.comments.map((d) => <Comment user_id={d.user_id} body={d.body}></Comment>);
+        const listItems = this.state.comments.map((d,i) => <Comment key={i} user_id={d.user_id} body={d.body} id={d.id}></Comment>);
                 const center = { lat: parseFloat(lat), lng: parseFloat(lng) };
 
                 return(
@@ -133,7 +133,7 @@ class Post extends Component {
                                     <h3 className="panel-title">
                                         <Link className="link" to={{ pathname: '/profile', params: { email: this.state.user.email } }}>
                                             {this.state.user.name}
-                                        </Link> : {this.state.title} {this.state.tags.map(person => <p>{person.name}</p>)} </h3>
+                                        </Link> : {this.state.title} {this.state.tags.map((person,i) => <p key={i}>{person.name}</p>)} </h3>
 
                                 </div>
                             </div>
@@ -163,7 +163,7 @@ class Post extends Component {
             </div>
                 }
                 <div>
-    {lat != null && lat != '' && <Map center={center} username={this.state.user.name} type='vista' />}
+    {lat !== null && lat !== '' && <Map center={center} username={this.state.user.name} type='vista' />}
 
 </div>
     <div className="container">

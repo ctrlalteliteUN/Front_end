@@ -6,8 +6,7 @@ import * as sessionActions from '../actions/sessionActions';
 import Group_posts from './Posts';
 import Navigation from './Navigation';
 import '../styles/Home.css';
-import { Link, withRouter } from 'react-router-dom'
-import { sessionService } from 'redux-react-session';
+import { /*Link,*/ withRouter } from 'react-router-dom'
 import axios from 'axios';
 import LoadingSpinner from './LoadingSpinner';
 import Map from './Map';
@@ -19,7 +18,7 @@ class groups extends Component {
     super(props, context);
     this.state = {
       user_id: -1,
-      email: "",
+      email:"",
       post_id: -1,
       file: "",
       namefile: "",
@@ -32,27 +31,25 @@ class groups extends Component {
         body: "",
         solicitud: 0,
         user_id: -1,
-        lat: null,
-        lng: null
+        lat:null,
+        lng:null
       },
       groups: [],
       picture: "",
       loading: false,
-      map: false,
-      group_id: "",
-      group_name:""
+      map: false
     };
     this.onSubmit = this.onSubmit.bind(this);
     this.onChange = this.onChange.bind(this);
     this.check = this.check.bind(this);
     this._handleImageChange = this._handleImageChange.bind(this);
-    this.handleLoc = this.handleLoc.bind(this);
-    this.saveStateGroups = this.saveStateGroups.bind(this);
+    this.handleLoc=this.handleLoc.bind(this);
+    this.saveStateGroups=this.saveStateGroups.bind(this);
 
 
   }
-  saveStateGroups() {
-    saveState(this.state, 'groups');
+saveStateGroups(){
+    saveState(this.state,'groups');
   }
 
   componentWillUnmount() {
@@ -67,14 +64,11 @@ class groups extends Component {
     const state = loadState('groups');
     this.setState(state);
     window.addEventListener('beforeunload', this.saveStateGroups);
-    if (this.props.location.params != undefined) {
-      this.setState({ group_name: this.props.location.params.name , group_id: this.props.location.params.group_id })
-    }
     this.setState({ loading: true }, () => {
       axios.get('https://knowledge-community-back-end.herokuapp.com/users')
         .then(res => {
           for (let i = 0; i < res.data.length; i++) {
-            if (res.data[i].email == this.props.user.email) {
+            if (res.data[i].email===this.props.user.email) {
               let post = Object.assign({}, this.state.post);
               post.user_id = res.data[i].id;
               this.setState({
@@ -92,7 +86,7 @@ class groups extends Component {
           console.error(error);
         })
     })
-
+    
   }
 
   onSubmit(history) {
@@ -131,7 +125,7 @@ class groups extends Component {
     this.setState({ tag });
   }
   check(e) {
-    let val = !this.state.map;
+    let val= !this.state.map;
     this.setState({ map: val });
   }
 
@@ -152,23 +146,23 @@ class groups extends Component {
 
   }
 
-  handleLoc(marker) {
-    const { post } = this.state;
-    post.lat = marker.lat;
-    post.lng = marker.lng;
+  handleLoc(marker) {    
+    const { post }=this.state;
+    post.lat=marker.lat;
+    post.lng=marker.lng;
     this.setState({
-      post: post
+        post:post
     });
-  }
+}
 
 
   render() {
-    const Pdfbutton = withRouter(({ history }) => (
+    /*const Pdfbutton = withRouter(({ history }) => (
       <button className="btn btn-default btn-lg posd"
         onClick={() => this.onPDF(history)}
         type="submit">Subir
       </button>
-    ));
+    ));*/
     const SubmitButton = withRouter(({ history }) => (
       <button className="btn btn-default btn-lg posd"
         onClick={() => this.onSubmit(history)}
@@ -185,7 +179,8 @@ class groups extends Component {
                 <div className="row">
                   <div className='container-home'>
                     <div className="col-md-12">
-                      <h3>{this.state.group_name}</h3>
+                      <h3>{this.props.location.params.name}</h3>
+                      <h3>{this.props.location.params.group_id}</h3>
                     </div>
                   </div>
                 </div>
@@ -236,16 +231,6 @@ class groups extends Component {
                         />
 
                       </div>
-                      {/*<button className="btn btn-default btn-lg dropdown-toggle"
-                        type="button" data-toggle="dropdown">
-                        Etiquetas <span className="caret"></span>
-                      </button>
-
-                      <ul className="dropdown-menu">
-                        <li><a href="#">Matematicas</a></li>
-                        <li><a href="#">Programacion</a></li>
-                        <li><a href="#">Comida</a></li>
-                        </ul>*/}
                       <select className="form-control sel" id="sel1" onChange={this.onChange}>
                         <option value="1">Solicitud</option>
                         <option value="0  ">Ofrecimiento</option>
@@ -253,11 +238,11 @@ class groups extends Component {
                       <div className="posd" >
                         <label><input type="checkbox" name="map" onChange={this.check} value={!this.state.map} />Mapa?</label>
                       </div>
-
-                      {this.state.map != false && <div className="map"><Map type='editar' onSelectLoc={this.handleLoc} /></div>}
+                      
+                      {this.state.map !== false && <div className="map"><Map type='editar' onSelectLoc={this.handleLoc}/></div>}
                       <br></br>
                       <br></br>
-
+                      
                       <SubmitButton />
                     </div>
                   </div>
@@ -265,123 +250,12 @@ class groups extends Component {
                 </div>
                 <div className="row">
                 </div>
-                <Group_posts user_id={this.state.user_id} group_id={this.state.group_id} />
+                <Group_posts user_id={this.state.user_id} group_id={this.props.location.params.group_id} />
               </div>
             </div>
           </div>
         }
       </div>)
-    {/*<div className=' container-home'>
-        <div className="col-md-12">
-          <Link className="link" to="/profile">
-            <div className="profile "></div>
-          </Link>
-          <p>{this.props.user.email}</p>
-        </div>
-      </div>
-      <div className=' container-home2'>
-        <div className="col-md-12">
-          <p></p>
-          <div className="form-group">
-            <input
-              className="form-control"
-              name="busqueda"
-              label="Busqueda"
-              type="busqueda"
-              placeholder="¿Qué te interesa aprender o enseñar?"
-              onChange={this.onChange}
-            />
-          </div>
-          <div style={{ width: "50%" }} className="btn-group">
-            <button className="btn btn-default btn-lg dropdown-toggle"
-              type="button" data-toggle="dropdown">
-              Etiquetas <span className="caret"></span>
-            </button>
-
-            <ul className="dropdown-menu">
-              <li><a href="#">Matematicas</a></li>
-              <li><a href="#">Programacion</a></li>
-              <li><a href="#">Comida</a></li>
-            </ul>
-
-            <button type="button" className="btn btn-default btn-lg offset-sm-10 posd">Postear</button>
-          </div>
-        </div>
-      </div>
-      <div className="col-sm">
-        <div className='container-home'>
-          <div className="col-md-12">
-            <div className="panel panel-default">
-              <div className="panel-heading">
-                <h3 className="panel-title">Grupos<a className="items">
-                  <i className="fas fa-users"></i>
-                </a></h3>
-              </div>
-              <div className="panel-body">
-                Lista de grupos
-                  </div>
-            </div>
-          </div>
-        </div>
-        <div className=' container-home2'>
-          <div className="col-md-12">
-            <div className="panel panel-default">
-              <div className="panel-heading">
-                <div style={{ float: "left" }} className="profile2 mnp"></div>
-                <h3 style={{ marginRight: "0%" }} className="panel-title ">{this.props.user.email} quiere aprender programacion en c++</h3>
-              </div>
-              <div className="col-md-12 log-text">
-                <hr></hr>
-              </div>
-              <div className="panel-body">
-                Hola comunidad, estoy buscando alguien para que me enseñe programacion en c++, a cambio puedo enseñar a tocar la guitarra
-                  </div>
-              <div className="btn-group">
-                <div className="col-md-6">
-                  <button type="button" className="btn btn-default btn-lg  ">Comentar</button>
-                </div>
-                <div className="col-md-6">
-                  <button type="button" className="btn btn-default btn-lg row-10">Contactar</button>
-                </div>
-              </div>
-            </div>
-
-          </div>
-        </div>
-      </div>
-      <div className="row">
-        <div className=' container-home3'>
-          <div className="col-md-12"></div>
-        </div>
-        <div className=' container-home2'>
-          <div className="col-md-12">
-            <div className="panel panel-default">
-              <div className="panel-heading">
-                <div style={{ float: "left" }} className="profile2 mnp"></div>
-                <h3 style={{ marginRight: "0%" }} className="panel-title ">dduartec@unal.edu.co ofrece clases de bateria a cambio de aprender a cocinar comida tailandesa</h3>
-              </div>
-              <div className="col-md-12 log-text">
-                <hr></hr>
-              </div>
-              <div className="panel-body">
-                Hola comunidad, alguien que me enseñe a cocinar comida tailandesa y este interesado aprender a tocar la bateria
-                  </div>
-              <div className="btn-group">
-                <div className="col-md-6">
-                  <button type="button" className="btn btn-default btn-lg  ">Comentar</button>
-                </div>
-                <div className="col-md-6">
-                  <button type="button" className="btn btn-default btn-lg row-10">Contactar</button>
-                </div>
-              </div>
-            </div>
-
-          </div>
-        </div>
-      </div>
-          </div >
-      <LogoutButton />
-    </div >*/}
   }
 }
 const { object, bool } = PropTypes;

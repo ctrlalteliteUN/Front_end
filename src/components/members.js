@@ -2,7 +2,6 @@ import React, { Component } from 'react';
 import '../styles/Log.css';
 import '../styles/App.css';
 import Navigation from './NavigationLog';
-import {Link} from 'react-router-dom'
 
 class members extends Component {
     render() {

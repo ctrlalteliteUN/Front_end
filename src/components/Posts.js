@@ -4,10 +4,9 @@ import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
 import * as sessionActions from '../actions/sessionActions';
 import '../styles/Home.css';
-import { Link, withRouter } from 'react-router-dom';
+//import { Link} from 'react-router-dom';
 import axios from 'axios';
 import Post from './Post';
-import LoadingSpinner from './LoadingSpinner';
 import store from '../store';
 import { loadState, saveState } from './localStorage.js';
 
@@ -38,7 +37,7 @@ class Posts extends Component {
     const state = loadState('posts');
     this.setState(state);
     window.addEventListener('beforeunload', this.saveStatePosts);
-    if (store.getState().session.user.email != undefined) {
+    if (store.getState().session.user.email !== undefined) {
       this.setState({ user: store.getState().session.user })
     }
     this.setState({ loading: true }, () => {
@@ -61,7 +60,7 @@ class Posts extends Component {
     console.log(store.getState());
   }*/
   render() {
-    const listItems = this.state.posts.map((d) => <Post id={d.id} user_id={this.props.user_id}>{d.title}</Post>);
+    const listItems = this.state.posts.map((d,i) => <Post key = {i} id={d.id} user_id={this.props.user_id}>{d.title}</Post>);
     return (
       <div>
         {listItems}

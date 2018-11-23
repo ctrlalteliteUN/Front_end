@@ -49,7 +49,7 @@ class Navigation extends Component {
       }
 
     keyPress(e) {
-        if (e.keyCode == 13) {
+        if (e.keyCode===13) {
             this.setRedirect();
         }
 
@@ -72,10 +72,10 @@ class Navigation extends Component {
                                     </i>
                                 </a>
                                 <div className="dropdown-menu" aria-labelledby="navbarDropdown">
-                                    <a className="dropdown-item" href="#">Action</a>
-                                    <a className="dropdown-item" href="#">Another action</a>
+                                    <a className="dropdown-item" >Action</a>
+                                    <a className="dropdown-item" >Another action</a>
                                     <div className="dropdown-divider"></div>
-                                    <a className="dropdown-item" href="#">Something else here</a>
+                                    <a className="dropdown-item" >Something else here</a>
                                 </div>
                             </li>
                         </ul>

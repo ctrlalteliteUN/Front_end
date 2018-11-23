@@ -1,6 +1,5 @@
 import React, { Component } from 'react';
 
-const marker = ({ text }) => <div>{text}</div>;
 
 class Marker extends Component {
 

@@ -1,11 +1,5 @@
 import React, { Component } from 'react';
-import PropTypes from 'prop-types';
-import { connect } from 'react-redux';
-import { bindActionCreators } from 'redux';
-import * as sessionActions from '../actions/sessionActions';
 import '../styles/Home.css';
-import { Link, withRouter } from 'react-router-dom';
-import axios from 'axios';
 
 class Archivo extends Component {
     constructor(props, context) {
@@ -27,7 +21,7 @@ class Archivo extends Component {
                     </h6>
                 </div>
                 <div className="row">
-                    <iframe src={this.props.ruta} width="600px" height="300px" seamless webkitallowfullscreen mozallowfullscreen allowfullscreen></iframe>
+                    <iframe title={this.props.title} src={this.props.ruta} width="600px" height="300px" seamless webkitallowfullscreen mozallowfullscreen allowfullscreen></iframe>
                 </div>
             </div>
         )

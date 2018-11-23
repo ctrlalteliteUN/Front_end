@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import '../styles/Log.css';
 import Navigation from './NavigationLog';
-import { Redirect, Link } from 'react-router-dom'
+import { Redirect } from 'react-router-dom'
 import Loginbody from './Loginbody';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
@@ -21,18 +21,20 @@ class Login extends Component {
   }
   checkSession() {
     if (this.props.authenticated) {
-      <Redirect to={{
-        pathname: '/welcome',
-      }} />
+      () => {
+        <Redirect to={{
+          pathname: '/welcome',
+        }} />
+      }
     }
 
   }
   render() {
     if (this.props.authenticated) {
-      return(
-      <Redirect to={{
-        pathname: '/',
-      }} />);
+      return (
+        <Redirect to={{
+          pathname: '/',
+        }} />);
     }
     return (
       <div>
@@ -45,7 +47,7 @@ class Login extends Component {
   }
 }
 
-const { object, bool } = PropTypes;
+const { bool } = PropTypes;
 
 Login.propTypes = {
   authenticated: bool.isRequired

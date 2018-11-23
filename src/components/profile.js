@@ -6,9 +6,8 @@ import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
 import * as sessionActions from '../actions/sessionActions';
 import '../styles/profile.css';
-import { Link, withRouter } from 'react-router-dom'
+import { Link} from 'react-router-dom'
 import axios from 'axios';
-import ImageUploader from 'react-images-upload';
 import Archivo from './archivo';
 import { Bar } from 'react-chartjs-2';
 import { loadState, saveState } from './localStorage.js';
@@ -48,10 +47,10 @@ class profile extends Component {
         const state = loadState('profile');
         this.setState(state);
         window.addEventListener('beforeunload', this.saveStateProfile);
-        if (this.props.location.params != undefined) {
+        if (this.props.location.params !== undefined) {
             this.setState({ email: this.props.location.params.email })
         }
-        if (store.getState().session.user.email != undefined) {
+        if (store.getState().session.user.email !== undefined) {
             this.setState({ user: store.getState().session.user })
         }
         
@@ -136,7 +135,7 @@ class profile extends Component {
         let { picture } = this.state;
         let $picture = null;
         if (!picture.error) {
-            $picture = (<img src={picture.ruta} />);
+            $picture = (<img src={picture.ruta} alt="" />);
         } else {
             $picture = (<img src="http://recursospracticos.com/wp-content/uploads/2017/10/Sin-foto-de-perfil-en-Facebook.jpg" alt="" />);
         }
@@ -194,7 +193,7 @@ class profile extends Component {
                                 </div>
                             </div>
                             <div className="col-md-2">
-                                {this.state.email != this.props.user.email ? <div></div> :
+                                {this.state.email !== this.props.user.email ? <div></div> :
                                     <Link className="link" to={{ pathname: '/editprofile', params: { email: this.state.email } }}>
                                         <input type="submit" className="profile-edit-btn" name="btnAddMore" value="Editar Perfil" />
                                     </Link>

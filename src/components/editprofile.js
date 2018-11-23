@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { Link, withRouter } from 'react-router-dom'
+import { withRouter } from 'react-router-dom'
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
@@ -7,9 +7,7 @@ import * as sessionActions from '../actions/sessionActions';
 import '../styles/Log.css';
 import { sessionService } from 'redux-react-session';
 import axios from 'axios';
-import { stringify } from 'querystring';
 import Navigation from './Navigation';
-import ImageUploader from 'react-images-upload';
 import { loadState, saveState } from './localStorage.js';
 
 class editprofile extends Component {
@@ -26,7 +24,7 @@ class editprofile extends Component {
             file: '',
             imagePreviewUrl: '',
             base64img: '',
-            persons:{},
+            persons: {},
             user: {
                 name: '',
                 email: '',
@@ -83,7 +81,7 @@ class editprofile extends Component {
         const state = loadState('editprofile');
         this.setState(state);
         window.addEventListener('beforeunload', this.saveStateEditProfile);
-        if (this.props.location.params != undefined) {
+        if (this.props.location.params !== undefined) {
             this.setState({ email: this.props.location.params.email }, function () {
                 axios.get('https://knowledge-community-back-end.herokuapp.com/users?email=' + this.state.email)
                     .then(res => {
@@ -112,17 +110,17 @@ class editprofile extends Component {
                             }).catch(err => console.error(err));
                     }).catch(err => console.error(err));
             }).catch(function (error) {
-                if (user.name == "" || user.email == "" || user.password == "" || user.password_confirmation == "") {
+                if (user.name==="" || user.email==="" || user.password==="" || user.password_confirmation==="") {
                     this.setState({
                         hasError: 1,
                     });
                 }
-                else if (user.password != user.password_confirmation) {
+                else if (user.password !== user.password_confirmation) {
                     this.setState({
                         hasError: 3,
                     });
                 }
-                else if (error.message.indexOf('422') != -1) {
+                else if (error.message.indexOf('422') !== -1) {
                     this.setState({
                         hasError: 2,
                     });
@@ -142,9 +140,8 @@ class editprofile extends Component {
         let { imagePreviewUrl } = this.state;
         let $imagePreview = null;
         if (imagePreviewUrl) {
-            $imagePreview = (<img src={imagePreviewUrl} />);
+            $imagePreview = (<img src={imagePreviewUrl} alt="" />);
         }
-        const { user } = this.state;
         const SubmitButton = withRouter(({ history }) => (
             <button className="mybtn"
                 onClick={() => this.onSubmit(history)}
@@ -166,18 +163,18 @@ class editprofile extends Component {
                             <div className="row">
 
                                 <div className="col-sm-8 offset-sm-2 myform-cont">
-                                    {this.state.hasError == 1 &&
+                                    {this.state.hasError===1 &&
                                         <div className="alert alert-danger">
                                             <strong>Error:</strong> {this.state.errors}
                                         </div>
                                     }
 
-                                    {this.state.hasError == 2 &&
+                                    {this.state.hasError===2 &&
                                         <div className="alert alert-danger">
                                             <strong>Error:</strong> {this.state.errors1}
                                         </div>
                                     }
-                                    {this.state.hasError == 3 &&
+                                    {this.state.hasError===3 &&
                                         <div className="alert alert-danger">
                                             <strong>Error:</strong> {this.state.errors2}
                                         </div>
