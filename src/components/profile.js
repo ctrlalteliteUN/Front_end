@@ -13,6 +13,7 @@ import Archivo from './archivo';
 import { Bar } from 'react-chartjs-2';
 import { loadState, saveState } from './localStorage.js';
 import LoadingSpinner from './LoadingSpinner';
+import store from '../store';
 
 class profile extends Component {
     constructor(props) {
@@ -26,7 +27,8 @@ class profile extends Component {
             groups: [],
             persons: [],
             picture: "",
-            loading: false
+            loading: false,
+            user: {}
         };
         this.saveStateProfile = this.saveStateProfile.bind(this);
     }
@@ -49,10 +51,14 @@ class profile extends Component {
         if (this.props.location.params != undefined) {
             this.setState({ email: this.props.location.params.email })
         }
+        if (store.getState().session.user.email != undefined) {
+            this.setState({ user: store.getState().session.user })
+        }
+        
         this.setState({ loading: true }, () => {
+            console.log(this.state)
             axios.get('https://knowledge-community-back-end.herokuapp.com/users?email=' + this.state.email)
                 .then(res => {
-                    console.log(res.data);
                     this.setState({ id: res.data[0].id, groups: res.data[0].groups, persons: res.data[0] })
                     axios.get('https://knowledge-community-back-end.herokuapp.com/app_files?ProfilePhoto=1&user_id=' + this.state.id)
                         .then(response => {
@@ -75,6 +81,11 @@ class profile extends Component {
         })
 
     }
+
+    /*componentWillReceiveProps() {
+        console.log(store.getState());
+        
+    }*/
 
     render() {
 

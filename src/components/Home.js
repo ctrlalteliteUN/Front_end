@@ -155,7 +155,6 @@ class Home extends Component {
   }
 
   componentWillReceiveProps() {
-    console.log(store.getState());
     axios.get('https://knowledge-community-back-end.herokuapp.com/users?email=' + store.getState().session.user.email)
       .then(res => {
         let post = Object.assign({}, this.state.post);

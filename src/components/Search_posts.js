@@ -8,6 +8,8 @@ import { Link, withRouter } from 'react-router-dom';
 import axios from 'axios';
 import Post from './Post';
 import LoadingSpinner from './LoadingSpinner';
+import store from '../store';
+import { loadState, saveState } from './localStorage.js';
 
 class Search_posts extends Component {
   constructor(props, context) {
@@ -15,26 +17,46 @@ class Search_posts extends Component {
 
     this.state = {
       posts: [],
-      loading: false
+      loading: false,
+      user:{}
     };
-  };
+    this.saveStateProfile = this.saveStatePost.bind(this);
+  }
 
+  saveStatePost() {
+    saveState(this.state, 'post');
+  }
 
+  componentWillUnmount() {
+    window.removeEventListener('beforeunload', this.saveStatePost)
+
+    // saves if component has a chance to unmount
+    this.saveStatePost();
+  }
 
   componentDidMount() {
-    axios.get('https://knowledge-community-back-end.herokuapp.com/posts?body='+this.props.searchm)
-      .then(res => {
-        this.setState({
-          posts: res.data,
-          loading: false,
-        });
-      }).catch(function (error) {
-        console.error(error);
-        console.error(error);
-        this.setState({
-          loading: false,
+    const state = loadState('post');
+    this.setState(state);
+    window.addEventListener('beforeunload', this.saveStatePost);
+    if (store.getState().session.user.email != undefined) {
+      this.setState({ user: store.getState().session.user })
+    }
+    this.setState({ loading: true }, () => {
+      axios.get('https://knowledge-community-back-end.herokuapp.com/posts?body=' + this.props.searchm)
+        .then(res => {
+          console.log(this.state)
+          this.setState({
+            posts: res.data,
+            loading: false,
+          });
+        }).catch(function (error) {
+          console.error(error);
+          console.error(error);
+          this.setState({
+            loading: false,
+          })
         })
-      })
+    })
   }
   getPosts() {
 
@@ -43,19 +65,19 @@ class Search_posts extends Component {
     }
   }
   render() {
-    
+
     const listItems = this.state.posts.map((d) => <Post id={d.id} user_id={this.props.user_id}>{d.title}</Post>);
     return (
       <div>
-      {listItems}
+        {listItems}
       </div>
     )
   }
 
 }
-/*const { object, bool } = PropTypes;
+const { object, bool } = PropTypes;
 
-Posts.propTypes = {
+Search_posts.propTypes = {
   user: object.isRequired,
   authenticated: bool.isRequired
 };
@@ -71,5 +93,5 @@ const mapDispatch = (dispatch) => {
   };
 };
 
-export default connect(null, mapDispatch)(Posts);*/
-export default Search_posts;
+export default connect(null, mapDispatch)(Search_posts);
+//export default Search_posts;
