@@ -229,7 +229,11 @@ class Home extends Component {
                           </a></h3>
                         </div>
                         <div className="panel-body">
-                          {this.state.groups.map(group => <p>{group.name}</p>)}
+                          {this.state.groups.map(group =>
+                            <Link to={{ pathname: '/groups', params: { group_id: group.id , name:group.name} }}>
+                            {group.name}    
+                            </Link> )}
+  
                         </div>
                       </div>
                     </div>
