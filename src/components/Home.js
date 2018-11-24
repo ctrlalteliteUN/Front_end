@@ -144,8 +144,10 @@ class Home extends Component {
 
 
   onGroup(history) {
+    console.log(this.state.group_name)
+    const group ={name:this.state.group_name}
     this.setState({ loading: true }, () => {
-    axios.post(`https://knowledge-community-back-end.herokuapp.com/groups`, this.state.group_name)
+    axios.post('https://knowledge-community-back-end.herokuapp.com/groups', group)
       .then(response => {
         history.push('/')
         this.setState({
@@ -202,8 +204,6 @@ class Home extends Component {
   }
   render() {
     //console.log(store.getState());
-    console.log(this.state.group_name)
-    console.log(this.state.post.title)
     const Pdfbutton = withRouter(({ history }) => (
       <button className="btn btn-default btn-lg posd"
         onClick={() => this.onPDF(history)}
