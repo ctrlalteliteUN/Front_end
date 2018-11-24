@@ -26,7 +26,7 @@ const App = ({ authenticated, checked }) => (
         <Route path="/login" component={Login} exact />
         <Route path="/welcome" component={Landingpage} exact />
         <Route path="/signup" component={Registro} exact />
-        <PrivateRoute path='/groups' component={groups} authenticated={authenticated} exact />
+        <PrivateRoute path='/groups/:group_name' component={groups} authenticated={authenticated} exact />
         <PrivateRoute path='/search' component={search} authenticated={authenticated} exact />
         <PrivateRoute path='/members' component={members} authenticated={authenticated} exact />
         <PrivateRoute path='/msgs' component={msgs} authenticated={authenticated} exact />

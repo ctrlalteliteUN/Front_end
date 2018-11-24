@@ -36,12 +36,13 @@ class groups extends Component {
         lng: null
       },
       groups: [],
+      users: [],
       picture: "",
       loading: false,
       map: false,
-      session:{},
-      grupo_id:"",
-      name:""
+      session: {},
+      group_id: "",
+      name: ""
     };
     this.onSubmit = this.onSubmit.bind(this);
     this.onChange = this.onChange.bind(this);
@@ -66,18 +67,27 @@ class groups extends Component {
   componentDidMount() {
     const state = loadState('groups');
     this.setState(state);
+    var str = this.props.match.params.group_name
+    var str2 = str.replace(" ", "%")
+    console.log(str2)
     window.addEventListener('beforeunload', this.saveStateGroups);
-    if (this.props.location.params !== undefined) {
-      this.setState({
-        email: this.props.location.params.email, 
-        group_id: this.props.location.params.group_id, 
-        name: this.props.location.params.name
-      })
-    }
     if (store.getState().session.user.email !== undefined) {
       this.setState({ session: store.getState().session.user })
     }
     this.setState({ loading: true }, () => {
+      axios.get('https://knowledge-community-back-end.herokuapp.com/groups?name=' + str)
+        .then(res => {
+          console.log(res.data[0].users)
+          this.setState({
+            users: res.data[0].users,
+            group_id: res.data[0].id,
+            name: res.data[0].name
+
+          });
+          this.setState({
+            loading: false
+          })
+        })
       axios.get('https://knowledge-community-back-end.herokuapp.com/users?email=' + this.state.email)
         .then(res => {
           for (let i = 0; i < res.data.length; i++) {
@@ -104,7 +114,7 @@ class groups extends Component {
 
   onSubmit(history) {
     this.setState({ loading: true }, () => {
-      axios.post(`https://knowledge-community-back-end.herokuapp.com/posts`, this.state.post)
+      axios.post('https://knowledge-community-back-end.herokuapp.com/groups/' + this.state.group_id + '/posts', this.state.post)
         .then(response => {
           alert("Publicacion Satisfactoria");
           this.setState({
@@ -207,6 +217,7 @@ class groups extends Component {
                           </a></h3>
                         </div>
                         <div className="panel-body">
+                          {this.state.users.map(person => <p>{person.name}</p>)}
                         </div>
                       </div>
                     </div>

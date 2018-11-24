@@ -39,9 +39,11 @@ class Home extends Component {
       picture: "",
       loading: false,
       map: false,
-      session:{}
+      session: {},
+      group_name: ""
     };
     this.onSubmit = this.onSubmit.bind(this);
+    this.onGroup = this.onGroup.bind(this);
     this.onChange = this.onChange.bind(this);
     this.check = this.check.bind(this);
     this._handleImageChange = this._handleImageChange.bind(this);
@@ -127,15 +129,32 @@ class Home extends Component {
   }
 
   onPDF(history) {
-    let { pdfPreviewUrl } = this.state;
-    if (pdfPreviewUrl) {
-      axios.post(`https://knowledge-community-back-end.herokuapp.com/app_files`, { ruta: pdfPreviewUrl, file_type_id: 2, user_id: this.state.user_id, post_id: "", description: "pdf", titulo: this.state.namefile })
-        .then(response => {
-          history.push('/')
-        })
+    this.setState({ loading: true }, () => {
+      let { pdfPreviewUrl } = this.state;
+      if (pdfPreviewUrl) {
+        axios.post(`https://knowledge-community-back-end.herokuapp.com/app_files`, { ruta: pdfPreviewUrl, file_type_id: 2, user_id: this.state.user_id, post_id: "", description: "pdf", titulo: this.state.namefile })
+          .then(response => {
+            history.push('/')
+            this.setState({
+              loading: false,
+            })
+          })
+      }
+    })
     }
-  }
 
+
+  onGroup(history) {
+    this.setState({ loading: true }, () => {
+    axios.post(`https://knowledge-community-back-end.herokuapp.com/groups`, this.state.group_name)
+      .then(response => {
+        history.push('/')
+        this.setState({
+          loading: false,
+        })
+      })
+    })
+  }
   onChange(e) {
     const { value, name } = e.target;
     const { post } = this.state;
@@ -144,6 +163,7 @@ class Home extends Component {
     tag[name] = value;
     this.setState({ post });
     this.setState({ tag });
+    this.setState({ group_name: value });
   }
   check(e) {
     let val = !this.state.map;
@@ -179,14 +199,22 @@ class Home extends Component {
   componentWillReceiveProps() {
     if (store.getState().session.user.email !== undefined) {
       this.setState({ session: store.getState().session.user })
-  }
+    }
   }
   render() {
     //console.log(store.getState());
+    console.log(this.state.group_name)
+    console.log(this.state.post.title)
     const Pdfbutton = withRouter(({ history }) => (
       <button className="btn btn-default btn-lg posd"
         onClick={() => this.onPDF(history)}
         type="submit">Subir
+      </button>
+    ));
+    const Groupbutton = withRouter(({ history }) => (
+      <button className="btn btn-default btn-lg posd"
+        onClick={() => this.onGroup(history)}
+        type="submit">Crear
       </button>
     ));
     const SubmitButton = withRouter(({ history }) => (
@@ -231,8 +259,8 @@ class Home extends Component {
                           </a></h3>
                         </div>
                         <div className="panel-body">
-                          {this.state.groups.map((group,i) =>
-                            <Link key={i} className="link" to={{ pathname: '/groups', params: { group_id: group.id, name: group.name } }}>
+                          {this.state.groups.map((group, i) =>
+                            <Link key={i} className="link" to={{ pathname: '/groups/' + group.name, params: { group_id: group.id, name: group.name } }}>
                               {group.name}<br></br>
                             </Link>)}
 
@@ -248,6 +276,24 @@ class Home extends Component {
                       <div>
                         <input type="file" onChange={this._handleImageChange} />
                         <Pdfbutton />
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                <div className="row">
+                  <div className='container-home'>
+                    <div>
+                      <h4>Crear Grupo</h4>
+                      <div>
+                        <input
+                          className="form-control in-pos"
+                          name="group_name"
+                          label="group_name"
+                          type="group_name"
+                          placeholder="Nombre del Grupo"
+                          onChange={this.onChange}
+                        />
+                        <Groupbutton />
                       </div>
                     </div>
                   </div>
