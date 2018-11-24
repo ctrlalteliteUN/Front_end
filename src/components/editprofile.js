@@ -9,6 +9,9 @@ import { sessionService } from 'redux-react-session';
 import axios from 'axios';
 import Navigation from './Navigation';
 import { loadState, saveState } from './localStorage.js';
+import store from '../store';
+import { verifyToken } from './verifyToken';
+
 
 class editprofile extends Component {
 
@@ -30,7 +33,8 @@ class editprofile extends Component {
                 email: '',
                 password: '',
                 password_confirmation: ''
-            }
+            },
+            session: {}
         };
 
         this.onSubmit = this.onSubmit.bind(this);
@@ -77,17 +81,22 @@ class editprofile extends Component {
     }
 
     componentDidMount() {
-
         const state = loadState('editprofile');
         this.setState(state);
         window.addEventListener('beforeunload', this.saveStateEditProfile);
+        if (store.getState().session.user.email !== undefined) {
+            this.setState({ session: store.getState().session.user })
+        }
         if (this.props.location.params !== undefined) {
             this.setState({ email: this.props.location.params.email }, function () {
-                axios.get('https://knowledge-community-back-end.herokuapp.com/users?email=' + this.state.email)
-                    .then(res => {
-                        console.log(this.state);
-                        this.setState({ id: res.data[0].id, groups: res.data[0].groups, persons: res.data[0] })
-                    })
+                verifyToken(this.state.session).then(data => {
+                    //console.log(data);
+                    axios.get('https://knowledge-community-back-end.herokuapp.com/users?email=' + this.state.email)
+                        .then(res => {
+                            console.log(this.state);
+                            this.setState({ id: res.data[0].id, groups: res.data[0].groups, persons: res.data[0] })
+                        })
+                })
             });
         }
     }
@@ -97,35 +106,42 @@ class editprofile extends Component {
         let { imagePreviewUrl } = this.state;
         if (imagePreviewUrl) {
 
-            axios.post(`https://knowledge-community-back-end.herokuapp.com/app_files`, { ruta: imagePreviewUrl, file_type_id: 1, user_id: this.state.id, post_id: "", description: "foto_perfil", titulo: "foto.png" })
+            verifyToken(this.state.session).then(data => {
+                //console.log(data); 
+                axios.post(`https://knowledge-community-back-end.herokuapp.com/app_files`, { ruta: imagePreviewUrl, file_type_id: 1, user_id: this.state.id, post_id: "", description: "foto_perfil", titulo: "foto.png" })
+
+            })
         }
-        axios.put('https://knowledge-community-back-end.herokuapp.com/users/' + this.state.id, { user })
-            .then(response => {
-                const { token } = response.data.authentication_token;
-                sessionService.saveSession({ token })
-                    .then(() => {
-                        sessionService.saveUser(response.data)
-                            .then(() => {
-                                history.push('/profile');
-                            }).catch(err => console.error(err));
-                    }).catch(err => console.error(err));
-            }).catch(function (error) {
-                if (user.name==="" || user.email==="" || user.password==="" || user.password_confirmation==="") {
-                    this.setState({
-                        hasError: 1,
-                    });
-                }
-                else if (user.password !== user.password_confirmation) {
-                    this.setState({
-                        hasError: 3,
-                    });
-                }
-                else if (error.message.indexOf('422') !== -1) {
-                    this.setState({
-                        hasError: 2,
-                    });
-                }
-            }.bind(this))
+        verifyToken(this.state.session).then(data => {
+            //console.log(data);
+            axios.put('https://knowledge-community-back-end.herokuapp.com/users/' + this.state.id, { user })
+                .then(response => {
+                    const { token } = response.data.authentication_token;
+                    sessionService.saveSession({ token })
+                        .then(() => {
+                            sessionService.saveUser(response.data)
+                                .then(() => {
+                                    history.push('/profile');
+                                }).catch(err => console.error(err));
+                        }).catch(err => console.error(err));
+                }).catch(function (error) {
+                    if (user.name === "" || user.email === "" || user.password === "" || user.password_confirmation === "") {
+                        this.setState({
+                            hasError: 1,
+                        });
+                    }
+                    else if (user.password !== user.password_confirmation) {
+                        this.setState({
+                            hasError: 3,
+                        });
+                    }
+                    else if (error.message.indexOf('422') !== -1) {
+                        this.setState({
+                            hasError: 2,
+                        });
+                    }
+                }.bind(this))
+        })
 
     }
 
@@ -163,18 +179,18 @@ class editprofile extends Component {
                             <div className="row">
 
                                 <div className="col-sm-8 offset-sm-2 myform-cont">
-                                    {this.state.hasError===1 &&
+                                    {this.state.hasError === 1 &&
                                         <div className="alert alert-danger">
                                             <strong>Error:</strong> {this.state.errors}
                                         </div>
                                     }
 
-                                    {this.state.hasError===2 &&
+                                    {this.state.hasError === 2 &&
                                         <div className="alert alert-danger">
                                             <strong>Error:</strong> {this.state.errors1}
                                         </div>
                                     }
-                                    {this.state.hasError===3 &&
+                                    {this.state.hasError === 3 &&
                                         <div className="alert alert-danger">
                                             <strong>Error:</strong> {this.state.errors2}
                                         </div>

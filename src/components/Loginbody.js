@@ -85,7 +85,7 @@ class Loginbody extends Component {
             loading: false,
           })        
           const { authentication_token } = response.data;
-          let user={email:email}
+          let user={email:email, id:response.data.id}
           sessionService.saveSession({ authentication_token })
             .then(() => {
               sessionService.saveUser(user)
@@ -162,15 +162,6 @@ class Loginbody extends Component {
                       onFailure={this.responseGoogle}                    >
                       <i className="fab fa-google"></i>
                     </GoogleLogin>
-                    <FacebookLogin
-                      appId="337250857041345"
-                      autoLoad={false}
-                      fields="name,email,picture"
-                      callback={this.responseFacebook}
-                      cssclassName="mybtn-social-f"
-                      icon="fab fa-facebook-square"
-                      textButton=""
-                    ></FacebookLogin>
                   </div>
                 </div>
               </div>

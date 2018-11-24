@@ -9,6 +9,7 @@ import axios from 'axios';
 import Post from './Post';
 import store from '../store';
 import { loadState, saveState } from './localStorage.js';
+import { verifyToken } from './verifyToken';
 
 class Group_posts extends Component {
   constructor(props, context) {
@@ -41,19 +42,22 @@ class Group_posts extends Component {
       this.setState({ session: store.getState().session.user })
     }
     this.setState({ loading: true }, () => {
-      axios.get('https://knowledge-community-back-end.herokuapp.com/groups/' + this.props.group_id + '/posts')
-        .then(res => {
-          this.setState({
-            posts: res.data,
-            loading: false,
-          });
-        }).catch(function (error) {
-          console.error(error);
-          console.error(error);
-          this.setState({
-            loading: false,
+      verifyToken(this.state.session).then(data => {
+        //console.log(data);
+        axios.get('https://knowledge-community-back-end.herokuapp.com/groups/' + this.props.group_id + '/posts')
+          .then(res => {
+            this.setState({
+              posts: res.data,
+              loading: false,
+            });
+          }).catch(function (error) {
+            console.error(error);
+            console.error(error);
+            this.setState({
+              loading: false,
+            })
           })
-        })
+      })
     })
   }
   render() {

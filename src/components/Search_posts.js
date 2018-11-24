@@ -9,7 +9,7 @@ import Post from './Post';
 //import LoadingSpinner from './LoadingSpinner';
 import store from '../store';
 import { loadState, saveState } from './localStorage.js';
-
+import { verifyToken } from './verifyToken';
 class Search_posts extends Component {
   constructor(props, context) {
     super(props, context);
@@ -17,7 +17,7 @@ class Search_posts extends Component {
     this.state = {
       posts: [],
       loading: false,
-      session:{}
+      session: {}
     };
     this.saveStateSearchPost = this.saveStateSearchPost.bind(this);
   }
@@ -41,25 +41,28 @@ class Search_posts extends Component {
       this.setState({ session: store.getState().session.user })
     }
     this.setState({ loading: true }, () => {
-      axios.get('https://knowledge-community-back-end.herokuapp.com/posts?body=' + this.props.searchm)
-        .then(res => {
-          console.log(this.state)
-          this.setState({
-            posts: res.data,
-            loading: false,
-          });
-        }).catch(function (error) {
-          console.error(error);
-          console.error(error);
-          this.setState({
-            loading: false,
+      verifyToken(this.state.session).then(data => {
+        //console.log(data);
+        axios.get('https://knowledge-community-back-end.herokuapp.com/posts?body=' + this.props.searchm)
+          .then(res => {
+            console.log(this.state)
+            this.setState({
+              posts: res.data,
+              loading: false,
+            });
+          }).catch(function (error) {
+            console.error(error);
+            console.error(error);
+            this.setState({
+              loading: false,
+            })
           })
-        })
+      })
     })
   }
   render() {
 
-    const listItems = this.state.posts.map((d,i) => <Post key={i} id={d.id} user_id={this.props.user_id}>{d.title}</Post>);
+    const listItems = this.state.posts.map((d, i) => <Post key={i} id={d.id} user_id={this.props.user_id}>{d.title}</Post>);
     return (
       <div>
         {listItems}

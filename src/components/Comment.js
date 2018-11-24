@@ -8,6 +8,7 @@ import '../styles/Home.css';
 import axios from 'axios';
 import store from '../store';
 import { loadState, saveState } from './localStorage.js';
+import { verifyToken } from './verifyToken';
 
 class Comment extends Component {
     constructor(props, context) {
@@ -15,6 +16,7 @@ class Comment extends Component {
         this.state = {
             user: [],
             picture: "",
+            session: {}
         };
 
 
@@ -40,14 +42,20 @@ class Comment extends Component {
             this.setState({ session: store.getState().session.user })
         }
         this.setState({ loading: true }, () => {
-            axios.get('https://knowledge-community-back-end.herokuapp.com/users/' + this.props.user_id)
-                .then(response => {
-                    this.setState({ user: response.data })
+            verifyToken(this.state.session).then(data => {
+                //console.log(data);
+                axios.get('https://knowledge-community-back-end.herokuapp.com/users/' + this.props.user_id)
+                    .then(response => {
+                        this.setState({ user: response.data })
+                    })
+                verifyToken(this.state.session).then(data => {
+                    //console.log(data);
+                    axios.get('https://knowledge-community-back-end.herokuapp.com/app_files?ProfilePhoto=1&user_id=' + this.props.user_id)
+                        .then(response => {
+                            this.setState({ picture: response.data })
+                        })
                 })
-            axios.get('https://knowledge-community-back-end.herokuapp.com/app_files?ProfilePhoto=1&user_id=' + this.props.user_id)
-                .then(response => {
-                    this.setState({ picture: response.data })
-                })
+            })
         })
     }
     render() {
@@ -79,19 +87,19 @@ class Comment extends Component {
 const { object, bool } = PropTypes;
 
 Comment.propTypes = {
-  user: object.isRequired,
-  authenticated: bool.isRequired
+    user: object.isRequired,
+    authenticated: bool.isRequired
 };
 
 const mapState = (state) => ({
-  user: state.session.user,
-  authenticated: state.session.authenticated
+    user: state.session.user,
+    authenticated: state.session.authenticated
 });
 
 const mapDispatch = (dispatch) => {
-  return {
-    actions: bindActionCreators(sessionActions, dispatch)
-  };
+    return {
+        actions: bindActionCreators(sessionActions, dispatch)
+    };
 };
 
 export default connect(mapState, mapDispatch)(Comment);

@@ -16,7 +16,7 @@ import profile from './profile';
 import Landingpage from './Landingpage';
 import Home from './Home';
 import editprofile from './editprofile';
-
+import Service from './Service';
 const App = ({ authenticated, checked }) => (
   <Router>
     {checked &&
@@ -32,6 +32,7 @@ const App = ({ authenticated, checked }) => (
         <PrivateRoute path='/msgs' component={msgs} authenticated={authenticated} exact />
         <PrivateRoute path='/profile/:user_id' component={profile} authenticated={authenticated} exact />
         <PrivateRoute path='/editprofile' component={editprofile} authenticated={authenticated} exact />
+        <PrivateRoute path='/service/:service_id' component={Service} authenticated={authenticated} exact />
         <PrivateRoute path='/*' authenticated={authenticated} component={Error}/>
         </Switch>
       </div>

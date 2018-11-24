@@ -10,7 +10,7 @@ import Comment from './Comment.js'
 import Map from './Map';
 import store from '../store';
 import { loadState, saveState } from './localStorage.js';
-
+import { verifyToken } from './verifyToken';
 
 class Post extends Component {
     constructor(props, context) {
@@ -34,8 +34,9 @@ class Post extends Component {
 
         };
 
-        this.onSubmit = this.onSubmit.bind(this);
+        this.onSubmitComment = this.onSubmitComment.bind(this);
         this.onChange = this.onChange.bind(this);
+        this.onSubmitContact = this.onSubmitContact.bind(this);
 
         this.saveStatePost = this.saveStatePost.bind(this);
     }
@@ -59,44 +60,76 @@ class Post extends Component {
             this.setState({ session: store.getState().session.user })
         }
         this.setState({ loading: true }, () => {
-            axios.get('https://knowledge-community-back-end.herokuapp.com/posts/' + this.props.id)
-                .then(res => {
-                    this.setState({
-                        body: res.data.body,
-                        title: res.data.title,
-                        user: res.data.user,
-                        comments: res.data.comments,
-                        tags: res.data.tags,
-                        lat: res.data.lat,
-                        lng: res.data.lng
-                    });
-                    axios.get('https://knowledge-community-back-end.herokuapp.com/app_files?ProfilePhoto=1&user_id=' + this.state.user.id)
-                        .then(response => {
-                            this.setState({ picture: response.data })
+            verifyToken(this.state.session).then(data => {
+                //console.log(data);
+                axios.get('https://knowledge-community-back-end.herokuapp.com/posts/' + this.props.id)
+                    .then(res => {
+                        this.setState({
+                            body: res.data.body,
+                            title: res.data.title,
+                            user: res.data.user,
+                            comments: res.data.comments,
+                            tags: res.data.tags,
+                            lat: res.data.lat,
+                            lng: res.data.lng
+                        });
+                        verifyToken(this.state.session).then(data => {
+                            //console.log(data);
+                            axios.get('https://knowledge-community-back-end.herokuapp.com/app_files?ProfilePhoto=1&user_id=' + this.state.user.id)
+                                .then(response => {
+                                    this.setState({ picture: response.data })
+                                })
                         })
-                })
+                    })
+            })
         })
     }
 
-    onSubmit(history) {
+    onSubmitComment(history) {
         const { comment } = this.state;
         comment.user_id = this.props.user_id;
-        axios.post('https://knowledge-community-back-end.herokuapp.com/posts/' + this.props.id + '/comments', this.state.comment)
-            .then(response => {
-                alert("Comentario publicado");
-                this.setState({
-                  loading: false,
+        verifyToken(this.state.session).then(data => {
+            //console.log(data);
+            axios.post('https://knowledge-community-back-end.herokuapp.com/pos+-ts/' + this.props.id + '/comments', this.state.comment)
+                .then(response => {
+                    alert("Comentario publicado");
+                    this.setState({
+                        loading: false,
+                    })
+                    let comments = this.state.comments;
+                    comments.push(comment);
+                    this.setState({ comments: comments })
+                    this.forceUpdate();
                 })
-                let comments=this.state.comments;
-                comments.push(comment);
-                this.setState({comments:comments})
-                this.forceUpdate();
-            })
-            .catch(function (error) {
-                console.error(error);
-                console.error(error);
-            })
-        
+                .catch(function (error) {
+                    console.error(error);
+                    console.error(error);
+                })
+        })
+
+    }
+    onSubmitContact(history) {
+        const service = {
+            post_id: this.props.id,
+            user1_id: this.state.user.id,
+            user2_id: this.props.id
+        }
+        //history.push('/service/'+this.props.id);
+        verifyToken(this.state.session).then(data => {
+            //console.log(data);
+            axios.post('https://knowledge-community-back-end.herokuapp.com/services/', this.state.comment)
+                .then(response => {
+                    alert("Servicio creado");
+                    this.setState({
+                        loading: false,
+                    })
+                    history.push('/service/' + this.props.id);
+                })
+                .catch(function (error) {
+                    console.error(error);
+                })
+        })
+
     }
 
     onChange(e) {
@@ -114,8 +147,14 @@ class Post extends Component {
 
         const ComentarButton = withRouter(({ history }) => (
             <button className="btn btn-default btn-lg posd"
-                onClick={() => this.onSubmit(history)}
+                onClick={() => this.onSubmitComment(history)}
                 type="submit">Comentar
+            </button>
+        ));
+        const ContactarButton = withRouter(({ history }) => (
+            <button className="btn btn-default btn-lg"
+                onClick={() => this.onSubmitContact(history)}
+                type="submit">Contactar
             </button>
         ));
 
@@ -139,7 +178,7 @@ class Post extends Component {
                         </div>
                         <div className="title">
                             <h3 className="panel-title">
-                                <Link className="link" to={{ pathname: '/profile/'+this.state.user.id, params: { email: this.state.user.email } }}>
+                                <Link className="link" to={{ pathname: '/profile/' + this.state.user.id, params: { email: this.state.user.email } }}>
                                     {this.state.user.name}
                                 </Link> : {this.state.title} {this.state.tags.map((person, i) => <p key={i}>{person.name}</p>)} </h3>
 
@@ -158,7 +197,7 @@ class Post extends Component {
                             placeholder="Comenta algo"
                             onChange={this.onChange}
                         />
-                        <button type="button" className="btn btn-default btn-lg">Contactar</button>
+                        <ContactarButton></ContactarButton>
                         <ComentarButton></ComentarButton>
                     </div>
 

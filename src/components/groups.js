@@ -12,6 +12,7 @@ import LoadingSpinner from './LoadingSpinner';
 import Map from './Map';
 import { loadState, saveState } from './localStorage.js';
 import store from '../store';
+import { verifyToken } from './verifyToken';
 
 
 class groups extends Component {
@@ -75,66 +76,78 @@ class groups extends Component {
       this.setState({ session: store.getState().session.user })
     }
     this.setState({ loading: true }, () => {
-      axios.get('https://knowledge-community-back-end.herokuapp.com/groups?name=' + str)
-        .then(res => {
-          console.log(res.data[0].users)
-          this.setState({
-            users: res.data[0].users,
-            group_id: res.data[0].id,
-            name: res.data[0].name
+      verifyToken(this.state.session).then(data => {
+        //console.log(data);
+        axios.get('https://knowledge-community-back-end.herokuapp.com/groups?name=' + str)
+          .then(res => {
+            console.log(res.data[0].users)
+            this.setState({
+              users: res.data[0].users,
+              group_id: res.data[0].id,
+              name: res.data[0].name
 
-          });
-          this.setState({
-            loading: false
+            });
+            this.setState({
+              loading: false
+            })
           })
-        })
-      axios.get('https://knowledge-community-back-end.herokuapp.com/users?email=' + this.state.email)
-        .then(res => {
-          for (let i = 0; i < res.data.length; i++) {
-            if (res.data[i].email === this.props.user.email) {
-              let post = Object.assign({}, this.state.post);
-              post.user_id = res.data[i].id;
-              this.setState({
-                user_id: res.data[i].id,
-                post: post,
-                groups: res.data[i].groups,
-              });
+      })
+      verifyToken(this.state.session).then(data => {
+        //console.log(data);
+        axios.get('https://knowledge-community-back-end.herokuapp.com/users?email=' + this.state.email)
+          .then(res => {
+            for (let i = 0; i < res.data.length; i++) {
+              if (res.data[i].email === this.props.user.email) {
+                let post = Object.assign({}, this.state.post);
+                post.user_id = res.data[i].id;
+                this.setState({
+                  user_id: res.data[i].id,
+                  post: post,
+                  groups: res.data[i].groups,
+                });
+              }
             }
-          }
-          this.setState({
-            loading: false
+            this.setState({
+              loading: false
+            })
+          }).catch(function (error) {
+            console.error(error);
+            console.error(error);
           })
-        }).catch(function (error) {
-          console.error(error);
-          console.error(error);
-        })
+      })
     })
 
   }
 
   onSubmit(history) {
     this.setState({ loading: true }, () => {
-      axios.post('https://knowledge-community-back-end.herokuapp.com/groups/' + this.state.group_id + '/posts', this.state.post)
-        .then(response => {
-          alert("Publicacion Satisfactoria");
-          this.setState({
-            loading: false,
-          })
-          axios.post('https://knowledge-community-back-end.herokuapp.com/posts/' + response.data.id + '/tags', this.state.tag)
-            .then(response => {
+      verifyToken(this.state.session).then(data => {
+        //console.log(data);
+        axios.post('https://knowledge-community-back-end.herokuapp.com/groups/' + this.state.group_id + '/posts', this.state.post)
+          .then(response => {
+            alert("Publicacion Satisfactoria");
+            this.setState({
+              loading: false,
+            })
+            verifyToken(this.state.session).then(data => {
+              //console.log(data);
+              axios.post('https://knowledge-community-back-end.herokuapp.com/posts/' + response.data.id + '/tags', this.state.tag)
+                .then(response => {
 
-              this.forceUpdate();
+                  this.forceUpdate();
+                })
+                .catch(function (error) {
+                  console.error(error);
+                })
             })
-            .catch(function (error) {
-              console.error(error);
-            })
-        })
-        .catch(function (error) {
-          console.error(error);
-          this.setState({
-            loading: false,
           })
-        })
+          .catch(function (error) {
+            console.error(error);
+            this.setState({
+              loading: false,
+            })
+          })
+      })
     })
   }
 
