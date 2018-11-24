@@ -112,7 +112,6 @@ class Home extends Component {
           })
           axios.post('https://knowledge-community-back-end.herokuapp.com/posts/' + response.data.id + '/tags', this.state.tag)
             .then(response => {
-
               this.forceUpdate();
             })
             .catch(function (error) {
@@ -240,7 +239,7 @@ class Home extends Component {
                 <div className="row">
                   <div className='container-home'>
                     <div className="col-md-12">
-                      <Link to={{ pathname: '/profile', params: { email: this.props.user.email } }}>
+                      <Link to={{ pathname: '/profile/'+this.state.user_id, params: { email: this.props.user.email } }}>
                         <div className="home-profile-img">
                           {$picture}
                         </div>

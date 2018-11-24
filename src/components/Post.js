@@ -139,7 +139,7 @@ class Post extends Component {
                         </div>
                         <div className="title">
                             <h3 className="panel-title">
-                                <Link className="link" to={{ pathname: '/profile', params: { email: this.state.user.email } }}>
+                                <Link className="link" to={{ pathname: '/profile/'+this.state.user.id, params: { email: this.state.user.email } }}>
                                     {this.state.user.name}
                                 </Link> : {this.state.title} {this.state.tags.map((person, i) => <p key={i}>{person.name}</p>)} </h3>
 

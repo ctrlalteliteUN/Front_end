@@ -44,6 +44,7 @@ class profile extends Component {
     }
 
     componentDidMount() {
+        console.log(this.props);
         const state = loadState('profile');
         this.setState(state);
         window.addEventListener('beforeunload', this.saveStateProfile);
@@ -53,12 +54,11 @@ class profile extends Component {
         if (store.getState().session.user.email !== undefined) {
             this.setState({ session: store.getState().session.user })
         }
-        
-        this.setState({ loading: true }, () => {
-            console.log(this.state)
-            axios.get('https://knowledge-community-back-end.herokuapp.com/users?email=' + this.state.email)
+        this.setState({ loading: true }, () => {            
+            axios.get('https://knowledge-community-back-end.herokuapp.com/users/' + this.props.match.params.user_id)
                 .then(res => {
-                    this.setState({ id: res.data[0].id, groups: res.data[0].groups, persons: res.data[0] })
+                    console.log(res);
+                    this.setState({ id: res.data.id, groups: res.data.groups, persons: res.data })
                     axios.get('https://knowledge-community-back-end.herokuapp.com/app_files?ProfilePhoto=1&user_id=' + this.state.id)
                         .then(response => {
                             this.setState({ picture: response.data })
@@ -87,7 +87,6 @@ class profile extends Component {
     }*/
 
     render() {
-
         var post = Object.keys(this.state.posts)
         const label = []
         const d = []
@@ -193,7 +192,7 @@ class profile extends Component {
                                 </div>
                             </div>
                             <div className="col-md-2">
-                                {this.state.email !== this.props.user.email ? <div></div> :
+                                {this.state.persons.email !== this.props.user.email ? <div></div> :
                                     <Link className="link" to={{ pathname: '/editprofile', params: { email: this.state.email } }}>
                                         <input type="submit" className="profile-edit-btn" name="btnAddMore" value="Editar Perfil" />
                                     </Link>
