@@ -45,7 +45,7 @@ class Posts extends Component {
     this.setState({ loading: true }, () => {
       verifyToken(this.state.session).then(data => {
         //console.log(data);
-        axios.get('https://knowledge-community-back-end.herokuapp.com/posts?page=2')
+        axios.get('https://knowledge-community-back-end.herokuapp.com/posts?page=3')
           .then(res => {
             this.setState({
               posts: res.data,
@@ -65,7 +65,7 @@ class Posts extends Component {
     console.log(store.getState());
   }*/
   render() {
-    const listItems = this.state.posts.map((d, i) => <Post key={i} id={d.id} user_id={this.props.user_id} post={d}>{d.title}</Post>);
+    const listItems = this.state.posts.map((d, i) => d.group ? <div></div> : <Post key={i} id={d.id} user_id={this.props.user_id} post={d}>{d.title}</Post>);
     return (
       <div>
         {listItems}

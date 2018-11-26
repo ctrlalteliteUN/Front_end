@@ -2,7 +2,12 @@ import axios from 'axios';
 
 export function verifyToken(session) {
     return new Promise((resolve, reject) => {
-        resolve(axios.post('https://knowledge-community-back-end.herokuapp.com/users/1/token_verify', session));
+        resolve(
+            axios.post('https://knowledge-community-back-end.herokuapp.com/users/1/token_verify', session).then(response => {
+                setTimeout(1000);
+            })
+
+        );
     })
   }
 /*export var verifyToken = (session) => {

@@ -137,7 +137,7 @@ class groups extends Component {
               //console.log(data);
               axios.post('https://knowledge-community-back-end.herokuapp.com/posts/' + response.data.id + '/tags', this.state.tag)
                 .then(response => {
-
+                  console.log(response);
                   this.forceUpdate();
                 })
                 .catch(function (error) {

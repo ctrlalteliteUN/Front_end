@@ -66,7 +66,7 @@ class Post extends Component {
             this.setState({ session: store.getState().session.user })
         }
         this.setState({ post: this.props.post }, () => {
-            console.log(this.state.post);
+            //console.log(this.state.post);
         });
 
         /* this.setState({ loading: true }, () => {
