@@ -45,7 +45,7 @@ class Posts extends Component {
     this.setState({ loading: true }, () => {
       verifyToken(this.state.session).then(data => {
         //console.log(data);
-        axios.get('https://knowledge-community-back-end.herokuapp.com/posts?page=3')
+        axios.get('https://knowledge-community-back-end.herokuapp.com/posts?page=2')
           .then(res => {
             this.setState({
               posts: res.data,
