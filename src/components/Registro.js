@@ -50,22 +50,22 @@ class Registro extends Component {
             sessionService.saveUser(response.data)
               .then(() => {
                 history.push('/');
-              }).catch(err => console.log(err));
-          }).catch(err => console.log(err));
+              }).catch(err => console.error(err));
+          }).catch(err => console.error(err));
       }).catch(function (error) {
-        if (user.name == "" || user.email == "" || user.password == "" || user.password_confirmation == "") {
+        if (user.name==="" || user.email==="" || user.password==="" || user.password_confirmation==="") {
           this.setState({
             hasError: 1,
             loading: false,
           });
         }
-        else if (user.password != user.password_confirmation) {
+        else if (user.password !== user.password_confirmation) {
           this.setState({
             hasError: 3,
             loading: false,
           });
         }
-        else if (error.message.indexOf('422') != -1) {
+        else if (error.message.indexOf('422') !== -1) {
           this.setState({
             hasError: 2,
             loading: false,
@@ -83,27 +83,23 @@ class Registro extends Component {
   }
 
   responseGoogle = (response,history) => {
-    console.log(response);
     const {id_token} = response.tokenObj;
     
     const {email}=response.profileObj
     const {name}=response.profileObj;
     let query={"id_token":id_token,"email":email,"name":name};
-    console.log(query);
     this.setState({ loading: true }, () => {
       axios.post(`https://knowledge-community-back-end.herokuapp.com/auth/request`, query)
         .then(response => {
           this.setState({
             loading: false,
-          })       
-          console.log(response);  
+          })        
           const { authentication_token } = response.data;
-          console.log(authentication_token);
           let user={email:email}
           sessionService.saveSession({ authentication_token })
             .then(() => {
               sessionService.saveUser(user)
-            }).catch(err => console.log(err));
+            }).catch(err => console.error(err));
         }).catch(function (error) {
           console.error(error);
           this.setState({
@@ -119,7 +115,7 @@ class Registro extends Component {
 
 
   render() {
-    const { user } = this.state;
+
     const SubmitButton = withRouter(({ history }) => (
       <button className="mybtn"
         onClick={() => this.onSubmit(history)}
@@ -147,18 +143,18 @@ class Registro extends Component {
               </div>
               <div className="row">
                 <div className="col-sm-8 offset-sm-2 myform-cont">
-                  {this.state.hasError == 1 &&
+                  {this.state.hasError===1 &&
                     <div className="alert alert-danger">
                       <strong>Error:</strong> {this.state.errors}
                     </div>
                   }
 
-                  {this.state.hasError == 2 &&
+                  {this.state.hasError===2 &&
                     <div className="alert alert-danger">
                       <strong>Error:</strong> {this.state.errors1}
                     </div>
                   }
-                  {this.state.hasError == 3 &&
+                  {this.state.hasError===3 &&
                     <div className="alert alert-danger">
                       <strong>Error:</strong> {this.state.errors2}
                     </div>
@@ -194,7 +190,7 @@ class Registro extends Component {
                     autoLoad={false}
                     fields="name,email,picture"
                     callback={this.responseFacebook}
-                    cssClass="mybtn-social-f"
+                    cssclassName="mybtn-social-f"
                     icon="fab fa-facebook-square"
                     textButton=""
                   ></FacebookLogin>
@@ -206,7 +202,7 @@ class Registro extends Component {
                   <hr></hr>
                 </div>
                 <div className="col-sm-8 offset-sm-2 myform-cont">
-                  <Link to="/login">
+                  <Link className="link" to="/login">
                     <button type="submit" className="mybtn">Iniciar Sesion</button>
                   </Link>
                 </div>
@@ -220,7 +216,7 @@ class Registro extends Component {
   }
 }
 
-const { object, bool } = PropTypes;
+const { bool } = PropTypes;
 
 Registro.propTypes = {
   authenticated: bool.isRequired

@@ -33,7 +33,6 @@ class Navigation extends Component {
 
     renderRedirect() {
         if (this.state.redirect) {
-            console.log(this.state.redirect);
             return <Redirect to={{
                 pathname: "/search",
                 state: { search: this.state.search }
@@ -44,15 +43,13 @@ class Navigation extends Component {
 
 
     onSubmit(history) {
-        console.log("PRUEBA PRUEBA PREUBA");
     }
     onChange(e) {
         this.setState({search: e.target.value});
       }
 
     keyPress(e) {
-        if (e.keyCode == 13) {
-            console.log('value', e.target.value);
+        if (e.keyCode===13) {
             this.setRedirect();
         }
 
@@ -75,10 +72,10 @@ class Navigation extends Component {
                                     </i>
                                 </a>
                                 <div className="dropdown-menu" aria-labelledby="navbarDropdown">
-                                    <a className="dropdown-item" href="#">Action</a>
-                                    <a className="dropdown-item" href="#">Another action</a>
+                                    <a className="dropdown-item" >Action</a>
+                                    <a className="dropdown-item" >Another action</a>
                                     <div className="dropdown-divider"></div>
-                                    <a className="dropdown-item" href="#">Something else here</a>
+                                    <a className="dropdown-item" >Something else here</a>
                                 </div>
                             </li>
                         </ul>

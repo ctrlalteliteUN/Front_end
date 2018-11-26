@@ -7,7 +7,6 @@ import * as sessionActions from '../actions/sessionActions';
 import '../styles/Log.css';
 import { sessionService } from 'redux-react-session';
 import axios from 'axios';
-import { stringify } from 'querystring';
 import { GoogleLogin } from 'react-google-login';
 import FacebookLogin from 'react-facebook-login';
 import LoadingSpinner from './LoadingSpinner';
@@ -49,14 +48,14 @@ class Loginbody extends Component {
             .then(() => {
               sessionService.saveUser(response.data.data.user)
                 .then(() => {
-                  history.push('/');
-                }).catch(err => console.log(err));
-            }).catch(err => console.log(err));
+                  history.push({ pathname: '/', state: { detail: response.data.data.user }});
+                }).catch(err => console.error(err));
+            }).catch(err => console.error(err));
         }).catch(function (error) {
           this.setState({
             loading: false,
           })
-          if (error.message.indexOf('500') != -1) {
+          if (error.message.indexOf('500') !== -1) {
             this.setState({
               hasError: true,
               loading: false,
@@ -74,27 +73,23 @@ class Loginbody extends Component {
     this.setState({ user });
   }
   responseGoogle = (response,history) => {
-    console.log(response);
     const {id_token} = response.tokenObj;
     
     const {email}=response.profileObj
     const {name}=response.profileObj;
     let query={"id_token":id_token,"email":email,"name":name};
-    console.log(query);
     this.setState({ loading: true }, () => {
       axios.post(`https://knowledge-community-back-end.herokuapp.com/auth/request`, query)
         .then(response => {
           this.setState({
             loading: false,
-          })       
-          console.log(response);  
+          })        
           const { authentication_token } = response.data;
-          console.log(authentication_token);
-          let user={email:email}
+          let user={email:email, id:response.data.id}
           sessionService.saveSession({ authentication_token })
             .then(() => {
               sessionService.saveUser(user)
-            }).catch(err => console.log(err));
+            }).catch(err => console.error(err));
         }).catch(function (error) {
           console.error(error);
           this.setState({
@@ -105,11 +100,9 @@ class Loginbody extends Component {
   }
 
   responseFacebook = (response) => {
-    console.log(response);
   }
 
   render() {
-    const { user: { email, password } } = this.state;
     const SubmitButton = withRouter(({ history }) => (
       <button className="mybtn"
         onClick={() => this.onSubmit(history)}
@@ -169,15 +162,6 @@ class Loginbody extends Component {
                       onFailure={this.responseGoogle}                    >
                       <i className="fab fa-google"></i>
                     </GoogleLogin>
-                    <FacebookLogin
-                      appId="337250857041345"
-                      autoLoad={false}
-                      fields="name,email,picture"
-                      callback={this.responseFacebook}
-                      cssClass="mybtn-social-f"
-                      icon="fab fa-facebook-square"
-                      textButton=""
-                    ></FacebookLogin>
                   </div>
                 </div>
               </div>
@@ -186,7 +170,7 @@ class Loginbody extends Component {
                   <hr></hr>
                 </div>
                 <div className="col-sm-8 offset-sm-2 myform-cont">
-                  <Link to="/signup">
+                  <Link className="link" to="/signup">
                     <button type="submit" className="mybtn">Registrate</button>
                   </Link>
                 </div>

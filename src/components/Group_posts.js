@@ -4,13 +4,14 @@ import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
 import * as sessionActions from '../actions/sessionActions';
 import '../styles/Home.css';
+//import { Link } from 'react-router-dom';
 import axios from 'axios';
 import Post from './Post';
-//import LoadingSpinner from './LoadingSpinner';
 import store from '../store';
 import { loadState, saveState } from './localStorage.js';
 import { verifyToken } from './verifyToken';
-class Search_posts extends Component {
+
+class Group_posts extends Component {
   constructor(props, context) {
     super(props, context);
 
@@ -19,33 +20,32 @@ class Search_posts extends Component {
       loading: false,
       session: {}
     };
-    this.saveStateSearchPost = this.saveStateSearchPost.bind(this);
+    this.saveStateGroupPosts = this.saveStateGroupPosts.bind(this);
   }
 
-  saveStateSearchPost() {
-    saveState(this.state, 'search_posts');
+  saveStateGroupPosts() {
+    saveState(this.state, 'posts_group');
   }
 
   componentWillUnmount() {
-    window.removeEventListener('beforeunload', this.saveStateSearchPost)
+    window.removeEventListener('beforeunload', this.saveStateGroupPosts)
 
     // saves if component has a chance to unmount
-    this.saveStateSearchPost();
+    this.saveStateGroupPosts();
   }
 
   componentDidMount() {
-    const state = loadState('search_posts');
+    const state = loadState('posts_group');
     this.setState(state);
-    window.addEventListener('beforeunload', this.saveStateSearchPost);
+    window.addEventListener('beforeunload', this.saveStateGroupPosts);
     if (store.getState().session.user.email !== undefined) {
       this.setState({ session: store.getState().session.user })
     }
     this.setState({ loading: true }, () => {
       verifyToken(this.state.session).then(data => {
         //console.log(data);
-        axios.get('https://knowledge-community-back-end.herokuapp.com/posts?body=' + this.props.searchm)
+        axios.get('https://knowledge-community-back-end.herokuapp.com/groups/' + this.props.group_id + '/posts')
           .then(res => {
-            console.log(this.state)
             this.setState({
               posts: res.data,
               loading: false,
@@ -73,7 +73,7 @@ class Search_posts extends Component {
 }
 const { object, bool } = PropTypes;
 
-Search_posts.propTypes = {
+Group_posts.propTypes = {
   user: object.isRequired,
   authenticated: bool.isRequired
 };
@@ -89,5 +89,5 @@ const mapDispatch = (dispatch) => {
   };
 };
 
-export default connect(mapState, mapDispatch)(Search_posts);
-//export default Search_posts;
+export default connect(mapState, mapDispatch)(Group_posts);
+//export default Group_posts;

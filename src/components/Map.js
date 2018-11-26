@@ -3,8 +3,6 @@ import GoogleMapReact from 'google-map-react';
 import Marker from './Marker';
 
 
-const AnyReactComponent = ({ text }) => <div>{text}</div>;
-
 class Map extends Component {
 
     constructor(props, context) {
@@ -31,7 +29,7 @@ class Map extends Component {
     };
 
     _onClick = ({ x, y, lat, lng, event }) => {
-        if (this.props.type!='vista'){
+        if (this.props.type!=='vista'){
             const {marker}=this.state;
             marker.lat=lat;
             marker.lng=lng;
@@ -41,7 +39,6 @@ class Map extends Component {
         
     }
     render() {
-        const marker = ({ text }) => <div>{text}</div>;
         return (
             // Important! Always set the container height explicitly
             <div style={{ height: '500px', width: '100%' }}>
