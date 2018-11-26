@@ -75,7 +75,7 @@ class Home extends Component {
         const state = loadState('home');
         this.setState(state);
         window.addEventListener('beforeunload', this.saveStateHome);
-        this.setState({ loading: true }, () => {
+        this.setState({ loading: true,map:false }, () => {
             verifyToken(this.state.session).then(data => {
                 //console.log(data);
                 axios.get('https://knowledge-community-back-end.herokuapp.com/users?email=' + this.state.session.email)

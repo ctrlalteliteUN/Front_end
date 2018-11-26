@@ -65,7 +65,7 @@ class Posts extends Component {
     console.log(store.getState());
   }*/
   render() {
-    const listItems = this.state.posts.map((d, i) => <Post key={i} id={d.id} user_id={this.props.user_id}>{d.title}</Post>);
+    const listItems = this.state.posts.map((d, i) => <Post key={i} id={d.id} user_id={this.props.user_id} post={d}>{d.title}</Post>);
     return (
       <div>
         {listItems}
