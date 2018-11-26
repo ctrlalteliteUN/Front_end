@@ -33,6 +33,7 @@ class groups extends Component {
         body: "",
         solicitud: 0,
         user_id: -1,
+        group_id:"",
         lat: null,
         lng: null
       },
@@ -81,10 +82,13 @@ class groups extends Component {
         axios.get('https://knowledge-community-back-end.herokuapp.com/groups?name=' + str)
           .then(res => {
             console.log(res.data[0].users)
+            let post = Object.assign({}, this.state.post);
+            post.group_id=res.data[0].id,
             this.setState({
               users: res.data[0].users,
               group_id: res.data[0].id,
-              name: res.data[0].name
+              name: res.data[0].name,
+              post: post,
 
             });
             this.setState({
@@ -123,7 +127,7 @@ class groups extends Component {
     this.setState({ loading: true }, () => {
       verifyToken(this.state.session).then(data => {
         //console.log(data);
-        axios.post('https://knowledge-community-back-end.herokuapp.com/groups/' + this.state.group_id + '/posts', this.state.post)
+        axios.post('https://knowledge-community-back-end.herokuapp.com/posts', this.state.post)
           .then(response => {
             alert("Publicacion Satisfactoria");
             this.setState({
