@@ -41,7 +41,8 @@ class Home extends Component {
             loading: false,
             map: false,
             session: {},
-            group_name: ""
+            group_name: "",
+            services: []
         };
         this.onSubmit = this.onSubmit.bind(this);
         this.onGroup = this.onGroup.bind(this);
@@ -75,7 +76,7 @@ class Home extends Component {
         const state = loadState('home');
         this.setState(state);
         window.addEventListener('beforeunload', this.saveStateHome);
-        this.setState({ loading: true,map:false }, () => {
+        this.setState({ loading: true, map: false, services:[] }, () => {
             verifyToken(this.state.session).then(data => {
                 //console.log(data);
                 axios.get('https://knowledge-community-back-end.herokuapp.com/users?email=' + this.state.session.email)
@@ -96,13 +97,28 @@ class Home extends Component {
                                         picture: response.data,
                                     })
                                 })
-                            this.setState({
-                                loading: false
-                            })
-                        }).catch(function (error) {
-                            console.error(error);
-                            console.error(error);
+
                         })
+                        res.data[0].services.forEach(element => {
+                            verifyToken(this.state.session).then(data => {
+                                console.log(data);
+                                axios.get('https://knowledge-community-back-end.herokuapp.com/services/' + element.id)
+                                    .then(response => {
+                                        var services = this.state.services;
+                                        services.push(response.data)
+                                        this.setState({
+                                            services: services,
+                                        })
+                                    })
+
+                            })
+                        });
+                        this.setState({
+                            loading: false
+                        })
+                    }).catch(function (error) {
+                        console.error(error);
+                        console.error(error);
                     })
             })
         })
@@ -110,7 +126,7 @@ class Home extends Component {
     }
 
     onSubmit(history) {
-        this.setState({ loading: true }, () => {
+        this.setState({ loading: true, }, () => {
             verifyToken(this.state.session).then(data => {
                 //console.log(data);
                 axios.post(`https://knowledge-community-back-end.herokuapp.com/posts`, this.state.post)
@@ -222,6 +238,7 @@ class Home extends Component {
         }
     }
     render() {
+        //console.log(this.state.services)
         const Pdfbutton = withRouter(({ history }) => (
             <button className="btn btn-default btn-lg posd"
                 onClick={() => this.onPDF(history)}
@@ -280,6 +297,27 @@ class Home extends Component {
                                                         <Link key={i} className="link" to={{ pathname: '/groups/' + group.name, params: { group_id: group.id, name: group.name } }}>
                                                             {group.name}<br></br>
                                                         </Link>)}
+
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div className="row">
+                                    <div className='container-home'>
+                                        <div className="col-md-12">
+                                            <div className="panel panel-default">
+                                                <div className="panel-heading">
+                                                    <h3 className="panel-title">Servicios<a className="items">
+                                                        <i class="fas fa-atlas"></i>
+                                                    </a></h3>
+                                                </div>
+                                                <div className="panel-body">
+                                                    {this.state.services.map((service, i) =>
+                                                        <Link key={i} className="link" to={{ pathname: '/service/' + service.id }}>
+                                                            {service.id}<br></br>
+                                                        </Link>
+                                                    )}
 
                                                 </div>
                                             </div>

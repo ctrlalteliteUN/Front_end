@@ -11,6 +11,8 @@ import axios from 'axios';
 import { loadState, saveState } from './localStorage.js';
 import LoadingSpinner from './LoadingSpinner';
 import store from '../store';
+import { verifyToken } from './verifyToken';
+import Post from './Post';
 
 class Service extends Component {
     constructor(props) {
@@ -23,6 +25,34 @@ class Service extends Component {
                 score: 5,
                 state: 0,
                 users: []
+            },
+            picture: "",
+            lat: "",
+            lng: "",
+            service: {
+                post: {
+                    body: "",
+                    title: "",
+                    user: {
+                        id: -1
+                    },
+                    comments: [],
+                    comment: {
+                        user_id: this.props.user_id,
+                        body: "",
+                    },
+                    tags: [],
+                    lat: 4.6381938,
+                    lng: -74.0840464,
+                },
+                users: [{
+                    id: -1,
+                    email: "",
+                    name: ""
+                }]
+            },
+            post: {
+                comments:[]
             }
         };
         this.saveStateService = this.saveStateService.bind(this);
@@ -40,7 +70,7 @@ class Service extends Component {
     }
 
     componentDidMount() {
-        console.log(this.props);
+        //console.log(this.props);
         const state = loadState('service');
         this.setState(state);
         window.addEventListener('beforeunload', this.saveStateService);
@@ -49,6 +79,32 @@ class Service extends Component {
         }
         this.setState({ loading: true }, () => {
             setTimeout(() => this.setState({ loading: false }), 500);
+        })
+        this.setState({ loading: true }, () => {
+            verifyToken(this.state.session).then(data => {
+                //console.log(data);
+                axios.get('https://knowledge-community-back-end.herokuapp.com/services/' + this.props.match.params.service_id)
+                    .then(response => {
+                        this.setState({
+                            service: response.data,
+                        })
+                        verifyToken(this.state.session).then(data => {
+                            console.log(data);
+                            axios.get('https://knowledge-community-back-end.herokuapp.com/posts/' + response.data.post.id)
+                                .then(res => {
+                                    console.log(res.data);
+                                    this.setState({
+                                        post: res.data,
+                                        loading: false,
+                                    });
+                                })
+                        })
+                    })
+            })
+
+        })
+        this.setState({ loading: true }, () => {
+            setTimeout(() => this.setState({ loading: false }), 5000);
         })
 
     }
@@ -59,11 +115,16 @@ class Service extends Component {
     }*/
 
     render() {
+        //console.log(this.state)
+        let aux=<div></div>;
+        if(this.state.post){
+            aux= <Post id={this.state.service.post.id} user_id={this.state.service.post.user_id} post={this.state.post} ></Post>
+        }
         return (
             <div>
                 <Navigation />
                 {this.state.loading ? <LoadingSpinner /> :
-                <div> EN PROCESO</div>
+                    aux
                 }
             </div >
 
