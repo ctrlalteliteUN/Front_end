@@ -12,7 +12,6 @@ import LoadingSpinner from './LoadingSpinner';
 import Map from './Map';
 import { loadState, saveState } from './localStorage.js';
 import store from '../store';
-import { verifyToken } from './verifyToken';
 
 
 class Home extends Component {
@@ -76,83 +75,74 @@ class Home extends Component {
         const state = loadState('home');
         this.setState(state);
         window.addEventListener('beforeunload', this.saveStateHome);
-        this.setState({ loading: true, map: false, services:[] }, () => {
-            verifyToken(this.state.session).then(data => {
-                //console.log(data);
-                axios.get('https://knowledge-community-back-end.herokuapp.com/users?email=' + this.state.session.email)
-                    .then(res => {
-                        console.log(this.state);
-                        let post = Object.assign({}, this.state.post);
-                        post.user_id = res.data[0].id;
-                        this.setState({
-                            user_id: res.data[0].id,
-                            post: post,
-                            groups: res.data[0].groups,
-                        });
-                        verifyToken(this.state.session).then(data => {
-                            //console.log(data);
-                            axios.get('https://knowledge-community-back-end.herokuapp.com/app_files?ProfilePhoto=1&user_id=' + this.state.user_id)
-                                .then(response => {
-                                    this.setState({
-                                        picture: response.data,
-                                    })
-                                })
-
-                        })
-                        res.data[0].services.forEach(element => {
-                            verifyToken(this.state.session).then(data => {
-                                console.log(data);
-                                axios.get('https://knowledge-community-back-end.herokuapp.com/services/' + element.id)
-                                    .then(response => {
-                                        var services = this.state.services;
-                                        services.push(response.data)
-                                        this.setState({
-                                            services: services,
-                                        })
-                                    })
-
+        this.setState({ loading: true, map: false, services: [] }, () => {
+            //console.log(data);
+            axios.get('https://knowledge-community-back-end.herokuapp.com/users?email=' + this.state.session.email)
+                .then(res => {
+                    console.log(this.state);
+                    let post = Object.assign({}, this.state.post);
+                    post.user_id = res.data[0].id;
+                    this.setState({
+                        user_id: res.data[0].id,
+                        post: post,
+                        groups: res.data[0].groups,
+                    });
+                    //console.log(data);
+                    axios.get('https://knowledge-community-back-end.herokuapp.com/app_files?ProfilePhoto=1&user_id=' + this.state.user_id)
+                        .then(response => {
+                            this.setState({
+                                picture: response.data,
                             })
-                        });
-                        this.setState({
-                            loading: false
                         })
-                    }).catch(function (error) {
-                        console.error(error);
-                        console.error(error);
+
+
+                    res.data[0].services.forEach(element => {
+                        //console.log(data);
+                        axios.get('https://knowledge-community-back-end.herokuapp.com/services/' + element.id)
+                            .then(response => {
+                                var services = this.state.services;
+                                services.push(response.data)
+                                this.setState({
+                                    services: services,
+                                })
+                            })
+
+                    });
+                    this.setState({
+                        loading: false
                     })
-            })
+                }).catch(function (error) {
+                    console.error(error);
+                    console.error(error);
+                })
         })
 
     }
 
     onSubmit(history) {
         this.setState({ loading: true, }, () => {
-            verifyToken(this.state.session).then(data => {
-                //console.log(data);
-                axios.post(`https://knowledge-community-back-end.herokuapp.com/posts`, this.state.post)
-                    .then(response => {
-                        alert("Publicacion Satisfactoria");
-                        this.setState({
-                            loading: false,
-                        })
-                        verifyToken(this.state.session).then(data => {
-                            //console.log(data);
-                            axios.post('https://knowledge-community-back-end.herokuapp.com/posts/' + response.data.id + '/tags', this.state.tag)
-                                .then(response => {
-                                    this.forceUpdate();
-                                })
-                                .catch(function (error) {
-                                    console.error(error);
-                                })
-                        })
+            //console.log(data);
+            axios.post(`https://knowledge-community-back-end.herokuapp.com/posts`, this.state.post)
+                .then(response => {
+                    alert("Publicacion Satisfactoria");
+                    this.setState({
+                        loading: false,
                     })
-                    .catch(function (error) {
-                        console.error(error);
-                        this.setState({
-                            loading: false,
+                    //console.log(data);
+                    axios.post('https://knowledge-community-back-end.herokuapp.com/posts/' + response.data.id + '/tags', this.state.tag)
+                        .then(response => {
+                            this.forceUpdate();
                         })
+                        .catch(function (error) {
+                            console.error(error);
+                        })
+                })
+                .catch(function (error) {
+                    console.error(error);
+                    this.setState({
+                        loading: false,
                     })
-            })
+                })
         })
     }
 
@@ -160,16 +150,14 @@ class Home extends Component {
         this.setState({ loading: true }, () => {
             let { pdfPreviewUrl } = this.state;
             if (pdfPreviewUrl) {
-                verifyToken(this.state.session).then(data => {
-                    //console.log(data);
-                    axios.post(`https://knowledge-community-back-end.herokuapp.com/app_files`, { ruta: pdfPreviewUrl, file_type_id: 2, user_id: this.state.user_id, post_id: "", description: "pdf", titulo: this.state.namefile })
-                        .then(response => {
-                            history.push('/')
-                            this.setState({
-                                loading: false,
-                            })
+                //console.log(data);
+                axios.post(`https://knowledge-community-back-end.herokuapp.com/app_files`, { ruta: pdfPreviewUrl, file_type_id: 2, user_id: this.state.user_id, post_id: "", description: "pdf", titulo: this.state.namefile })
+                    .then(response => {
+                        history.push('/')
+                        this.setState({
+                            loading: false,
                         })
-                })
+                    })
             }
         })
     }
@@ -179,16 +167,14 @@ class Home extends Component {
         console.log(this.state.group_name)
         const group = { name: this.state.group_name }
         this.setState({ loading: true }, () => {
-            verifyToken(this.state.session).then(data => {
-                //console.log(data);
-                axios.post('https://knowledge-community-back-end.herokuapp.com/groups', group)
-                    .then(response => {
-                        history.push('/')
-                        this.setState({
-                            loading: false,
-                        })
+            //console.log(data);
+            axios.post('https://knowledge-community-back-end.herokuapp.com/groups', group)
+                .then(response => {
+                    history.push('/')
+                    this.setState({
+                        loading: false,
                     })
-            })
+                })
         })
     }
     onChange(e) {
@@ -234,7 +220,9 @@ class Home extends Component {
 
     componentWillReceiveProps() {
         if (store.getState().session.user.email !== undefined) {
-            this.setState({ session: store.getState().session.user })
+            this.setState({ session: store.getState().session.user });
+            axios.defaults.headers.common['Authorization'] = `${this.state.session.authentication_token}`;
+            axios.defaults.headers.common['ID'] = `${this.state.session.id}`;
         }
     }
     render() {

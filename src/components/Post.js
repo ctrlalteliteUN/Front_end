@@ -10,7 +10,6 @@ import Comment from './Comment.js'
 import Map from './Map';
 import store from '../store';
 import { loadState, saveState } from './localStorage.js';
-import { verifyToken } from './verifyToken';
 
 class Post extends Component {
     constructor(props, context) {
@@ -63,14 +62,16 @@ class Post extends Component {
         this.setState(state);
         window.addEventListener('beforeunload', this.saveStatePost);
         if (store.getState().session.user.email !== undefined) {
-            this.setState({ session: store.getState().session.user })
+            this.setState({ session: store.getState().session.user },()=>{
+            axios.defaults.headers.common['Authorization'] = `${this.state.session.authentication_token}`;
+            axios.defaults.headers.common['ID'] = `${this.state.session.id}`;
+            })
         }
         this.setState({ post: this.props.post }, () => {
             //console.log(this.state.post);
         });
 
-        /* this.setState({ loading: true }, () => {
-             verifyToken(this.state.session).then(data => {                
+        /* this.setState({ loading: true }, () => {              
                  axios.get('https://knowledge-community-back-end.herokuapp.com/posts/' + this.props.id)
                      .then(res => {
                          console.log(data);
@@ -84,39 +85,34 @@ class Post extends Component {
                              lat: res.data.lat,
                              lng: res.data.lng
                          });
-                         verifyToken(this.state.session).then(data => {
                              //console.log(data);
                              axios.get('https://knowledge-community-back-end.herokuapp.com/app_files?ProfilePhoto=1&user_id=' + this.state.post.user.id)
                                  .then(response => {
                                      this.setState({ picture: response.data })
                                  })
-                         })
                      })
-             })
          })*/
     }
 
     onSubmitComment(history) {
         const { comment } = this.state;
         comment.user_id = this.props.user_id;
-        verifyToken(this.state.session).then(data => {
-            //console.log(data);
-            axios.post('https://knowledge-community-back-end.herokuapp.com/pos+-ts/' + this.props.id + '/comments', this.state.comment)
-                .then(response => {
-                    alert("Comentario publicado");
-                    this.setState({
-                        loading: false,
-                    })
-                    let comments = this.state.comments;
-                    comments.push(comment);
-                    this.setState({ comments: comments })
-                    this.forceUpdate();
+        //console.log(data);
+        axios.post('https://knowledge-community-back-end.herokuapp.com/pos+-ts/' + this.props.id + '/comments', this.state.comment)
+            .then(response => {
+                alert("Comentario publicado");
+                this.setState({
+                    loading: false,
                 })
-                .catch(function (error) {
-                    console.error(error);
-                    console.error(error);
-                })
-        })
+                let comments = this.state.comments;
+                comments.push(comment);
+                this.setState({ comments: comments })
+                this.forceUpdate();
+            })
+            .catch(function (error) {
+                console.error(error);
+                console.error(error);
+            })
 
     }
     onSubmitContact(history) {
@@ -126,20 +122,18 @@ class Post extends Component {
             user2_id: this.props.id
         }
         //history.push('/service/'+this.props.id);
-        verifyToken(this.state.session).then(data => {
-            //console.log(data);
-            axios.post('https://knowledge-community-back-end.herokuapp.com/services/', this.state.comment)
-                .then(response => {
-                    alert("Servicio creado");
-                    this.setState({
-                        loading: false,
-                    })
-                    history.push('/service/' + this.props.id);
+        //console.log(data);
+        axios.post('https://knowledge-community-back-end.herokuapp.com/services/', this.state.comment)
+            .then(response => {
+                alert("Servicio creado");
+                this.setState({
+                    loading: false,
                 })
-                .catch(function (error) {
-                    console.error(error);
-                })
-        })
+                history.push('/service/' + this.props.id);
+            })
+            .catch(function (error) {
+                console.error(error);
+            })
 
     }
 
@@ -155,6 +149,7 @@ class Post extends Component {
 
 
     render() {
+        //console.log(this.state);
         const ComentarButton = withRouter(({ history }) => (
             <button className="btn btn-default btn-lg posd"
                 onClick={() => this.onSubmitComment(history)}

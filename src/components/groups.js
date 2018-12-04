@@ -12,7 +12,6 @@ import LoadingSpinner from './LoadingSpinner';
 import Map from './Map';
 import { loadState, saveState } from './localStorage.js';
 import store from '../store';
-import { verifyToken } from './verifyToken';
 
 
 class groups extends Component {
@@ -33,7 +32,7 @@ class groups extends Component {
         body: "",
         solicitud: 0,
         user_id: -1,
-        group_id:"",
+        group_id: "",
         lat: null,
         lng: null
       },
@@ -74,16 +73,18 @@ class groups extends Component {
     console.log(str2)
     window.addEventListener('beforeunload', this.saveStateGroups);
     if (store.getState().session.user.email !== undefined) {
-      this.setState({ session: store.getState().session.user })
+      this.setState({ session: store.getState().session.user }, () => {
+        axios.defaults.headers.common['Authorization'] = `${this.state.session.authentication_token}`;
+        axios.defaults.headers.common['ID'] = `${this.state.session.id}`;
+      })
     }
-    this.setState({ loading: true }, () => {
-      verifyToken(this.state.session).then(data => {
-        //console.log(data);
-        axios.get('https://knowledge-community-back-end.herokuapp.com/groups?name=' + str)
-          .then(res => {
-            console.log(res.data[0].users)
-            let post = Object.assign({}, this.state.post);
-            post.group_id=res.data[0].id,
+    this.setState({ loading: true, map: false }, () => {
+      //console.log(data);
+      axios.get('https://knowledge-community-back-end.herokuapp.com/groups?name=' + str)
+        .then(res => {
+          console.log(res.data[0].users)
+          let post = Object.assign({}, this.state.post);
+          post.group_id = res.data[0].id,
             this.setState({
               users: res.data[0].users,
               group_id: res.data[0].id,
@@ -91,67 +92,60 @@ class groups extends Component {
               post: post,
 
             });
-            this.setState({
-              loading: false
-            })
+          this.setState({
+            loading: false
           })
-      })
-      verifyToken(this.state.session).then(data => {
-        //console.log(data);
-        axios.get('https://knowledge-community-back-end.herokuapp.com/users?email=' + this.state.email)
-          .then(res => {
-            for (let i = 0; i < res.data.length; i++) {
-              if (res.data[i].email === this.props.user.email) {
-                let post = Object.assign({}, this.state.post);
-                post.user_id = res.data[i].id;
-                this.setState({
-                  user_id: res.data[i].id,
-                  post: post,
-                  groups: res.data[i].groups,
-                });
-              }
+        })
+      //console.log(data);
+      axios.get('https://knowledge-community-back-end.herokuapp.com/users?email=' + this.state.email)
+        .then(res => {
+          for (let i = 0; i < res.data.length; i++) {
+            if (res.data[i].email === this.props.user.email) {
+              let post = Object.assign({}, this.state.post);
+              post.user_id = res.data[i].id;
+              this.setState({
+                user_id: res.data[i].id,
+                post: post,
+                groups: res.data[i].groups,
+              });
             }
-            this.setState({
-              loading: false
-            })
-          }).catch(function (error) {
-            console.error(error);
-            console.error(error);
+          }
+          this.setState({
+            loading: false
           })
-      })
+        }).catch(function (error) {
+          console.error(error);
+          console.error(error);
+        })
     })
-
   }
 
   onSubmit(history) {
     this.setState({ loading: true }, () => {
-      verifyToken(this.state.session).then(data => {
-        //console.log(data);
-        axios.post('https://knowledge-community-back-end.herokuapp.com/posts', this.state.post)
-          .then(response => {
-            alert("Publicacion Satisfactoria");
-            this.setState({
-              loading: false,
-            })
-            verifyToken(this.state.session).then(data => {
-              //console.log(data);
-              axios.post('https://knowledge-community-back-end.herokuapp.com/posts/' + response.data.id + '/tags', this.state.tag)
-                .then(response => {
-                  console.log(response);
-                  this.forceUpdate();
-                })
-                .catch(function (error) {
-                  console.error(error);
-                })
-            })
+      //console.log(data);
+      axios.post('https://knowledge-community-back-end.herokuapp.com/posts', this.state.post)
+        .then(response => {
+          alert("Publicacion Satisfactoria");
+          this.setState({
+            loading: false,
           })
-          .catch(function (error) {
-            console.error(error);
-            this.setState({
-              loading: false,
+          //console.log(data);
+          axios.post('https://knowledge-community-back-end.herokuapp.com/posts/' + response.data.id + '/tags', this.state.tag)
+            .then(response => {
+              console.log(response);
+              this.forceUpdate();
             })
+            .catch(function (error) {
+              console.error(error);
+            })
+        })
+
+        .catch(function (error) {
+          console.error(error);
+          this.setState({
+            loading: false,
           })
-      })
+        })
     })
   }
 

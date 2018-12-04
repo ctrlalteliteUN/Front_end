@@ -9,7 +9,6 @@ import Post from './Post';
 //import LoadingSpinner from './LoadingSpinner';
 import store from '../store';
 import { loadState, saveState } from './localStorage.js';
-import { verifyToken } from './verifyToken';
 class Search_posts extends Component {
   constructor(props, context) {
     super(props, context);
@@ -38,26 +37,27 @@ class Search_posts extends Component {
     this.setState(state);
     window.addEventListener('beforeunload', this.saveStateSearchPost);
     if (store.getState().session.user.email !== undefined) {
-      this.setState({ session: store.getState().session.user })
-    }
-    this.setState({ loading: true }, () => {
-      verifyToken(this.state.session).then(data => {
-        //console.log(data);
-        axios.get('https://knowledge-community-back-end.herokuapp.com/posts?body=' + this.props.searchm)
-          .then(res => {
-            console.log(this.state)
-            this.setState({
-              posts: res.data,
-              loading: false,
-            });
-          }).catch(function (error) {
-            console.error(error);
-            console.error(error);
-            this.setState({
-              loading: false,
-            })
-          })
+      this.setState({ session: store.getState().session.user },()=>{
+      axios.defaults.headers.common['Authorization'] = `${this.state.session.authentication_token}`;
+      axios.defaults.headers.common['ID'] = `${this.state.session.id}`;
       })
+  }
+    this.setState({ loading: true }, () => {
+      //console.log(data);
+      axios.get('https://knowledge-community-back-end.herokuapp.com/posts?body=' + this.props.searchm)
+        .then(res => {
+          console.log(this.state)
+          this.setState({
+            posts: res.data,
+            loading: false,
+          });
+        }).catch(function (error) {
+          console.error(error);
+          console.error(error);
+          this.setState({
+            loading: false,
+          })
+        })
     })
   }
   render() {

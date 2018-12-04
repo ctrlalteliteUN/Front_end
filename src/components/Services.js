@@ -11,7 +11,6 @@ import axios from 'axios';
 import { loadState, saveState } from './localStorage.js';
 import LoadingSpinner from './LoadingSpinner';
 import store from '../store';
-import { verifyToken } from './verifyToken';
 
 class Service extends Component {
     constructor(props) {
@@ -19,8 +18,8 @@ class Service extends Component {
         this.state = {
             session: {},
             loading: false,
-            services_aux:[],
-            services:[]
+            services_aux: [],
+            services: []
         };
         this.saveStateService = this.saveStateService.bind(this);
     }
@@ -42,39 +41,38 @@ class Service extends Component {
         this.setState(state);
         window.addEventListener('beforeunload', this.saveStateService);
         if (store.getState().session.user.email !== undefined) {
-            this.setState({ session: store.getState().session.user })
+            this.setState({ session: store.getState().session.user }, () => {
+                axios.defaults.headers.common['Authorization'] = `${this.state.session.authentication_token}`;
+                axios.defaults.headers.common['ID'] = `${this.state.session.id}`;
+            })
         }
-        this.setState({ loading: true , services:[]}, () => {
+        this.setState({ loading: true, services: [] }, () => {
             this.setState({ loading: true, map: false }, () => {
-                verifyToken(this.state.session).then(data => {
-                    //console.log(data);
-                    axios.get('https://knowledge-community-back-end.herokuapp.com/users/' + this.state.session.id)
-                        .then(res => {
-                            this.setState({
-                                services_aux: res.data.services
-                            });
-                            this.state.services_aux.forEach(element => {
-                                verifyToken(this.state.session).then(data => {
-                                    //console.log(data);
-                                    axios.get('https://knowledge-community-back-end.herokuapp.com/services/' + element.id)
-                                        .then(response => {
-                                            var services = this.state.services;
-                                            services.push(response.data.post)
-                                            this.setState({
-                                                services: services,
-                                            })
-                                        })
-    
+                //console.log(data);
+                axios.get('https://knowledge-community-back-end.herokuapp.com/users/' + this.state.session.id)
+                    .then(res => {
+                        this.setState({
+                            services_aux: res.data.services
+                        });
+                        this.state.services_aux.forEach(element => {
+                            //console.log(data);
+                            axios.get('https://knowledge-community-back-end.herokuapp.com/services/' + element.id)
+                                .then(response => {
+                                    var services = this.state.services;
+                                    services.push(response.data.post)
+                                    this.setState({
+                                        services: services,
+                                    })
                                 })
-                            });
-                            this.setState({
-                                loading: false
-                            })
-                        }).catch(function (error) {
-                            console.error(error);
-                            console.error(error);
+
+                        });
+                        this.setState({
+                            loading: false
                         })
-                })
+                    }).catch(function (error) {
+                        console.error(error);
+                        console.error(error);
+                    })
             })
             setTimeout(() => this.setState({ loading: false }), 500);
         })
@@ -92,7 +90,7 @@ class Service extends Component {
             <div>
                 <Navigation />
                 {this.state.loading ? <LoadingSpinner /> :
-                <div> EN PROCESOfdfd</div>
+                    <div> EN PROCESOfdfd</div>
                 }
             </div >
 

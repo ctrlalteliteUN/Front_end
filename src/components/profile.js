@@ -13,7 +13,6 @@ import { Bar } from 'react-chartjs-2';
 import { loadState, saveState } from './localStorage.js';
 import LoadingSpinner from './LoadingSpinner';
 import store from '../store';
-import { verifyToken } from './verifyToken';
 
 class profile extends Component {
     constructor(props) {
@@ -53,46 +52,40 @@ class profile extends Component {
             this.setState({ email: this.props.location.params.email })
         }
         if (store.getState().session.user.email !== undefined) {
-            this.setState({ session: store.getState().session.user })
+            this.setState({ session: store.getState().session.user },()=>{
+            axios.defaults.headers.common['Authorization'] = `${this.state.session.authentication_token}`;
+            axios.defaults.headers.common['ID'] = `${this.state.session.id}`;
+            })
         }
         this.setState({ loading: true }, () => {
-            verifyToken(this.state.session).then(data => {
-                //console.log(data);
-                axios.get('https://knowledge-community-back-end.herokuapp.com/users/' + this.props.match.params.user_id)
-                    .then(res => {
-                        console.log(res);
-                        this.setState({ id: res.data.id, groups: res.data.groups, persons: res.data })
-                        verifyToken(this.state.session).then(data => {
-                            //console.log(data);
-                            axios.get('https://knowledge-community-back-end.herokuapp.com/app_files?ProfilePhoto=1&user_id=' + this.state.id)
-                                .then(response => {
-                                    this.setState({ picture: response.data })
-                                })
+            //console.log(data);
+            axios.get('https://knowledge-community-back-end.herokuapp.com/users/' + this.props.match.params.user_id)
+                .then(res => {
+                    console.log(res);
+                    this.setState({ id: res.data.id, groups: res.data.groups, persons: res.data })
+                    //console.log(data);
+                    axios.get('https://knowledge-community-back-end.herokuapp.com/app_files?ProfilePhoto=1&user_id=' + this.state.id)
+                        .then(response => {
+                            this.setState({ picture: response.data })
                         })
-                        verifyToken(this.state.session).then(data => {
-                            //console.log(data);
-                            axios.get('https://knowledge-community-back-end.herokuapp.com/app_files?FileType=2&user_id=' + this.state.id)
-                                .then(response => {
-                                    this.setState({ files: response.data })
-                                })
+                    //console.log(data);
+                    axios.get('https://knowledge-community-back-end.herokuapp.com/app_files?FileType=2&user_id=' + this.state.id)
+                        .then(response => {
+                            this.setState({ files: response.data })
                         })
-                        verifyToken(this.state.session).then(data => {
-                            //console.log(data);
-                            axios.get('https://knowledge-community-back-end.herokuapp.com/users/' + this.state.id + '?statistics=1')
-                                .then(response => {
-                                    this.setState({ posts: response.data })
-                                })
+
+                    //console.log(data);
+                    axios.get('https://knowledge-community-back-end.herokuapp.com/users/' + this.state.id + '?statistics=1')
+                        .then(response => {
+                            this.setState({ posts: response.data })
                         })
-                        verifyToken(this.state.session).then(data => {
-                            //console.log(data);
-                            axios.get('https://knowledge-community-back-end.herokuapp.com/users/' + this.state.id + '?statistics=2')
-                                .then(response => {
-                                    this.setState({ comments: response.data })
-                                })
-                        })
-                        setTimeout(() => this.setState({ loading: false }), 500);
-                    })
-            })
+                })
+            //console.log(data);
+            axios.get('https://knowledge-community-back-end.herokuapp.com/users/' + this.state.id + '?statistics=2')
+                .then(response => {
+                    this.setState({ comments: response.data })
+                })
+            setTimeout(() => this.setState({ loading: false }), 500);
         })
 
     }

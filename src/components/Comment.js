@@ -8,7 +8,6 @@ import '../styles/Home.css';
 import axios from 'axios';
 import store from '../store';
 import { loadState, saveState } from './localStorage.js';
-import { verifyToken } from './verifyToken';
 
 class Comment extends Component {
     constructor(props, context) {
@@ -39,23 +38,22 @@ class Comment extends Component {
         this.setState(state);
         window.addEventListener('beforeunload', this.saveStateComment);
         if (store.getState().session.user.email !== undefined) {
-            this.setState({ session: store.getState().session.user })
+            this.setState({ session: store.getState().session.user },()=>{
+            axios.defaults.headers.common['Authorization'] = `${this.state.session.authentication_token}`;
+            axios.defaults.headers.common['ID'] = `${this.state.session.id}`;
+            })
         }
         this.setState({ loading: true }, () => {
-            verifyToken(this.state.session).then(data => {
-                //console.log(data);
-                axios.get('https://knowledge-community-back-end.herokuapp.com/users/' + this.props.user_id)
-                    .then(response => {
-                        this.setState({ user: response.data })
-                    })
-                verifyToken(this.state.session).then(data => {
-                    //console.log(data);
-                    axios.get('https://knowledge-community-back-end.herokuapp.com/app_files?ProfilePhoto=1&user_id=' + this.props.user_id)
-                        .then(response => {
-                            this.setState({ picture: response.data })
-                        })
+            //console.log(data);
+            axios.get('https://knowledge-community-back-end.herokuapp.com/users/' + this.props.user_id)
+                .then(response => {
+                    this.setState({ user: response.data })
                 })
-            })
+            //console.log(data);
+            axios.get('https://knowledge-community-back-end.herokuapp.com/app_files?ProfilePhoto=1&user_id=' + this.props.user_id)
+                .then(response => {
+                    this.setState({ picture: response.data })
+                })
         })
     }
     render() {

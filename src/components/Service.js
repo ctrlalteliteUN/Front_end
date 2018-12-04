@@ -11,7 +11,6 @@ import axios from 'axios';
 import { loadState, saveState } from './localStorage.js';
 import LoadingSpinner from './LoadingSpinner';
 import store from '../store';
-import { verifyToken } from './verifyToken';
 import Post from './Post';
 
 class Service extends Component {
@@ -52,10 +51,12 @@ class Service extends Component {
                 }]
             },
             post: {
-                comments:[]
+                comments: [],
+                tags: []
             }
         };
         this.saveStateService = this.saveStateService.bind(this);
+        this.startsChange = this.startsChange.bind(this);
     }
 
     saveStateService() {
@@ -75,32 +76,30 @@ class Service extends Component {
         this.setState(state);
         window.addEventListener('beforeunload', this.saveStateService);
         if (store.getState().session.user.email !== undefined) {
-            this.setState({ session: store.getState().session.user })
+            this.setState({ session: store.getState().session.user },()=>{
+            axios.defaults.headers.common['Authorization'] = `${this.state.session.authentication_token}`;
+            axios.defaults.headers.common['ID'] = `${this.state.session.id}`;
+            })
         }
         this.setState({ loading: true }, () => {
             setTimeout(() => this.setState({ loading: false }), 500);
         })
         this.setState({ loading: true }, () => {
-            verifyToken(this.state.session).then(data => {
-                //console.log(data);
-                axios.get('https://knowledge-community-back-end.herokuapp.com/services/' + this.props.match.params.service_id)
-                    .then(response => {
-                        this.setState({
-                            service: response.data,
-                        })
-                        verifyToken(this.state.session).then(data => {
-                            console.log(data);
-                            axios.get('https://knowledge-community-back-end.herokuapp.com/posts/' + response.data.post.id)
-                                .then(res => {
-                                    console.log(res.data);
-                                    this.setState({
-                                        post: res.data,
-                                        loading: false,
-                                    });
-                                })
-                        })
+            //console.log(data);
+            axios.get('https://knowledge-community-back-end.herokuapp.com/services/' + this.props.match.params.service_id)
+                .then(response => {
+                    this.setState({
+                        service: response.data,
                     })
-            })
+                    axios.get('https://knowledge-community-back-end.herokuapp.com/posts/' + response.data.post.id)
+                        .then(res => {
+                            console.log(res.data);
+                            this.setState({
+                                post: res.data,
+                                loading: false,
+                            });
+                        })
+                })
 
         })
         this.setState({ loading: true }, () => {
@@ -113,12 +112,17 @@ class Service extends Component {
         console.log(store.getState());
         
     }*/
+    startsChange(e) {
+        let solicitud = this.state.solicitud;
+        solicitud.score = e.target.value;
+        this.setState({ solicitud: solicitud })
+    }
 
     render() {
-        //console.log(this.state)
-        let aux=<div></div>;
-        if(this.state.post){
-            aux= <Post id={this.state.service.post.id} user_id={this.state.service.post.user_id} post={this.state.post} ></Post>
+        //console.log(this.state.post)
+        let aux = <div></div>;
+        if (this.state.post) {
+            aux = <Post id={this.state.service.post.id} user_id={this.state.service.post.user_id} post={this.state.post} ></Post>
         }
         return (
             <div>
@@ -126,6 +130,20 @@ class Service extends Component {
                 {this.state.loading ? <LoadingSpinner /> :
                     aux
                 }
+                <div className="container cal-panel">
+                    <p className="clasificacion" >
+                        <input id="radio1" type="radio" name="estrellas" value="5" checked={this.state.solicitud.score === "5"} onChange={this.startsChange} />
+                        <label for="radio1">★</label>
+                        <input id="radio2" type="radio" name="estrellas" value="4" checked={this.state.solicitud.score === "4"} onChange={this.startsChange} />
+                        <label for="radio2">★</label>
+                        <input id="radio3" type="radio" name="estrellas" value="3" checked={this.state.solicitud.score === "3"} onChange={this.startsChange} />
+                        <label for="radio3">★</label>
+                        <input id="radio4" type="radio" name="estrellas" value="2" checked={this.state.solicitud.score === "2"} onChange={this.startsChange} />
+                        <label for="radio4">★</label>
+                        <input id="radio5" type="radio" name="estrellas" value="1" checked={this.state.solicitud.score === "1"} onChange={this.startsChange} />
+                        <label for="radio5">★</label>
+                    </p>
+                </div>
             </div >
 
         )

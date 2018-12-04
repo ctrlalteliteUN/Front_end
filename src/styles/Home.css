@@ -140,3 +140,37 @@
   .link:hover {
      color: blue;
   }
+  input[type="radio"] {
+    display: none;
+  }
+  
+  .lb {
+    color:darkgrey;
+  }
+  
+  .clasificacion {
+    direction: rtl;
+    unicode-bidi: bidi-override;
+    font-size: 50px;
+  }
+  
+  label:hover,
+  label:hover ~ label {
+    color: #4d636f;
+  }
+  
+  input[type="radio"]:checked ~ label {
+    color: #4d636f;
+  }
+  .cal-panel{
+      margin-top: 20px;
+  }
+  .solbtn{
+    width:150px;
+    background-color: #4d636f;
+    border-style: none;
+    color: white;
+    height: 35px;
+    margin-top: 10px;
+
+  }

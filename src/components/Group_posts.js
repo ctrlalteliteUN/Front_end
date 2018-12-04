@@ -9,7 +9,6 @@ import axios from 'axios';
 import Post from './Post';
 import store from '../store';
 import { loadState, saveState } from './localStorage.js';
-import { verifyToken } from './verifyToken';
 
 class Group_posts extends Component {
   constructor(props, context) {
@@ -39,25 +38,26 @@ class Group_posts extends Component {
     this.setState(state);
     window.addEventListener('beforeunload', this.saveStateGroupPosts);
     if (store.getState().session.user.email !== undefined) {
-      this.setState({ session: store.getState().session.user })
+      this.setState({ session: store.getState().session.user }, () => {
+        axios.defaults.headers.common['Authorization'] = `${this.state.session.authentication_token}`;
+        axios.defaults.headers.common['ID'] = `${this.state.session.id}`;
+      })
     }
     this.setState({ loading: true }, () => {
-      verifyToken(this.state.session).then(data => {
-        //console.log(data);
-        axios.get('https://knowledge-community-back-end.herokuapp.com/groups/' + this.props.group_id + '/posts')
-          .then(res => {
-            this.setState({
-              posts: res.data,
-              loading: false,
-            });
-          }).catch(function (error) {
-            console.error(error);
-            console.error(error);
-            this.setState({
-              loading: false,
-            })
+      //console.log(data);
+      axios.get('https://knowledge-community-back-end.herokuapp.com/groups/' + this.props.group_id + '/posts')
+        .then(res => {
+          this.setState({
+            posts: res.data,
+            loading: false,
+          });
+        }).catch(function (error) {
+          console.error(error);
+          console.error(error);
+          this.setState({
+            loading: false,
           })
-      })
+        })
     })
   }
   render() {
