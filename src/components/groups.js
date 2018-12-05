@@ -139,7 +139,6 @@ class groups extends Component {
               console.error(error);
             })
         })
-
         .catch(function (error) {
           console.error(error);
           this.setState({

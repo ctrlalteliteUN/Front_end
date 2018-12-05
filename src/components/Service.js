@@ -133,15 +133,15 @@ class Service extends Component {
                 <div className="container cal-panel">
                     <p className="clasificacion" >
                         <input id="radio1" type="radio" name="estrellas" value="5" checked={this.state.solicitud.score === "5"} onChange={this.startsChange} />
-                        <label for="radio1">★</label>
+                        <label className="lb" for="radio1">★</label>
                         <input id="radio2" type="radio" name="estrellas" value="4" checked={this.state.solicitud.score === "4"} onChange={this.startsChange} />
-                        <label for="radio2">★</label>
+                        <label className="lb" for="radio2">★</label>
                         <input id="radio3" type="radio" name="estrellas" value="3" checked={this.state.solicitud.score === "3"} onChange={this.startsChange} />
-                        <label for="radio3">★</label>
+                        <label className="lb" for="radio3">★</label>
                         <input id="radio4" type="radio" name="estrellas" value="2" checked={this.state.solicitud.score === "2"} onChange={this.startsChange} />
-                        <label for="radio4">★</label>
+                        <label className="lb" for="radio4">★</label>
                         <input id="radio5" type="radio" name="estrellas" value="1" checked={this.state.solicitud.score === "1"} onChange={this.startsChange} />
-                        <label for="radio5">★</label>
+                        <label className="lb" for="radio5">★</label>
                     </p>
                 </div>
             </div >

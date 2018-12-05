@@ -49,7 +49,6 @@ class Posts extends Component {
 
       axios.get('https://knowledge-community-back-end.herokuapp.com/posts?page=3')
         .then(res => {
-          console.log(res);
           this.setState({
             posts: res.data,
             loading: false,
@@ -57,9 +56,6 @@ class Posts extends Component {
         }).catch(function (error) {
           console.error(error);
           console.error(error);
-          this.setState({
-            loading: false,
-          })
         })
     });
   }

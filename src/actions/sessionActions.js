@@ -53,6 +53,7 @@ export const logout = (history) => {
     return sessionApi.logout().then(() => {
       sessionService.deleteSession();
       sessionService.deleteUser();
+      localStorage.clear();
       history.push('/welcome');
     }).catch(err => {
       throw (err);

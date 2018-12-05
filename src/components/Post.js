@@ -69,6 +69,10 @@ class Post extends Component {
         }
         this.setState({ post: this.props.post }, () => {
             //console.log(this.state.post);
+            axios.get('https://knowledge-community-back-end.herokuapp.com/app_files?ProfilePhoto=1&user_id=' + this.state.post.user.id)
+            .then(response => {
+                this.setState({ picture: response.data })
+            })
         });
 
         /* this.setState({ loading: true }, () => {              
@@ -86,10 +90,7 @@ class Post extends Component {
                              lng: res.data.lng
                          });
                              //console.log(data);
-                             axios.get('https://knowledge-community-back-end.herokuapp.com/app_files?ProfilePhoto=1&user_id=' + this.state.post.user.id)
-                                 .then(response => {
-                                     this.setState({ picture: response.data })
-                                 })
+                            
                      })
          })*/
     }

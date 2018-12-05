@@ -73,49 +73,11 @@ class Home extends Component {
 
     componentDidMount() {
         const state = loadState('home');
-        this.setState(state);
-        window.addEventListener('beforeunload', this.saveStateHome);
-        this.setState({ loading: true, map: false, services: [] }, () => {
-            //console.log(data);
-            axios.get('https://knowledge-community-back-end.herokuapp.com/users?email=' + this.state.session.email)
-                .then(res => {
-                    console.log(this.state);
-                    let post = Object.assign({}, this.state.post);
-                    post.user_id = res.data[0].id;
-                    this.setState({
-                        user_id: res.data[0].id,
-                        post: post,
-                        groups: res.data[0].groups,
-                    });
-                    //console.log(data);
-                    axios.get('https://knowledge-community-back-end.herokuapp.com/app_files?ProfilePhoto=1&user_id=' + this.state.user_id)
-                        .then(response => {
-                            this.setState({
-                                picture: response.data,
-                            })
-                        })
+        if (state) {
+            this.setState(state);
+            window.addEventListener('beforeunload', this.saveStateHome);
+        }
 
-
-                    res.data[0].services.forEach(element => {
-                        //console.log(data);
-                        axios.get('https://knowledge-community-back-end.herokuapp.com/services/' + element.id)
-                            .then(response => {
-                                var services = this.state.services;
-                                services.push(response.data)
-                                this.setState({
-                                    services: services,
-                                })
-                            })
-
-                    });
-                    this.setState({
-                        loading: false
-                    })
-                }).catch(function (error) {
-                    console.error(error);
-                    console.error(error);
-                })
-        })
 
     }
 
@@ -223,10 +185,50 @@ class Home extends Component {
             this.setState({ session: store.getState().session.user });
             axios.defaults.headers.common['Authorization'] = `${this.state.session.authentication_token}`;
             axios.defaults.headers.common['ID'] = `${this.state.session.id}`;
+            this.setState({ loading: true, map: false, services: [] }, () => {
+                axios.get('https://knowledge-community-back-end.herokuapp.com/users?email=' + this.state.session.email)
+                    .then(res => {
+                        let post = Object.assign({}, this.state.post);
+                        post.user_id = res.data[0].id;
+                        this.setState({
+                            user_id: res.data[0].id,
+                            post: post,
+                            groups: res.data[0].groups,
+                        });
+                        //console.log(data);
+                        axios.get('https://knowledge-community-back-end.herokuapp.com/app_files?ProfilePhoto=1&user_id=' + res.data[0].id)
+                            .then(response => {
+                                this.setState({
+                                    picture: response.data,
+                                })
+                            })
+
+                        
+                        res.data[0].services.forEach(element => {
+                            axios.get('https://knowledge-community-back-end.herokuapp.com/services/' + element.id)
+                                .then(response => {
+                                    console.log(element);
+                                    console.log(response);
+                                    var services = this.state.services;
+                                    services.push(response.data)
+                                    this.setState({
+                                        services: services,
+                                    })
+                                })
+
+                        });
+                        this.setState({
+                            loading: false
+                        })
+                    }).catch(function (error) {
+                        console.error(error);
+                        console.error(error);
+                    })
+            })
         }
     }
     render() {
-        //console.log(this.state.services)
+        //console.log(this.state)
         const Pdfbutton = withRouter(({ history }) => (
             <button className="btn btn-default btn-lg posd"
                 onClick={() => this.onPDF(history)}
@@ -262,7 +264,7 @@ class Home extends Component {
                                 <div className="row">
                                     <div className='container-home'>
                                         <div className="col-md-12">
-                                            <Link to={{ pathname: '/profile/' + this.state.user_id, params: { email: this.props.user.email } }}>
+                                            <Link to={{ pathname: '/profile/' + this.props.user.id, params: { email: this.props.user.email } }}>
                                                 <div className="home-profile-img">
                                                     {$picture}
                                                 </div>
