@@ -77,6 +77,45 @@ class Home extends Component {
             this.setState(state);
             window.addEventListener('beforeunload', this.saveStateHome);
         }
+        this.setState({ loading: true, map: false, services: [] }, () => {
+            axios.get('https://knowledge-community-back-end.herokuapp.com/users?email=' + this.state.session.email)
+                .then(res => {
+                    let post = Object.assign({}, this.state.post);
+                    post.user_id = res.data[0].id;
+                    this.setState({
+                        user_id: res.data[0].id,
+                        post: post,
+                        groups: res.data[0].groups,
+                        services:[]
+                    });
+                    //console.log(data);
+                    axios.get('https://knowledge-community-back-end.herokuapp.com/app_files?ProfilePhoto=1&user_id=' + res.data[0].id)
+                        .then(response => {
+                            this.setState({
+                                picture: response.data,
+                            })
+                        })
+
+                    
+                    res.data[0].services.forEach(element => {
+                        axios.get('https://knowledge-community-back-end.herokuapp.com/services/' + element.id)
+                            .then(response => {
+                                var services = this.state.services;
+                                services.push(response.data)
+                                this.setState({
+                                    services: services,
+                                })
+                            })
+
+                    });
+                    this.setState({
+                        loading: false
+                    })
+                }).catch(function (error) {
+                    console.error(error);
+                    console.error(error);
+                })
+        })
 
 
     }
@@ -185,46 +224,7 @@ class Home extends Component {
             this.setState({ session: store.getState().session.user });
             axios.defaults.headers.common['Authorization'] = `${this.state.session.authentication_token}`;
             axios.defaults.headers.common['ID'] = `${this.state.session.id}`;
-            this.setState({ loading: true, map: false, services: [] }, () => {
-                axios.get('https://knowledge-community-back-end.herokuapp.com/users?email=' + this.state.session.email)
-                    .then(res => {
-                        let post = Object.assign({}, this.state.post);
-                        post.user_id = res.data[0].id;
-                        this.setState({
-                            user_id: res.data[0].id,
-                            post: post,
-                            groups: res.data[0].groups,
-                        });
-                        //console.log(data);
-                        axios.get('https://knowledge-community-back-end.herokuapp.com/app_files?ProfilePhoto=1&user_id=' + res.data[0].id)
-                            .then(response => {
-                                this.setState({
-                                    picture: response.data,
-                                })
-                            })
-
-                        
-                        res.data[0].services.forEach(element => {
-                            axios.get('https://knowledge-community-back-end.herokuapp.com/services/' + element.id)
-                                .then(response => {
-                                    console.log(element);
-                                    console.log(response);
-                                    var services = this.state.services;
-                                    services.push(response.data)
-                                    this.setState({
-                                        services: services,
-                                    })
-                                })
-
-                        });
-                        this.setState({
-                            loading: false
-                        })
-                    }).catch(function (error) {
-                        console.error(error);
-                        console.error(error);
-                    })
-            })
+            
         }
     }
     render() {
@@ -299,13 +299,13 @@ class Home extends Component {
                                             <div className="panel panel-default">
                                                 <div className="panel-heading">
                                                     <h3 className="panel-title">Servicios<a className="items">
-                                                        <i class="fas fa-atlas"></i>
+                                                        <i className="fas fa-atlas"></i>
                                                     </a></h3>
                                                 </div>
                                                 <div className="panel-body">
                                                     {this.state.services.map((service, i) =>
                                                         <Link key={i} className="link" to={{ pathname: '/service/' + service.id }}>
-                                                            {service.id}<br></br>
+                                                            {service.post.title}<br></br>
                                                         </Link>
                                                     )}
 

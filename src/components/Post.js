@@ -99,7 +99,7 @@ class Post extends Component {
         const { comment } = this.state;
         comment.user_id = this.props.user_id;
         //console.log(data);
-        axios.post('https://knowledge-community-back-end.herokuapp.com/pos+-ts/' + this.props.id + '/comments', this.state.comment)
+        axios.post('https://knowledge-community-back-end.herokuapp.com/posts/' + this.props.id + '/comments', this.state.comment)
             .then(response => {
                 alert("Comentario publicado");
                 this.setState({
@@ -119,18 +119,22 @@ class Post extends Component {
     onSubmitContact(history) {
         const service = {
             post_id: this.props.id,
-            user1_id: this.state.post.user.id,
-            user2_id: this.props.id
+            user_id: this.state.post.user.id,
+            user_service_id: this.props.user.id,
+            score_post:1,
+            score_service:2,
+            state:0,
         }
+        //console.log(this.props);
         //history.push('/service/'+this.props.id);
         //console.log(data);
-        axios.post('https://knowledge-community-back-end.herokuapp.com/services/', this.state.comment)
+        axios.post('https://knowledge-community-back-end.herokuapp.com/services/', service)
             .then(response => {
                 alert("Servicio creado");
                 this.setState({
                     loading: false,
                 })
-                history.push('/service/' + this.props.id);
+                history.push('/service/' + response.data.id);
             })
             .catch(function (error) {
                 console.error(error);

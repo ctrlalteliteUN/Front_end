@@ -53,10 +53,12 @@ class Service extends Component {
             post: {
                 comments: [],
                 tags: []
-            }
+            },
+            admitido: false,
         };
         this.saveStateService = this.saveStateService.bind(this);
         this.startsChange = this.startsChange.bind(this);
+        this.onSubmitScore = this.onSubmitScore.bind(this);
     }
 
     saveStateService() {
@@ -76,9 +78,9 @@ class Service extends Component {
         this.setState(state);
         window.addEventListener('beforeunload', this.saveStateService);
         if (store.getState().session.user.email !== undefined) {
-            this.setState({ session: store.getState().session.user },()=>{
-            axios.defaults.headers.common['Authorization'] = `${this.state.session.authentication_token}`;
-            axios.defaults.headers.common['ID'] = `${this.state.session.id}`;
+            this.setState({ session: store.getState().session.user }, () => {
+                axios.defaults.headers.common['Authorization'] = `${this.state.session.authentication_token}`;
+                axios.defaults.headers.common['ID'] = `${this.state.session.id}`;
             })
         }
         this.setState({ loading: true }, () => {
@@ -93,16 +95,24 @@ class Service extends Component {
                     })
                     axios.get('https://knowledge-community-back-end.herokuapp.com/posts/' + response.data.post.id)
                         .then(res => {
-                            console.log(res.data);
                             this.setState({
                                 post: res.data,
                                 loading: false,
                             });
                         })
+                    this.state.service.users.forEach(element => {
+                        if (element.id == this.state.session.id) {
+                            this.setState({ admitido: true });
+                        } else {
+                            this.setState({ user: element });
+                        }
+                    });
                 })
+
 
         })
         this.setState({ loading: true }, () => {
+
             setTimeout(() => this.setState({ loading: false }), 5000);
         })
 
@@ -118,19 +128,67 @@ class Service extends Component {
         this.setState({ solicitud: solicitud })
     }
 
-    render() {
-        //console.log(this.state.post)
-        let aux = <div></div>;
-        if (this.state.post) {
-            aux = <Post id={this.state.service.post.id} user_id={this.state.service.post.user_id} post={this.state.post} ></Post>
+    onSubmitScore() {
+        let service = {
+            post_id: this.state.post.id,
+            user_id: this.state.post.user_id,
+            user_service_id: -1,
+            score_post: 0,
+            score_service: 0,
+            state: 0,
         }
-        return (
-            <div>
-                <Navigation />
-                {this.state.loading ? <LoadingSpinner /> :
-                    aux
+        if (this.state.post.user_id == this.state.session.id) {
+            service.score_post = this.state.solicitud.score;
+            this.state.service.users.forEach(element => {
+                if (element.id != this.state.session.id) {
+                    service.score_service = element.score;
                 }
+            });
+        } else {
+            service.score_service = this.state.solicitud.score;
+            this.state.service.users.forEach(element => {
+                if (element.id != this.state.session.id) {
+                    service.score_post= element.score;
+                }
+            });
+        }
+        this.state.service.users.forEach(element => {
+            if (element.id != this.state.post.user_id) {
+                service.user_service_id = element.id;
+            }
+        });
+        axios.put('https://knowledge-community-back-end.herokuapp.com/services/' + this.state.service.id, service)
+            .then(response => {
+                alert("Se ha guardado la calificación");
+                this.setState({
+                    loading: false,
+                })
+            })
+            .catch(function (error) {
+                console.error(error);
+            })
+    }
+
+    render() {
+        const ScoreButton = () => (
+            <button className="btn btn-default btn-lg posd"
+                onClick={() => this.onSubmitScore()}
+                type="submit">Finalizar
+            </button>
+        );
+        let aux = <div></div>;
+        if (this.state.post && this.state.admitido && this.state.user) {
+            aux = <div className="container">
+                <br></br><br></br>
+                <h2>Este es el usuario con el que intercambiaras conocimiento: </h2>
+                <div className="container">
+                    <p>Nombre: {this.state.user.name}</p>
+                    <p>Correo: {this.state.user.email}</p>
+                </div>
+                <h2>Este es el post por el que intercambian conocimiento: </h2>
+                <Post id={this.state.service.post.id} user_id={this.state.service.post.user_id} post={this.state.post} ></Post>
                 <div className="container cal-panel">
+                    <h3>¿Qué tal fue el intercambio de conocimiento con {this.state.user.name}?</h3>
                     <p className="clasificacion" >
                         <input id="radio1" type="radio" name="estrellas" value="5" checked={this.state.solicitud.score === "5"} onChange={this.startsChange} />
                         <label className="lb" for="radio1">★</label>
@@ -143,7 +201,21 @@ class Service extends Component {
                         <input id="radio5" type="radio" name="estrellas" value="1" checked={this.state.solicitud.score === "1"} onChange={this.startsChange} />
                         <label className="lb" for="radio5">★</label>
                     </p>
+                    <h3>Finaliza el servicio una vez hayan intercambiado conocimiento!</h3>
+                    <ScoreButton></ScoreButton>
                 </div>
+            </div>
+        } else {
+            aux = <div>Este no es tu servicio!!!!</div>
+        }
+
+        return (
+            <div>
+                <Navigation />
+                {this.state.loading ? <LoadingSpinner /> :
+                    aux
+                }
+
             </div >
 
         )
