@@ -62,7 +62,7 @@ class Service extends Component {
     }
 
     saveStateService() {
-        saveState(this.state, 'service');
+        saveState(this.state, 'service'+this.props.match.params.service_id);
     }
 
     componentWillUnmount() {
@@ -74,7 +74,7 @@ class Service extends Component {
 
     componentDidMount() {
         //console.log(this.props);
-        const state = loadState('service');
+        const state = loadState('service'+this.props.match.params.service_id);
         this.setState(state);
         window.addEventListener('beforeunload', this.saveStateService);
         if (store.getState().session.user.email !== undefined) {
